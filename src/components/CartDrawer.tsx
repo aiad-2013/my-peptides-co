@@ -12,8 +12,18 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
   const handleCheckout = () => {
     // Build WooCommerce cart URL with products
-    // For now, redirect to main checkout - you can customize this
-    const checkoutUrl = 'https://vicorpus.com/checkout/';
+    const baseUrl = 'https://vicorpusco.wpenginepowered.com';
+    
+    // Create URL parameters for each cart item
+    // WooCommerce accepts add-to-cart with product IDs
+    const cartParams = items.map(item => {
+      // Using product slug/name as identifier - will need WooCommerce product IDs for full integration
+      return `products[]=${encodeURIComponent(item.id)}&quantities[]=${item.quantity}`;
+    }).join('&');
+    
+    // Build checkout URL with cart data and return URL
+    const returnUrl = encodeURIComponent(window.location.origin + '/?order_complete=true');
+    const checkoutUrl = `${baseUrl}/checkout/?${cartParams}&return_url=${returnUrl}`;
     
     // Open in new tab
     window.open(checkoutUrl, '_blank');
