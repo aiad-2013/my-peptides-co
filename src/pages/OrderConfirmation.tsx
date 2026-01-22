@@ -15,10 +15,8 @@ interface LineItem {
 
 interface Order {
   id: string;
-  woocommerce_order_id: string;
   order_number: string | null;
   status: string;
-  customer_email: string | null;
   customer_name: string | null;
   line_items: LineItem[] | null;
   subtotal: number | null;
@@ -45,22 +43,31 @@ const OrderConfirmationContent = () => {
       }
 
       try {
-        const { data, error: fetchError } = await supabase
-          .from('orders')
-          .select('*')
-          .eq('woocommerce_order_id', orderId)
-          .single();
+        // Use edge function to securely fetch order (no direct table access)
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-order?order_id=${encodeURIComponent(orderId)}`,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+          }
+        );
 
-        if (fetchError) {
-          console.error('Error fetching order:', fetchError);
+        const result = await response.json();
+
+        if (!response.ok) {
+          console.error('Error fetching order:', result.error);
           setError('Order not found');
-        } else if (data) {
-          // Parse line_items from JSON - cast through unknown for type safety
-          const lineItems = Array.isArray(data.line_items) 
-            ? (data.line_items as unknown as LineItem[]) 
+        } else if (result.order) {
+          // Parse line_items from JSON
+          const lineItems = Array.isArray(result.order.line_items) 
+            ? (result.order.line_items as LineItem[]) 
             : null;
           const orderData: Order = {
-            ...data,
+            ...result.order,
             line_items: lineItems,
           };
           setOrder(orderData);
@@ -123,7 +130,7 @@ const OrderConfirmationContent = () => {
               <div className="flex flex-wrap gap-4 justify-between pb-6 border-b border-border">
                 <div>
                   <p className="text-sm text-muted-foreground">Order Number</p>
-                  <p className="font-semibold">#{order.order_number || order.woocommerce_order_id}</p>
+                  <p className="font-semibold">#{order.order_number || order.id}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Status</p>
@@ -185,16 +192,6 @@ const OrderConfirmationContent = () => {
                 </div>
               </div>
             </div>
-
-            {/* Confirmation Email Notice */}
-            {order.customer_email && (
-              <div className="bg-muted/30 rounded-xl p-4 text-center">
-                <p className="text-sm text-muted-foreground">
-                  A confirmation email has been sent to{' '}
-                  <span className="font-medium text-foreground">{order.customer_email}</span>
-                </p>
-              </div>
-            )}
 
             {/* Back to Shop */}
             <div className="text-center pt-4">
