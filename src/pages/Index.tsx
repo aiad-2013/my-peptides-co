@@ -1,13 +1,72 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState, useRef } from 'react';
+import { Header } from '@/components/Header';
+import { Hero } from '@/components/Hero';
+import { ProductGrid } from '@/components/ProductGrid';
+import { ProductModal } from '@/components/ProductModal';
+import { CartDrawer } from '@/components/CartDrawer';
+import { Footer } from '@/components/Footer';
+import { CartProvider } from '@/context/CartContext';
+import { Product } from '@/types/product';
+
+const IndexContent = () => {
+  const [activeCategory, setActiveCategory] = useState<'all' | 'sarms' | 'peptides'>('all');
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const productsRef = useRef<HTMLDivElement>(null);
+
+  const handleViewDetails = (product: Product) => {
+    setSelectedProduct(product);
+    setIsProductModalOpen(true);
+  };
+
+  const scrollToProducts = () => {
+    productsRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Header
+        onCartClick={() => setIsCartOpen(true)}
+        onCategoryChange={setActiveCategory}
+        activeCategory={activeCategory}
+      />
+
+      <main>
+        <Hero onShopClick={scrollToProducts} />
+        
+        <div ref={productsRef}>
+          <ProductGrid
+            category={activeCategory}
+            onViewDetails={handleViewDetails}
+          />
+        </div>
+      </main>
+
+      <Footer />
+
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isProductModalOpen}
+        onClose={() => {
+          setIsProductModalOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
+
+      <CartDrawer
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+      />
+    </div>
+  );
+};
 
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <CartProvider>
+      <IndexContent />
+    </CartProvider>
   );
 };
 
