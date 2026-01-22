@@ -1,5 +1,6 @@
 export interface Product {
   id: string;
+  wooCommerceId?: number;
   name: string;
   category: 'sarms' | 'peptides';
   price: number;
