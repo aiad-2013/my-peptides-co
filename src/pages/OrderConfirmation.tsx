@@ -3,7 +3,6 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
-import { supabase } from '@/integrations/supabase/client';
 import { CheckCircle, Package, ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -34,20 +33,28 @@ const OrderConfirmationContent = () => {
   const [error, setError] = useState<string | null>(null);
 
   const orderId = searchParams.get('order_id');
+  const token = searchParams.get('token');
 
   useEffect(() => {
     const fetchOrder = async () => {
-      if (!orderId) {
+      // Both order_id and token are required
+      if (!orderId || !token) {
+        setError('Invalid order link');
+        setLoading(false);
+        return;
+      }
+
+      // Validate token format (64 hex characters)
+      if (!/^[a-f0-9]{64}$/i.test(token)) {
+        setError('Invalid order link');
         setLoading(false);
         return;
       }
 
       try {
-        // Use edge function to securely fetch order (no direct table access)
-        const { data: { session } } = await supabase.auth.getSession();
-        
+        // Use edge function to securely fetch order with token verification
         const response = await fetch(
-          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-order?order_id=${encodeURIComponent(orderId)}`,
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-order?order_id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(token)}`,
           {
             headers: {
               'Content-Type': 'application/json',
@@ -59,8 +66,11 @@ const OrderConfirmationContent = () => {
         const result = await response.json();
 
         if (!response.ok) {
-          console.error('Error fetching order:', result.error);
-          setError('Order not found');
+          if (response.status === 403) {
+            setError('Invalid or expired order link');
+          } else {
+            setError('Order not found');
+          }
         } else if (result.order) {
           // Parse line_items from JSON
           const lineItems = Array.isArray(result.order.line_items) 
@@ -73,7 +83,7 @@ const OrderConfirmationContent = () => {
           setOrder(orderData);
         }
       } catch (err) {
-        console.error('Error:', err);
+        console.error('Error loading order');
         setError('Failed to load order details');
       } finally {
         setLoading(false);
@@ -81,7 +91,7 @@ const OrderConfirmationContent = () => {
     };
 
     fetchOrder();
-  }, [orderId]);
+  }, [orderId, token]);
 
   return (
     <div className="min-h-screen bg-background">
