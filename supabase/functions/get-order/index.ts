@@ -14,10 +14,26 @@ Deno.serve(async (req) => {
   try {
     const url = new URL(req.url);
     const orderId = url.searchParams.get('order_id');
+    const orderToken = url.searchParams.get('token');
 
     if (!orderId) {
       return new Response(
         JSON.stringify({ error: 'Order ID is required' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    if (!orderToken) {
+      return new Response(
+        JSON.stringify({ error: 'Order token is required for verification' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+      );
+    }
+
+    // Validate token format (64 hex characters)
+    if (!/^[a-f0-9]{64}$/i.test(orderToken)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid token format' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
@@ -27,10 +43,10 @@ Deno.serve(async (req) => {
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Fetch order by woocommerce_order_id
+    // Fetch order by woocommerce_order_id AND verify the token matches
     const { data: order, error } = await supabase
       .from('orders')
-      .select('id, order_number, status, customer_name, line_items, subtotal, shipping_total, tax_total, total, currency, created_at')
+      .select('id, order_number, status, customer_name, line_items, subtotal, shipping_total, tax_total, total, currency, created_at, order_token')
       .eq('woocommerce_order_id', orderId)
       .maybeSingle();
 
@@ -49,9 +65,36 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Return sanitized order data (no sensitive info like email/addresses)
+    // Verify the token matches using constant-time comparison to prevent timing attacks
+    const tokenMatch = order.order_token && 
+      order.order_token.length === orderToken.length &&
+      timingSafeCompare(order.order_token, orderToken);
+
+    if (!tokenMatch) {
+      console.warn('Invalid order token attempt for order:', orderId);
+      return new Response(
+        JSON.stringify({ error: 'Invalid order token' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 403 }
+      );
+    }
+
+    // Return sanitized order data (no sensitive info like email/addresses/token)
+    const sanitizedOrder = {
+      id: order.id,
+      order_number: order.order_number,
+      status: order.status,
+      customer_name: order.customer_name,
+      line_items: order.line_items,
+      subtotal: order.subtotal,
+      shipping_total: order.shipping_total,
+      tax_total: order.tax_total,
+      total: order.total,
+      currency: order.currency,
+      created_at: order.created_at,
+    };
+
     return new Response(
-      JSON.stringify({ order }),
+      JSON.stringify({ order: sanitizedOrder }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
 
@@ -63,3 +106,22 @@ Deno.serve(async (req) => {
     );
   }
 });
+
+// Constant-time string comparison to prevent timing attacks
+function timingSafeCompare(a: string, b: string): boolean {
+  const encoder = new TextEncoder();
+  const aBytes = encoder.encode(a);
+  const bBytes = encoder.encode(b);
+  
+  if (aBytes.length !== bBytes.length) {
+    return false;
+  }
+  
+  // Use XOR to compare all bytes without early exit
+  let result = 0;
+  for (let i = 0; i < aBytes.length; i++) {
+    result |= aBytes[i] ^ bBytes[i];
+  }
+  
+  return result === 0;
+}

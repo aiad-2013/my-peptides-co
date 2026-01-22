@@ -77,6 +77,13 @@ async function verifyWebhookSignature(
   }
 }
 
+// Generate a secure random token for order verification
+function generateOrderToken(): string {
+  const array = new Uint8Array(32);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -143,6 +150,16 @@ Deno.serve(async (req) => {
       );
     }
 
+    // Check if this order already exists (to preserve existing token on updates)
+    const { data: existingOrder } = await supabase
+      .from('orders')
+      .select('order_token')
+      .eq('woocommerce_order_id', orderData.id.toString())
+      .maybeSingle();
+
+    // Generate a new token only for new orders, preserve existing token for updates
+    const orderToken = existingOrder?.order_token || generateOrderToken();
+
     // Prepare order data for storage
     const orderRecord = {
       woocommerce_order_id: orderData.id.toString(),
@@ -160,6 +177,7 @@ Deno.serve(async (req) => {
       currency: orderData.currency,
       payment_method: orderData.payment_method_title || orderData.payment_method,
       order_notes: orderData.customer_note,
+      order_token: orderToken,
     };
 
     // Upsert the order (insert or update if exists)

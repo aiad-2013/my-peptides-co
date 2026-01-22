@@ -25,6 +25,7 @@ export type Database = {
           line_items: Json | null
           order_notes: string | null
           order_number: string | null
+          order_token: string | null
           payment_method: string | null
           shipping_address: Json | null
           shipping_total: number | null
@@ -45,6 +46,7 @@ export type Database = {
           line_items?: Json | null
           order_notes?: string | null
           order_number?: string | null
+          order_token?: string | null
           payment_method?: string | null
           shipping_address?: Json | null
           shipping_total?: number | null
@@ -65,6 +67,7 @@ export type Database = {
           line_items?: Json | null
           order_notes?: string | null
           order_number?: string | null
+          order_token?: string | null
           payment_method?: string | null
           shipping_address?: Json | null
           shipping_total?: number | null
