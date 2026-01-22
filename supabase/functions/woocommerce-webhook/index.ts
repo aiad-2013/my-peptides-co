@@ -77,11 +77,26 @@ async function verifyWebhookSignature(
   }
 }
 
-// Generate a secure random token for order verification
-function generateOrderToken(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+// Generate a deterministic order token using HMAC-SHA256
+// This allows WooCommerce to generate the same token independently
+async function generateOrderToken(orderId: string, secret: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+  const signatureBytes = await crypto.subtle.sign(
+    'HMAC',
+    key,
+    encoder.encode(orderId)
+  );
+  // Convert to hex string (64 characters)
+  return Array.from(new Uint8Array(signatureBytes), byte => 
+    byte.toString(16).padStart(2, '0')
+  ).join('');
 }
 
 Deno.serve(async (req) => {
@@ -150,15 +165,16 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check if this order already exists (to preserve existing token on updates)
-    const { data: existingOrder } = await supabase
-      .from('orders')
-      .select('order_token')
-      .eq('woocommerce_order_id', orderData.id.toString())
-      .maybeSingle();
-
-    // Generate a new token only for new orders, preserve existing token for updates
-    const orderToken = existingOrder?.order_token || generateOrderToken();
+    // Generate deterministic token using HMAC - same token every time for same order
+    // This allows WooCommerce to generate the identical token for email links
+    if (!webhookSecret) {
+      console.error('WOOCOMMERCE_WEBHOOK_SECRET required for token generation');
+      return new Response(
+        JSON.stringify({ error: 'Webhook secret not configured' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      );
+    }
+    const orderToken = await generateOrderToken(orderData.id.toString(), webhookSecret);
 
     // Prepare order data for storage
     const orderRecord = {
