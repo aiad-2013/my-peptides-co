@@ -12,7 +12,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
   const handleCheckout = () => {
     // Build WooCommerce cart URL with products
-    const baseUrl = 'https://vicorpusco.wpenginepowered.com';
+    const baseUrl = 'https://vicorpus.co';
     
     // Create URL parameters for each cart item
     // WooCommerce accepts add-to-cart with product IDs
