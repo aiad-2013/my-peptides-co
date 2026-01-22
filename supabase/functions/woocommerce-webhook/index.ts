@@ -63,6 +63,17 @@ Deno.serve(async (req) => {
 
     // Get webhook topic from headers
     const webhookTopic = req.headers.get('x-wc-webhook-topic');
+    const contentType = req.headers.get('content-type') || '';
+    
+    // Handle WooCommerce ping/verification request (sent as form data)
+    if (!webhookTopic || contentType.includes('application/x-www-form-urlencoded')) {
+      const body = await req.text();
+      console.log('Received ping/verification request:', body);
+      return new Response(
+        JSON.stringify({ success: true, message: 'Webhook verified' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
     
     // Parse the order data from WooCommerce
     const orderData: WooCommerceOrder = await req.json();
