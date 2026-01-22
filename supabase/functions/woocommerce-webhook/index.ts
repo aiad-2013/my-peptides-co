@@ -49,6 +49,34 @@ interface WooCommerceOrder {
   }>;
 }
 
+// Verify WooCommerce webhook signature using HMAC-SHA256
+async function verifyWebhookSignature(
+  body: string,
+  signature: string,
+  secret: string
+): Promise<boolean> {
+  try {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(secret),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const signatureBytes = await crypto.subtle.sign(
+      'HMAC',
+      key,
+      encoder.encode(body)
+    );
+    const expectedSignature = btoa(String.fromCharCode(...new Uint8Array(signatureBytes)));
+    return expectedSignature === signature;
+  } catch (error) {
+    console.error('Signature verification error:', error);
+    return false;
+  }
+}
+
 Deno.serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -58,25 +86,52 @@ Deno.serve(async (req) => {
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const webhookSecret = Deno.env.get('WOOCOMMERCE_WEBHOOK_SECRET');
     
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Get webhook topic from headers
+    // Get webhook headers
     const webhookTopic = req.headers.get('x-wc-webhook-topic');
+    const webhookSignature = req.headers.get('x-wc-webhook-signature');
     const contentType = req.headers.get('content-type') || '';
+    
+    // Read the raw body for signature verification
+    const rawBody = await req.text();
     
     // Handle WooCommerce ping/verification request (sent as form data)
     if (!webhookTopic || contentType.includes('application/x-www-form-urlencoded')) {
-      const body = await req.text();
-      console.log('Received ping/verification request:', body);
+      console.log('Received ping/verification request:', rawBody);
       return new Response(
         JSON.stringify({ success: true, message: 'Webhook verified' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
+
+    // Verify webhook signature for actual order webhooks
+    if (webhookSecret) {
+      if (!webhookSignature) {
+        console.error('Missing webhook signature');
+        return new Response(
+          JSON.stringify({ error: 'Missing webhook signature' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
+      }
+
+      const isValid = await verifyWebhookSignature(rawBody, webhookSignature, webhookSecret);
+      if (!isValid) {
+        console.error('Invalid webhook signature');
+        return new Response(
+          JSON.stringify({ error: 'Invalid webhook signature' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
+        );
+      }
+      console.log('Webhook signature verified successfully');
+    } else {
+      console.warn('WOOCOMMERCE_WEBHOOK_SECRET not configured - skipping signature verification');
+    }
     
-    // Parse the order data from WooCommerce
-    const orderData: WooCommerceOrder = await req.json();
+    // Parse the order data from the raw body
+    const orderData: WooCommerceOrder = JSON.parse(rawBody);
     
     console.log('Received WooCommerce webhook:', webhookTopic, 'Order ID:', orderData.id);
 
