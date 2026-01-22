@@ -11,22 +11,13 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
 
   const handleCheckout = () => {
-    // Build WooCommerce cart URL with products
+    // Redirect directly to WooCommerce checkout
+    // Note: For full cart sync, products need numeric WooCommerce product IDs
     const baseUrl = 'https://vicorpus.co';
     
-    // Create URL parameters for each cart item
-    // WooCommerce accepts add-to-cart with product IDs
-    const cartParams = items.map(item => {
-      // Using product slug/name as identifier - will need WooCommerce product IDs for full integration
-      return `products[]=${encodeURIComponent(item.id)}&quantities[]=${item.quantity}`;
-    }).join('&');
-    
-    // Build checkout URL with cart data and return URL pointing to order confirmation page
-    const returnUrl = encodeURIComponent(window.location.origin + '/order-confirmation');
-    const checkoutUrl = `${baseUrl}/checkout/?${cartParams}&return_url=${returnUrl}`;
-    
-    // Open in new tab
-    window.open(checkoutUrl, '_blank');
+    // For now, redirect to checkout page
+    // Full integration would require WooCommerce product IDs and using their cart API
+    window.open(`${baseUrl}/checkout/`, '_blank');
   };
 
   if (!isOpen) return null;
