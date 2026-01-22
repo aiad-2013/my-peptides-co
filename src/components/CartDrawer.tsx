@@ -21,8 +21,8 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       return `products[]=${encodeURIComponent(item.id)}&quantities[]=${item.quantity}`;
     }).join('&');
     
-    // Build checkout URL with cart data and return URL
-    const returnUrl = encodeURIComponent(window.location.origin + '/?order_complete=true');
+    // Build checkout URL with cart data and return URL pointing to order confirmation page
+    const returnUrl = encodeURIComponent(window.location.origin + '/order-confirmation');
     const checkoutUrl = `${baseUrl}/checkout/?${cartParams}&return_url=${returnUrl}`;
     
     // Open in new tab
