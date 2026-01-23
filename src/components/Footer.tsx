@@ -1,4 +1,5 @@
-import { FlaskConical, Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
+import logoWhite from '@/assets/logo-white.png';
 
 export const Footer = () => {
   return (
@@ -18,9 +19,8 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <FlaskConical className="w-8 h-8 text-accent" />
-              <span className="text-2xl font-serif font-semibold">Vicorpus</span>
+            <div className="mb-4">
+              <img src={logoWhite} alt="VI CORPUS" className="h-10 w-auto" />
             </div>
             <p className="text-primary-foreground/70 max-w-md mb-6">
               Australia's trusted supplier of premium research compounds. 
