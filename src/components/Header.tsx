@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ShoppingCart, Menu, X, FlaskConical } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -25,11 +26,8 @@ export const Header = ({ onCartClick, onCategoryChange, activeCategory }: Header
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <FlaskConical className="w-8 h-8 text-accent" />
-            <span className="text-xl md:text-2xl font-serif font-semibold tracking-tight">
-              Vicorpus
-            </span>
+          <div className="flex items-center">
+            <img src={logo} alt="VI CORPUS" className="h-10 md:h-12 w-auto" />
           </div>
 
           {/* Desktop Navigation */}
