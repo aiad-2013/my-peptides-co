@@ -2,7 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* GT-Super font - add font files to src/assets/fonts/ */
+@font-face {
+  font-family: 'GT-Super';
+  src: url('@/assets/fonts/GT-Super-Display-Regular.woff2') format('woff2'),
+       url('@/assets/fonts/GT-Super-Display-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT-Super';
+  src: url('@/assets/fonts/GT-Super-Display-Medium.woff2') format('woff2'),
+       url('@/assets/fonts/GT-Super-Display-Medium.woff') format('woff');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'GT-Super';
+  src: url('@/assets/fonts/GT-Super-Display-Bold.woff2') format('woff2'),
+       url('@/assets/fonts/GT-Super-Display-Bold.woff') format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   :root {
@@ -105,7 +133,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'GT-Super', 'Playfair Display', Georgia, serif;
   }
 }
 
