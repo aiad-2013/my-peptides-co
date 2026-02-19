@@ -5,37 +5,28 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Footer } from '@/components/Footer';
 import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import logo from '@/assets/logo.png';
 
 interface BlogPostData {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   content: string;
   excerpt: string;
   date: string;
-  featuredImage: string;
+  featured_image: string;
   categories: { name: string; slug: string }[];
 }
 
 const fetchPost = async (slug: string): Promise<BlogPostData> => {
-  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
-  const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
-
-  const res = await fetch(
-    `https://${projectId}.supabase.co/functions/v1/get-blog-posts?slug=${encodeURIComponent(slug)}`,
-    {
-      headers: {
-        'apikey': anonKey,
-        'Authorization': `Bearer ${anonKey}`,
-      },
-    }
-  );
-
-  if (!res.ok) throw new Error('Failed to fetch blog post');
-  const posts = await res.json();
-  if (!posts.length) throw new Error('Post not found');
-  return posts[0];
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .eq('slug', slug)
+    .single();
+  if (error) throw error;
+  return data as unknown as BlogPostData;
 };
 
 const BlogPost = () => {
@@ -85,9 +76,8 @@ const BlogPost = () => {
           </div>
         ) : post ? (
           <article>
-            {/* Categories & Date */}
             <div className="flex items-center gap-2 mb-4 flex-wrap">
-              {post.categories.map((c) => (
+              {(Array.isArray(post.categories) ? post.categories : []).map((c: any) => (
                 <Badge key={c.slug} variant="secondary" className="capitalize text-xs">
                   {c.name}
                 </Badge>
@@ -100,23 +90,20 @@ const BlogPost = () => {
               )}
             </div>
 
-            {/* Title */}
             <h1 className="text-3xl md:text-4xl font-serif font-bold text-foreground mb-6 leading-tight">
               {post.title}
             </h1>
 
-            {/* Featured Image */}
-            {post.featuredImage && (
+            {post.featured_image && (
               <div className="rounded-lg overflow-hidden mb-8">
                 <img
-                  src={post.featuredImage}
+                  src={post.featured_image}
                   alt={post.title}
                   className="w-full h-auto object-cover"
                 />
               </div>
             )}
 
-            {/* Content */}
             <div
               className="prose prose-lg max-w-none
                 prose-headings:font-serif prose-headings:text-foreground
@@ -130,7 +117,6 @@ const BlogPost = () => {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
 
-            {/* Back link */}
             <div className="mt-12 pt-8 border-t border-border">
               <Link to="/blog" className="inline-flex items-center gap-2 text-accent hover:underline font-medium">
                 <ArrowLeft className="w-4 h-4" />
