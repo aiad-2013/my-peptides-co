@@ -11,21 +11,24 @@ import { supabase } from '@/integrations/supabase/client';
 import logo from '@/assets/logo.png';
 
 interface BlogPostItem {
-  id: number;
+  id: string;
   slug: string;
   title: string;
   excerpt: string;
   date: string;
-  featuredImage: string;
+  featured_image: string;
   categories: { name: string; slug: string }[];
 }
 
 type CategoryFilter = 'all' | 'sarms' | 'peptides';
 
 const fetchPosts = async (): Promise<BlogPostItem[]> => {
-  const { data, error } = await supabase.functions.invoke('get-blog-posts');
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('id, slug, title, excerpt, date, featured_image, categories')
+    .order('date', { ascending: false });
   if (error) throw error;
-  return data;
+  return (data || []) as unknown as BlogPostItem[];
 };
 
 const stripHtml = (html: string) => {
@@ -44,14 +47,15 @@ const Blog = () => {
 
   const filtered = category === 'all'
     ? posts
-    : posts.filter((p) =>
-        p.categories.some((c) => {
-          const s = c.slug.toLowerCase();
+    : posts.filter((p) => {
+        const cats = Array.isArray(p.categories) ? p.categories : [];
+        return cats.some((c: any) => {
+          const s = (c.slug || '').toLowerCase();
           if (category === 'sarms') return s.includes('sarm');
           if (category === 'peptides') return s.includes('peptide');
           return false;
-        })
-      );
+        });
+      });
 
   const categories: { label: string; value: CategoryFilter }[] = [
     { label: 'All Articles', value: 'all' },
@@ -123,21 +127,23 @@ const Blog = () => {
                 to={`/blog/${post.slug}`}
                 className="group rounded-lg border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
               >
-                <div className="aspect-[16/10] overflow-hidden bg-muted">
-                  {post.featuredImage ? (
+                {post.featured_image ? (
+                  <div className="aspect-[16/10] overflow-hidden bg-muted">
                     <img
-                      src={post.featuredImage}
+                      src={post.featured_image}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
                     />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-sm">No Image</div>
-                  )}
-                </div>
+                  </div>
+                ) : (
+                  <div className="aspect-[16/10] bg-gradient-navy flex items-center justify-center">
+                    <span className="text-primary-foreground/40 font-serif text-lg">VI CORPUS</span>
+                  </div>
+                )}
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
-                    {post.categories.map((c) => (
+                    {(Array.isArray(post.categories) ? post.categories : []).map((c: any) => (
                       <Badge key={c.slug} variant="secondary" className="capitalize text-xs">
                         {c.name}
                       </Badge>
