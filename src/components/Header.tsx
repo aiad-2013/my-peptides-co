@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Package, BookOpen } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
@@ -20,6 +20,11 @@ export const Header = ({ onCartClick, onCategoryChange, activeCategory }: Header
     { label: 'All Products', value: 'all' as const },
     { label: 'SARMs', value: 'sarms' as const },
     { label: 'Peptides', value: 'peptides' as const },
+  ];
+
+  const linkItems = [
+    { label: 'Blog', to: '/blog' },
+    { label: 'Track My Order', to: '/track-order' },
   ];
 
   return (
@@ -47,20 +52,20 @@ export const Header = ({ onCartClick, onCategoryChange, activeCategory }: Header
                 {item.label}
               </button>
             ))}
+            <span className="w-px h-5 bg-border mx-1" />
+            {linkItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Actions */}
           <div className="flex items-center gap-2">
-            <Link to="/blog">
-              <Button variant="ghost" size="icon" title="Blog">
-                <BookOpen className="w-5 h-5" />
-              </Button>
-            </Link>
-            <Link to="/track-order">
-              <Button variant="ghost" size="icon" title="Track Order">
-                <Package className="w-5 h-5" />
-              </Button>
-            </Link>
             <Button
               variant="ghost"
               size="icon"
@@ -105,6 +110,17 @@ export const Header = ({ onCartClick, onCategoryChange, activeCategory }: Header
               >
                 {item.label}
               </button>
+            ))}
+            <div className="h-px bg-border my-2 mx-4" />
+            {linkItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-left px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+              >
+                {item.label}
+              </Link>
             ))}
           </nav>
         )}
