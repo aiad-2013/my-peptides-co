@@ -2,3 +2,6 @@ project_id = "nzjgmkyqedausyancdjl"
 
 [functions.track-order]
 verify_jwt = false
+
+[functions.create-wc-order]
+verify_jwt = false

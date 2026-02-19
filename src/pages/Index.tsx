@@ -3,7 +3,6 @@ import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ProductModal } from '@/components/ProductModal';
-import { CartDrawer } from '@/components/CartDrawer';
 import { Footer } from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
 import { Product } from '@/types/product';
@@ -12,7 +11,6 @@ const IndexContent = () => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'sarms' | 'peptides'>('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const productsRef = useRef<HTMLDivElement>(null);
 
   const handleViewDetails = (product: Product) => {
@@ -27,7 +25,6 @@ const IndexContent = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header
-        onCartClick={() => setIsCartOpen(true)}
         onCategoryChange={setActiveCategory}
         activeCategory={activeCategory}
       />
@@ -52,11 +49,6 @@ const IndexContent = () => {
           setIsProductModalOpen(false);
           setSelectedProduct(null);
         }}
-      />
-
-      <CartDrawer
-        isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
       />
     </div>
   );
