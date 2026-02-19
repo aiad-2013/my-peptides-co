@@ -113,7 +113,6 @@ const TrackOrderContent = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header
-        onCartClick={() => {}}
         onCategoryChange={() => {}}
         activeCategory="all"
       />
