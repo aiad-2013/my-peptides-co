@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
-import { Package, Search, ArrowLeft, Loader2, CheckCircle, Clock, Truck, XCircle, Mail } from 'lucide-react';
+import { Package, Search, ArrowLeft, Loader2, CheckCircle, Clock, Truck, XCircle, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -11,6 +11,18 @@ interface LineItem {
   name: string;
   quantity: number;
   total: string;
+}
+
+interface TrackingInfo {
+  provider: string;
+  number: string;
+  url: string;
+}
+
+interface ShippingAddress {
+  city: string;
+  state: string;
+  country: string;
 }
 
 interface Order {
@@ -24,6 +36,9 @@ interface Order {
   total: number;
   currency: string | null;
   created_at: string;
+  shipping_method: string | null;
+  shipping_address: ShippingAddress | null;
+  tracking: TrackingInfo[];
 }
 
 const statusConfig: Record<string, { icon: typeof CheckCircle; label: string; color: string }> = {
@@ -200,6 +215,65 @@ const TrackOrderContent = () => {
                 </p>
               </div>
             </div>
+
+            {/* Shipping & Tracking */}
+            {(order.shipping_method || order.tracking.length > 0 || order.shipping_address) && (
+              <div className="space-y-3 pt-2">
+                <h3 className="font-semibold text-sm flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-accent" />
+                  Shipping Information
+                </h3>
+                <div className="bg-muted/50 rounded-lg p-4 space-y-3">
+                  {order.shipping_method && (
+                    <div className="text-sm">
+                      <span className="text-muted-foreground">Method: </span>
+                      <span className="font-medium">{order.shipping_method}</span>
+                    </div>
+                  )}
+                  {order.shipping_address && (order.shipping_address.city || order.shipping_address.state) && (
+                    <div className="text-sm flex items-start gap-2">
+                      <MapPin className="w-3.5 h-3.5 text-muted-foreground mt-0.5 shrink-0" />
+                      <span>
+                        {[order.shipping_address.city, order.shipping_address.state, order.shipping_address.country]
+                          .filter(Boolean)
+                          .join(', ')}
+                      </span>
+                    </div>
+                  )}
+                  {order.tracking.length > 0 ? (
+                    <div className="space-y-2">
+                      {order.tracking.map((t, i) => (
+                        <div key={i} className="flex items-center justify-between gap-3 bg-card rounded-md p-3 border border-border">
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium">{t.provider}</p>
+                            <p className="text-xs text-muted-foreground font-mono truncate">{t.number}</p>
+                          </div>
+                          {t.url ? (
+                            <a
+                              href={t.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="shrink-0"
+                            >
+                              <Button variant="gold-outline" size="sm">
+                                Track
+                                <ExternalLink className="w-3 h-3 ml-1" />
+                              </Button>
+                            </a>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">No tracking link</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      Tracking information will appear here once your order has been shipped.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
 
             {/* Line Items */}
             {order.line_items && order.line_items.length > 0 && (
