@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { CartProvider } from '@/context/CartContext';
-import { Package, Search, ArrowLeft, Loader2, CheckCircle, Clock, Truck, XCircle } from 'lucide-react';
+import { Package, Search, ArrowLeft, Loader2, CheckCircle, Clock, Truck, XCircle, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -14,8 +14,7 @@ interface LineItem {
 }
 
 interface Order {
-  id: string;
-  order_number: string | null;
+  order_number: string;
   status: string;
   customer_name: string | null;
   line_items: LineItem[] | null;
@@ -39,21 +38,23 @@ const statusConfig: Record<string, { icon: typeof CheckCircle; label: string; co
 };
 
 const TrackOrderContent = () => {
-  const [searchParams] = useSearchParams();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [orderIdInput, setOrderIdInput] = useState(searchParams.get('order_id') || '');
-  const [tokenInput, setTokenInput] = useState(searchParams.get('token') || '');
+  const [orderNumberInput, setOrderNumberInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
 
   const fetchOrder = async () => {
-    if (!orderIdInput.trim() || !tokenInput.trim()) {
-      setError('Please enter both your order number and tracking token.');
+    const trimmedOrder = orderNumberInput.trim();
+    const trimmedEmail = emailInput.trim();
+
+    if (!trimmedOrder || !trimmedEmail) {
+      setError('Please enter both your order number and email address.');
       return;
     }
 
-    if (!/^[a-f0-9]{64}$/i.test(tokenInput.trim())) {
-      setError('Invalid tracking token format. Please check the link in your confirmation email.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setError('Please enter a valid email address.');
       return;
     }
 
@@ -63,24 +64,26 @@ const TrackOrderContent = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-order?order_id=${encodeURIComponent(orderIdInput.trim())}&token=${encodeURIComponent(tokenInput.trim())}`,
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/track-order`,
         {
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
           },
+          body: JSON.stringify({
+            order_number: trimmedOrder,
+            email: trimmedEmail,
+          }),
         }
       );
 
       const result = await response.json();
 
       if (!response.ok) {
-        setError(response.status === 403 ? 'Invalid order credentials.' : 'Order not found.');
+        setError(result.error || 'Order not found.');
       } else if (result.order) {
-        const lineItems = Array.isArray(result.order.line_items)
-          ? (result.order.line_items as LineItem[])
-          : null;
-        setOrder({ ...result.order, line_items: lineItems });
+        setOrder(result.order);
       }
     } catch {
       setError('Failed to load order details. Please try again.');
@@ -88,13 +91,6 @@ const TrackOrderContent = () => {
       setLoading(false);
     }
   };
-
-  // Auto-fetch if URL params are present
-  useState(() => {
-    if (searchParams.get('order_id') && searchParams.get('token')) {
-      fetchOrder();
-    }
-  });
 
   const status = order ? statusConfig[order.status] || statusConfig.processing : null;
   const StatusIcon = status?.icon || Package;
@@ -114,7 +110,7 @@ const TrackOrderContent = () => {
           </div>
           <h1 className="text-3xl font-serif font-semibold mb-2">Track Your Order</h1>
           <p className="text-muted-foreground">
-            Enter your order details from your confirmation email
+            Enter the email address and order number from your confirmation email
           </p>
         </div>
 
@@ -122,28 +118,33 @@ const TrackOrderContent = () => {
         <div className="bg-card border border-border rounded-2xl p-6 mb-8">
           <div className="space-y-4">
             <div>
-              <label htmlFor="orderId" className="block text-sm font-medium mb-1.5">
+              <label htmlFor="orderNumber" className="block text-sm font-medium mb-1.5">
                 Order Number
               </label>
               <Input
-                id="orderId"
+                id="orderNumber"
                 placeholder="e.g. 12345"
-                value={orderIdInput}
-                onChange={(e) => setOrderIdInput(e.target.value)}
+                value={orderNumberInput}
+                onChange={(e) => setOrderNumberInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && fetchOrder()}
               />
             </div>
             <div>
-              <label htmlFor="token" className="block text-sm font-medium mb-1.5">
-                Tracking Token
+              <label htmlFor="email" className="block text-sm font-medium mb-1.5">
+                Email Address
               </label>
-              <Input
-                id="token"
-                placeholder="Enter your tracking token from the confirmation email"
-                value={tokenInput}
-                onChange={(e) => setTokenInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && fetchOrder()}
-              />
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="The email used when placing your order"
+                  value={emailInput}
+                  onChange={(e) => setEmailInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && fetchOrder()}
+                  className="pl-10"
+                />
+              </div>
             </div>
             <Button
               variant="gold"
@@ -173,11 +174,11 @@ const TrackOrderContent = () => {
           <div className="bg-card border border-border rounded-2xl p-6 space-y-6 animate-fade-in">
             {/* Status Header */}
             <div className="text-center pb-6 border-b border-border">
-              <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 mb-4`}>
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 mb-4">
                 <StatusIcon className={`w-8 h-8 ${status?.color || 'text-accent'}`} />
               </div>
               <h2 className="text-xl font-serif font-semibold mb-1">
-                Order #{order.order_number || order.id}
+                Order #{order.order_number}
               </h2>
               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-accent/10 capitalize ${status?.color || 'text-accent'}`}>
                 {status?.label || order.status}
