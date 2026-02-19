@@ -38,8 +38,8 @@ export const Footer = () => {
             <ul className="space-y-2 text-sm text-primary-foreground/70">
               <li><a href="#" className="hover:text-accent transition-colors">SARMs</a></li>
               <li><a href="#" className="hover:text-accent transition-colors">Peptides</a></li>
+              <li><a href="/blog" className="hover:text-accent transition-colors">Blog</a></li>
               <li><a href="#" className="hover:text-accent transition-colors">Lab Reports</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Bundles</a></li>
             </ul>
           </div>
 
