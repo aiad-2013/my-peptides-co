@@ -82,7 +82,75 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Return sanitized order data (no sensitive PII beyond what customer already knows)
+    // Extract shipping/tracking info from meta data or shipping lines
+    const shippingLines = (matchedOrder.shipping_lines || []).map((line: any) => ({
+      method: line.method_title || line.method_id || 'Standard Shipping',
+    }));
+
+    // Look for tracking info in meta_data (common WooCommerce tracking plugins)
+    const trackingInfo: Array<{ provider: string; number: string; url: string }> = [];
+    for (const meta of matchedOrder.meta_data || []) {
+      // WooCommerce Shipment Tracking plugin
+      if (meta.key === '_wc_shipment_tracking_items' && Array.isArray(meta.value)) {
+        for (const t of meta.value) {
+          trackingInfo.push({
+            provider: t.tracking_provider || t.custom_tracking_provider || 'Carrier',
+            number: t.tracking_number || '',
+            url: t.custom_tracking_link || t.tracking_link || '',
+          });
+        }
+      }
+      // Alternative: single tracking number fields
+      if (meta.key === '_tracking_number' && meta.value) {
+        trackingInfo.push({
+          provider: '',
+          number: String(meta.value),
+          url: '',
+        });
+      }
+      if (meta.key === '_tracking_provider' && meta.value && trackingInfo.length > 0 && !trackingInfo[trackingInfo.length - 1].provider) {
+        trackingInfo[trackingInfo.length - 1].provider = String(meta.value);
+      }
+      if (meta.key === '_tracking_link' && meta.value && trackingInfo.length > 0 && !trackingInfo[trackingInfo.length - 1].url) {
+        trackingInfo[trackingInfo.length - 1].url = String(meta.value);
+      }
+    }
+
+    // Build tracking URLs for known Australian carriers if not provided
+    for (const t of trackingInfo) {
+      if (!t.url && t.number) {
+        const providerLower = t.provider.toLowerCase();
+        if (providerLower.includes('australia post') || providerLower.includes('auspost')) {
+          t.url = `https://auspost.com.au/mypost/track/#/details/${encodeURIComponent(t.number)}`;
+          if (!t.provider) t.provider = 'Australia Post';
+        } else if (providerLower.includes('startrack') || providerLower.includes('star track')) {
+          t.url = `https://sttrk.com.au/tracking/${encodeURIComponent(t.number)}`;
+          if (!t.provider) t.provider = 'StarTrack';
+        } else if (providerLower.includes('tnt')) {
+          t.url = `https://www.tnt.com/express/en_au/site/shipping-tools/tracking.html?searchType=con&cons=${encodeURIComponent(t.number)}`;
+          if (!t.provider) t.provider = 'TNT';
+        } else if (providerLower.includes('dhl')) {
+          t.url = `https://www.dhl.com/au-en/home/tracking/tracking-express.html?submit=1&tracking-id=${encodeURIComponent(t.number)}`;
+          if (!t.provider) t.provider = 'DHL';
+        } else if (providerLower.includes('fedex')) {
+          t.url = `https://www.fedex.com/fedextrack/?trknbr=${encodeURIComponent(t.number)}`;
+          if (!t.provider) t.provider = 'FedEx';
+        } else if (providerLower.includes('aramex') || providerLower.includes('fastway')) {
+          t.url = `https://www.aramex.com.au/tools/track?l=${encodeURIComponent(t.number)}`;
+          if (!t.provider) t.provider = 'Aramex';
+        }
+      }
+      if (!t.provider) t.provider = 'Carrier';
+    }
+
+    // Shipping address (city/state/country only - no full street address)
+    const shippingAddress = matchedOrder.shipping ? {
+      city: matchedOrder.shipping.city || '',
+      state: matchedOrder.shipping.state || '',
+      country: matchedOrder.shipping.country || '',
+    } : null;
+
+    // Return sanitized order data
     const sanitizedOrder = {
       order_number: String(matchedOrder.number),
       status: matchedOrder.status,
@@ -98,6 +166,9 @@ Deno.serve(async (req) => {
       total: parseFloat(matchedOrder.total || '0'),
       currency: matchedOrder.currency || 'AUD',
       created_at: matchedOrder.date_created,
+      shipping_method: shippingLines[0]?.method || null,
+      shipping_address: shippingAddress,
+      tracking: trackingInfo,
     };
 
     return new Response(
