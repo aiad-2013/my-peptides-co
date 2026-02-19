@@ -50,6 +50,7 @@ export const Footer = () => {
               <li><a href="#" className="hover:text-accent transition-colors">FAQ</a></li>
               <li><a href="#" className="hover:text-accent transition-colors">Shipping</a></li>
               <li><a href="#" className="hover:text-accent transition-colors">Returns</a></li>
+              <li><a href="/track-order" className="hover:text-accent transition-colors">Track Order</a></li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
                 <a href="mailto:support@vicorpus.com" className="hover:text-accent transition-colors">

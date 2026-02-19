@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ShoppingCart, Menu, X, Package } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,11 @@ export const Header = ({ onCartClick, onCategoryChange, activeCategory }: Header
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            <Link to="/track-order">
+              <Button variant="ghost" size="icon" title="Track Order">
+                <Package className="w-5 h-5" />
+              </Button>
+            </Link>
             <Button
               variant="ghost"
               size="icon"
