@@ -14,9 +14,23 @@ interface ProductModalProps {
 
 export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) => {
   const [quantity, setQuantity] = useState(1);
+  const [imgError, setImgError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   const { addItem } = useCart();
 
   if (!isOpen || !product) return null;
+
+  const handleImgError = () => {
+    if (retryCount < 2) {
+      setRetryCount(prev => prev + 1);
+    } else {
+      setImgError(true);
+    }
+  };
+
+  const imageSrc = product.image && product.image !== '/placeholder.svg'
+    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+    : null;
 
   const handleAddToCart = () => {
     addItem(product, quantity);
@@ -45,11 +59,12 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
         <div className="grid md:grid-cols-2 gap-0">
           {/* Image */}
           <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
-            {product.image && product.image !== '/placeholder.svg' ? (
+            {!imgError && imageSrc ? (
               <img
-                src={getProxiedImageUrl(product.image)}
+                src={imageSrc}
                 alt={product.name}
                 className="absolute inset-0 w-full h-full object-cover"
+                onError={handleImgError}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">

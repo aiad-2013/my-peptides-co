@@ -15,17 +15,31 @@ interface ProductCardProps {
 export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
   const { addItem } = useCart();
   const [imgError, setImgError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+  const maxRetries = 2;
+
+  const handleImgError = () => {
+    if (retryCount < maxRetries) {
+      setRetryCount(prev => prev + 1);
+    } else {
+      setImgError(true);
+    }
+  };
+
+  const imageSrc = product.image && product.image !== '/placeholder.svg'
+    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+    : null;
 
   return (
     <div className="group relative bg-card rounded-lg border border-border overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1">
       {/* Image Container */}
       <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
-        {!imgError && product.image && product.image !== '/placeholder.svg' ? (
+        {!imgError && imageSrc ? (
           <img
-            src={getProxiedImageUrl(product.image)}
+            src={imageSrc}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={() => setImgError(true)}
+            onError={handleImgError}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
