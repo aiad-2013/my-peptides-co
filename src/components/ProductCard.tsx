@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -81,9 +82,11 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
         </p>
 
         {/* Name */}
-        <h3 className="font-serif text-lg font-semibold text-foreground mb-1 line-clamp-1">
-          {product.name}
-        </h3>
+        <Link to={`/product/${product.id}`} className="block">
+          <h3 className="font-serif text-lg font-semibold text-foreground mb-1 line-clamp-1 hover:text-accent transition-colors">
+            {product.name}
+          </h3>
+        </Link>
 
         {/* Concentration */}
         {product.concentration && (
