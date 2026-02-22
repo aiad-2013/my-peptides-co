@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -12,31 +13,29 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
   const { addItem } = useCart();
+  const [imgError, setImgError] = useState(false);
 
   return (
     <div className="group relative bg-card rounded-lg border border-border overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1">
       {/* Image Container */}
       <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
-        {/* Product Image */}
-        <img
-          src={product.image}
-          alt={product.name}
-          className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          onError={(e) => {
-            // Fallback to placeholder on error
-            e.currentTarget.style.display = 'none';
-            e.currentTarget.nextElementSibling?.classList.remove('hidden');
-          }}
-        />
-        {/* Fallback placeholder (hidden by default) */}
-        <div className="hidden absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-32 rounded-lg bg-gradient-navy shadow-lg">
-            <div className="h-full flex flex-col items-center justify-center p-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-gold mb-2" />
-              <div className="w-full h-1 bg-accent/30 rounded" />
+        {!imgError && product.image && product.image !== '/placeholder.svg' ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            onError={() => setImgError(true)}
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-24 h-32 rounded-lg bg-gradient-navy shadow-lg">
+              <div className="h-full flex flex-col items-center justify-center p-2">
+                <div className="w-8 h-8 rounded-full bg-gradient-gold mb-2" />
+                <div className="w-full h-1 bg-accent/30 rounded" />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Badge */}
         {product.badge && (
