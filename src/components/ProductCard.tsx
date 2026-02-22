@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { ShoppingCart, Eye } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface ProductCardProps {
   product: Product;
@@ -21,7 +22,7 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
       <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
         {!imgError && product.image && product.image !== '/placeholder.svg' ? (
           <img
-            src={product.image}
+            src={getProxiedImageUrl(product.image)}
             alt={product.name}
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             onError={() => setImgError(true)}
