@@ -4,6 +4,7 @@ import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/context/CartContext';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface ProductModalProps {
   product: Product | null;
@@ -43,16 +44,24 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
 
         <div className="grid md:grid-cols-2 gap-0">
           {/* Image */}
-          <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary">
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-32 h-44 rounded-lg bg-gradient-navy shadow-xl animate-float">
-                <div className="h-full flex flex-col items-center justify-center p-3">
-                  <div className="w-12 h-12 rounded-full bg-gradient-gold mb-3" />
-                  <div className="w-full h-1.5 bg-accent/30 rounded mb-1" />
-                  <div className="w-2/3 h-1 bg-accent/20 rounded" />
+          <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
+            {product.image && product.image !== '/placeholder.svg' ? (
+              <img
+                src={getProxiedImageUrl(product.image)}
+                alt={product.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-32 h-44 rounded-lg bg-gradient-navy shadow-xl animate-float">
+                  <div className="h-full flex flex-col items-center justify-center p-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-gold mb-3" />
+                    <div className="w-full h-1.5 bg-accent/30 rounded mb-1" />
+                    <div className="w-2/3 h-1 bg-accent/20 rounded" />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
             {product.badge && (
               <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
                 {product.badge}
