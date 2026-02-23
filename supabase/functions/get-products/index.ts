@@ -22,6 +22,11 @@ interface WooCommerceProduct {
   meta_data: Array<{ key: string; value: string }>;
 }
 
+interface ProductFAQ {
+  question: string;
+  answer: string;
+}
+
 interface TransformedProduct {
   id: string;
   wooCommerceId: number;
@@ -35,6 +40,10 @@ interface TransformedProduct {
   badge?: string;
   inStock: boolean;
   wooCommerceUrl: string;
+  dosage?: string;
+  ingredients?: string;
+  faqs?: ProductFAQ[];
+  peopleViewing?: number;
 }
 
 serve(async (req) => {
@@ -76,6 +85,7 @@ serve(async (req) => {
     const wooProducts: WooCommerceProduct[] = await response.json();
     console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
 
+
     // Transform WooCommerce products to our format
     const products: TransformedProduct[] = wooProducts.map((product) => {
       // Determine category from WooCommerce categories
@@ -97,11 +107,44 @@ serve(async (req) => {
         }
       }
 
-      // Look for badge in meta data
+      // Extract custom fields from meta data
       let badge = '';
+      let dosage = '';
+      let ingredients = '';
+      let metaConcentration = '';
+      let faqs: ProductFAQ[] = [];
+      let peopleViewing = 0;
+
       for (const meta of product.meta_data || []) {
         if (meta.key === '_product_badge' || meta.key === 'badge') {
-          badge = meta.value;
+          badge = meta.value as string;
+        }
+        if (meta.key === 'dosage' && meta.value) {
+          dosage = meta.value as string;
+        }
+        if (meta.key === 'ingredients' && meta.value) {
+          ingredients = meta.value as string;
+        }
+        if (meta.key === 'concentration' && meta.value) {
+          metaConcentration = meta.value as string;
+        }
+        if (meta.key === 'people_viewing' && meta.value) {
+          peopleViewing = parseInt(meta.value as string, 10) || 0;
+        }
+        if (meta.key === 'faqs' && meta.value && typeof meta.value === 'string' && meta.value.trim()) {
+          // FAQs are HTML with <h3>question</h3> followed by answer text
+          const faqHtml = meta.value as string;
+          // Split by h3 tags to extract Q&A pairs
+          const h3Parts = faqHtml.split(/<h3[^>]*>/i).filter(Boolean);
+          for (const part of h3Parts) {
+            const closingIdx = part.indexOf('</h3>');
+            if (closingIdx === -1) continue;
+            const question = part.substring(0, closingIdx).replace(/<[^>]*>/g, '').replace(/^\d+\.\s*/, '').trim();
+            const answer = part.substring(closingIdx + 5).replace(/<[^>]*>/g, '').trim();
+            if (question && answer) {
+              faqs.push({ question, answer });
+            }
+          }
         }
       }
 
@@ -116,13 +159,17 @@ serve(async (req) => {
         name: product.name,
         category,
         price: parseFloat(product.price) || 0,
-        concentration: concentration || undefined,
+        concentration: concentration || metaConcentration || undefined,
         volume: volume || undefined,
         description,
         image: product.images?.[0]?.src || '/placeholder.svg',
         badge: badge || undefined,
         inStock: product.stock_status === 'instock',
         wooCommerceUrl: product.permalink,
+        dosage: dosage || undefined,
+        ingredients: ingredients || undefined,
+        faqs: faqs.length > 0 ? faqs : undefined,
+        peopleViewing: peopleViewing || undefined,
       };
     });
 

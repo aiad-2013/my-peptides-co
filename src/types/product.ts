@@ -1,3 +1,8 @@
+export interface ProductFAQ {
+  question: string;
+  answer: string;
+}
+
 export interface Product {
   id: string;
   wooCommerceId?: number;
@@ -11,6 +16,10 @@ export interface Product {
   badge?: string;
   inStock: boolean;
   wooCommerceUrl: string;
+  dosage?: string;
+  ingredients?: string;
+  faqs?: ProductFAQ[];
+  peopleViewing?: number;
 }
 
 export interface CartItem extends Product {
