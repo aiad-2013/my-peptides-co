@@ -4,6 +4,7 @@ import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ProductModal } from '@/components/ProductModal';
 import { Footer } from '@/components/Footer';
+import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { CartProvider } from '@/context/CartContext';
 import { Product } from '@/types/product';
 
@@ -41,6 +42,7 @@ const IndexContent = () => {
       </main>
 
       <Footer />
+      <SocialProofNotification />
 
       <ProductModal
         product={selectedProduct}
