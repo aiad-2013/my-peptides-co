@@ -67,7 +67,7 @@ serve(async (req) => {
     const order = await response.json();
     console.log('Order created:', order.id, 'key:', order.order_key);
 
-    // Build the pay-for-order URL - shows payment form on WooCommerce
+    // Redirect to the full WooCommerce checkout where billing/shipping/payment are all collected
     const payUrl = `${storeUrl}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}`;
 
     return new Response(JSON.stringify({ payUrl, orderId: order.id }), {
