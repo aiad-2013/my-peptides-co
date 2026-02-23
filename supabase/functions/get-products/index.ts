@@ -46,6 +46,7 @@ interface TransformedProduct {
   faqs?: ProductFAQ[];
   peopleViewing?: number;
   isBundle?: boolean;
+  discountTiers?: Array<{ qty: number; discount: number }>;
 }
 
 serve(async (req) => {
@@ -88,14 +89,6 @@ serve(async (req) => {
     console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
 
 
-    // Debug: log meta keys for first product to find ELEX pricing data
-    if (wooProducts.length > 0) {
-      const firstProduct = wooProducts.find(p => p.slug?.includes('mk677') || p.name?.toLowerCase().includes('mk677')) || wooProducts[0];
-      console.log(`Debug meta keys for "${firstProduct.name}" (type: ${firstProduct.type}):`, 
-        JSON.stringify(firstProduct.meta_data?.map(m => ({ key: m.key, valuePreview: typeof m.value === 'string' ? m.value.substring(0, 100) : JSON.stringify(m.value)?.substring(0, 100) })))
-      );
-    }
-
     // Transform WooCommerce products to our format
     const products: TransformedProduct[] = wooProducts.map((product) => {
       // Detect bundle products (WPC Product Bundles uses type 'woosb')
@@ -127,6 +120,7 @@ serve(async (req) => {
       let metaConcentration = '';
       let faqs: ProductFAQ[] = [];
       let peopleViewing = 0;
+      let discountTiers: Array<{ qty: number; discount: number }> = [];
 
       for (const meta of product.meta_data || []) {
         if (meta.key === '_product_badge' || meta.key === 'badge') {
@@ -143,6 +137,14 @@ serve(async (req) => {
         }
         if (meta.key === 'people_viewing' && meta.value) {
           peopleViewing = parseInt(meta.value as string, 10) || 0;
+        }
+        if (meta.key === 'discount_tiers' && meta.value) {
+          try {
+            const parsed = typeof meta.value === 'string' ? JSON.parse(meta.value) : meta.value;
+            if (Array.isArray(parsed)) {
+              discountTiers = parsed.filter((t: { qty?: number; discount?: number }) => t.qty && t.discount);
+            }
+          } catch { /* ignore parse errors */ }
         }
         if (meta.key === 'faqs' && meta.value && typeof meta.value === 'string' && meta.value.trim()) {
           // FAQs are HTML with <h3>question</h3> followed by answer text
@@ -184,6 +186,7 @@ serve(async (req) => {
         faqs: faqs.length > 0 ? faqs : undefined,
         peopleViewing: peopleViewing || undefined,
         isBundle: isBundle || undefined,
+        discountTiers: discountTiers.length > 0 ? discountTiers : undefined,
       };
     });
 
