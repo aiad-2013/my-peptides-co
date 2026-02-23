@@ -10,6 +10,7 @@ interface WooCommerceProduct {
   name: string;
   slug: string;
   permalink: string;
+  type: string;
   price: string;
   regular_price: string;
   sale_price: string;
@@ -44,6 +45,7 @@ interface TransformedProduct {
   ingredients?: string;
   faqs?: ProductFAQ[];
   peopleViewing?: number;
+  isBundle?: boolean;
 }
 
 serve(async (req) => {
@@ -88,6 +90,9 @@ serve(async (req) => {
 
     // Transform WooCommerce products to our format
     const products: TransformedProduct[] = wooProducts.map((product) => {
+      // Detect bundle products (WPC Product Bundles uses type 'woosb')
+      const isBundle = product.type === 'woosb' || product.type === 'bundle';
+
       // Determine category from WooCommerce categories
       const categorySlug = product.categories?.[0]?.slug?.toLowerCase() || '';
       const category: 'sarms' | 'peptides' = 
@@ -163,13 +168,14 @@ serve(async (req) => {
         volume: volume || undefined,
         description,
         image: product.images?.[0]?.src || '/placeholder.svg',
-        badge: badge || undefined,
+        badge: badge || (isBundle ? 'Bundle' : undefined),
         inStock: product.stock_status === 'instock',
         wooCommerceUrl: product.permalink,
         dosage: dosage || undefined,
         ingredients: ingredients || undefined,
         faqs: faqs.length > 0 ? faqs : undefined,
         peopleViewing: peopleViewing || undefined,
+        isBundle: isBundle || undefined,
       };
     });
 

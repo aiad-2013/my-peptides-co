@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingCart, Eye, Package } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
@@ -53,12 +53,20 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
           </div>
         )}
 
-        {/* Badge */}
-        {product.badge && (
-          <Badge className="absolute top-3 left-3 bg-accent text-accent-foreground font-medium">
-            {product.badge}
-          </Badge>
-        )}
+        {/* Badges */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+          {product.isBundle && (
+            <Badge className="bg-primary text-primary-foreground font-medium">
+              <Package className="w-3 h-3 mr-1" />
+              Bundle
+            </Badge>
+          )}
+          {product.badge && product.badge !== 'Bundle' && (
+            <Badge className="bg-accent text-accent-foreground font-medium">
+              {product.badge}
+            </Badge>
+          )}
+        </div>
 
         {/* Quick View Overlay */}
         <div className="absolute inset-0 bg-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
