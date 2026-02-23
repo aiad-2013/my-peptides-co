@@ -88,6 +88,14 @@ serve(async (req) => {
     console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
 
 
+    // Debug: log meta keys for first product to find ELEX pricing data
+    if (wooProducts.length > 0) {
+      const firstProduct = wooProducts.find(p => p.slug?.includes('mk677') || p.name?.toLowerCase().includes('mk677')) || wooProducts[0];
+      console.log(`Debug meta keys for "${firstProduct.name}" (type: ${firstProduct.type}):`, 
+        JSON.stringify(firstProduct.meta_data?.map(m => ({ key: m.key, valuePreview: typeof m.value === 'string' ? m.value.substring(0, 100) : JSON.stringify(m.value)?.substring(0, 100) })))
+      );
+    }
+
     // Transform WooCommerce products to our format
     const products: TransformedProduct[] = wooProducts.map((product) => {
       // Detect bundle products (WPC Product Bundles uses type 'woosb')
