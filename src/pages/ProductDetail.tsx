@@ -8,7 +8,8 @@ import { useProducts } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ShoppingCart, Minus, Plus, Shield, ArrowLeft, FlaskConical, CheckCircle2 } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill } from 'lucide-react';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 const ProductDetailContent = () => {
@@ -145,9 +146,17 @@ const ProductDetailContent = () => {
 
           {/* Product Info */}
           <div>
-            <p className="text-sm font-medium text-accent uppercase tracking-wider mb-2">
-              {product.category}
-            </p>
+            <div className="flex items-center justify-between mb-2">
+              <p className="text-sm font-medium text-accent uppercase tracking-wider">
+                {product.category}
+              </p>
+              {product.peopleViewing && product.peopleViewing > 0 && (
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Eye className="w-4 h-4 text-accent" />
+                  <span><strong className="text-foreground">{product.peopleViewing}</strong> people viewing</span>
+                </div>
+              )}
+            </div>
 
             <h1 className="text-3xl md:text-4xl font-serif font-semibold text-foreground mb-3">
               {product.name}
@@ -157,6 +166,17 @@ const ProductDetailContent = () => {
               <p className="text-lg text-muted-foreground mb-6">
                 {product.concentration} {product.volume && `• ${product.volume}`}
               </p>
+            )}
+
+            {/* Dosage */}
+            {product.dosage && (
+              <div className="flex items-center gap-3 mb-6 p-3 rounded-lg bg-accent/10 border border-accent/20">
+                <Pill className="w-5 h-5 text-accent flex-shrink-0" />
+                <div>
+                  <span className="text-xs font-medium text-accent uppercase tracking-wider">Dosage</span>
+                  <p className="text-sm font-semibold text-foreground">{product.dosage}</p>
+                </div>
+              </div>
             )}
 
             {/* Price */}
@@ -194,6 +214,23 @@ const ProductDetailContent = () => {
                 <span className="text-sm text-foreground">Fast Australian shipping</span>
               </div>
             </div>
+
+            {/* FAQs */}
+            {product.faqs && product.faqs.length > 0 && (
+              <div className="mb-8">
+                <h2 className="text-lg font-semibold text-foreground mb-3">Frequently Asked Questions</h2>
+                <Accordion type="single" collapsible className="w-full">
+                  {product.faqs.map((faq, idx) => (
+                    <AccordionItem key={idx} value={`faq-${idx}`}>
+                      <AccordionTrigger className="text-sm text-left">{faq.question}</AccordionTrigger>
+                      <AccordionContent className="text-foreground/80">
+                        {faq.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </div>
+            )}
 
             {/* Quantity & Add to Cart */}
             <div className="flex items-center gap-4 mb-4">
