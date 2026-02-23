@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version',
 };
 
 interface CartItem {
@@ -34,7 +34,7 @@ serve(async (req) => {
     const storeUrl = 'https://vicorpus.co';
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
 
-    // Create a pending order with line items and customer details
+    // Create a pending order with line items and optional customer details
     const orderPayload: Record<string, unknown> = {
       status: 'pending',
       set_paid: false,
@@ -67,7 +67,7 @@ serve(async (req) => {
     const order = await response.json();
     console.log('Order created:', order.id, 'key:', order.order_key);
 
-    // Build the pay-for-order URL
+    // Build the pay-for-order URL - shows payment form on WooCommerce
     const payUrl = `${storeUrl}/checkout/order-pay/${order.id}/?pay_for_order=true&key=${order.order_key}`;
 
     return new Response(JSON.stringify({ payUrl, orderId: order.id }), {
