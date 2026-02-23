@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Loader2 } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
-import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import logo from '@/assets/logo.png';
 
@@ -14,42 +13,16 @@ interface HeaderProps {
 }
 
 export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps = {}) => {
-  const { totalItems, items, clearCart } = useCart();
+  const { totalItems } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const navigate = useNavigate();
 
-  const handleCartClick = async () => {
-    if (items.length === 0) {
+  const handleCartClick = () => {
+    if (totalItems === 0) {
       toast.info('Your cart is empty');
       return;
     }
-
-    setIsCheckingOut(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-wc-order', {
-        body: {
-          items: items.map((item) => ({
-            wooCommerceId: item.wooCommerceId,
-            quantity: item.quantity,
-            name: item.name,
-            price: item.price,
-          })),
-        },
-      });
-
-      if (error) throw error;
-      if (data?.payUrl) {
-        clearCart();
-        window.open(data.payUrl, '_blank');
-      } else {
-        throw new Error('No payment URL returned');
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      toast.error('Could not create order. Please try again.');
-    } finally {
-      setIsCheckingOut(false);
-    }
+    navigate('/checkout');
   };
 
   const navItems = [
@@ -107,13 +80,8 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
               size="icon"
               onClick={handleCartClick}
               className="relative"
-              disabled={isCheckingOut}
             >
-              {isCheckingOut ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                <ShoppingCart className="w-5 h-5" />
-              )}
+              <ShoppingCart className="w-5 h-5" />
               {totalItems > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent text-accent-foreground text-xs font-semibold rounded-full flex items-center justify-center">
                   {totalItems}
