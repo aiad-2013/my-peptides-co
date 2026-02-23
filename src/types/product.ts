@@ -3,6 +3,11 @@ export interface ProductFAQ {
   answer: string;
 }
 
+export interface DiscountTier {
+  qty: number;
+  discount: number;
+}
+
 export interface Product {
   id: string;
   wooCommerceId?: number;
@@ -21,6 +26,7 @@ export interface Product {
   faqs?: ProductFAQ[];
   peopleViewing?: number;
   isBundle?: boolean;
+  discountTiers?: DiscountTier[];
 }
 
 export interface CartItem extends Product {
