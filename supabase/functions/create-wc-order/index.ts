@@ -25,7 +25,7 @@ serve(async (req) => {
       throw new Error('WooCommerce API credentials not configured');
     }
 
-    const { items }: { items: CartItem[] } = await req.json();
+    const { items, billing, shipping }: { items: CartItem[]; billing?: Record<string, string>; shipping?: Record<string, string> } = await req.json();
 
     if (!items || items.length === 0) {
       throw new Error('No items in cart');
@@ -34,8 +34,8 @@ serve(async (req) => {
     const storeUrl = 'https://vicorpus.co';
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
 
-    // Create a pending order with line items
-    const orderPayload = {
+    // Create a pending order with line items and customer details
+    const orderPayload: Record<string, unknown> = {
       status: 'pending',
       set_paid: false,
       line_items: items.map((item) => ({
@@ -43,6 +43,9 @@ serve(async (req) => {
         quantity: item.quantity,
       })),
     };
+
+    if (billing) orderPayload.billing = billing;
+    if (shipping) orderPayload.shipping = shipping;
 
     console.log('Creating WooCommerce order:', JSON.stringify(orderPayload));
 
