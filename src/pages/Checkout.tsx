@@ -1,15 +1,17 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, ArrowLeft, Loader2 } from 'lucide-react';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const [redirecting, setRedirecting] = useState(false);
 
-  if (items.length === 0) {
+  if (!redirecting && items.length === 0) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
         <Header />
@@ -27,11 +29,27 @@ const Checkout = () => {
     );
   }
 
+  if (redirecting) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <Loader2 className="w-10 h-10 text-accent mx-auto animate-spin" />
+            <p className="text-muted-foreground text-lg">Redirecting to checkout…</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   const handleCheckout = () => {
     const products = items
       .map(item => `${item.wooCommerceId}:${item.quantity}`)
       .join(',');
     const url = `https://vicorpus.co/?lovable_cart=1&products=${encodeURIComponent(products)}`;
+    setRedirecting(true);
     clearCart();
     window.location.href = url;
   };
