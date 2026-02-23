@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package } from 'lucide-react';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 const ProductDetailContent = () => {
@@ -137,8 +137,14 @@ const ProductDetailContent = () => {
                 </div>
               </div>
             )}
-            {product.badge && (
-              <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground text-sm px-3 py-1">
+            {product.isBundle && (
+              <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm px-3 py-1">
+                <Package className="w-4 h-4 mr-1.5" />
+                Bundle
+              </Badge>
+            )}
+            {product.badge && product.badge !== 'Bundle' && (
+              <Badge className="absolute top-4 left-4 mt-10 bg-accent text-accent-foreground text-sm px-3 py-1">
                 {product.badge}
               </Badge>
             )}

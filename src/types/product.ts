@@ -20,6 +20,7 @@ export interface Product {
   ingredients?: string;
   faqs?: ProductFAQ[];
   peopleViewing?: number;
+  isBundle?: boolean;
 }
 
 export interface CartItem extends Product {
