@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { X, Minus, Plus, Trash2, ShoppingBag, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -10,23 +11,11 @@ interface CartDrawerProps {
 export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
   const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
 
+  const navigate = useNavigate();
+
   const handleCheckout = () => {
-    const baseUrl = 'https://vicorpus.co';
-    
-    // Build cart URL with WooCommerce product IDs
-    // Format: ?add-to-cart=ID&quantity=N for single, or use multiple params
-    if (items.length > 0 && items[0].wooCommerceId) {
-      // Build URL to add first item, then redirect to checkout
-      // For multiple items, we'd need WooCommerce's cart API or a custom endpoint
-      const firstItem = items[0];
-      const addToCartUrl = `${baseUrl}/?add-to-cart=${firstItem.wooCommerceId}&quantity=${firstItem.quantity}`;
-      
-      // For now, open checkout with first item (full cart sync requires custom WC endpoint)
-      window.open(addToCartUrl, '_blank');
-    } else {
-      // Fallback: redirect to checkout page
-      window.open(`${baseUrl}/checkout/`, '_blank');
-    }
+    onClose();
+    navigate('/checkout');
   };
 
   if (!isOpen) return null;

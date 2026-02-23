@@ -9,11 +9,11 @@ import { toast } from 'sonner';
 import logo from '@/assets/logo.png';
 
 interface HeaderProps {
-  onCategoryChange: (category: 'all' | 'sarms' | 'peptides') => void;
-  activeCategory: 'all' | 'sarms' | 'peptides';
+  onCategoryChange?: (category: 'all' | 'sarms' | 'peptides') => void;
+  activeCategory?: 'all' | 'sarms' | 'peptides';
 }
 
-export const Header = ({ onCategoryChange, activeCategory }: HeaderProps) => {
+export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps = {}) => {
   const { totalItems, items, clearCart } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
