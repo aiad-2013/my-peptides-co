@@ -18,6 +18,10 @@ const ProductDetailContent = () => {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [slug]);
   const [retryCount, setRetryCount] = useState(0);
   const [activeCategory, setActiveCategory] = useState<'all' | 'sarms' | 'peptides'>('all');
 
