@@ -1,18 +1,13 @@
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { Loader2, ShoppingBag, ArrowLeft } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import { ShoppingBag, ArrowLeft } from 'lucide-react';
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
 
   if (items.length === 0) {
     return (
@@ -32,31 +27,13 @@ const Checkout = () => {
     );
   }
 
-  const handleCheckout = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-wc-order', {
-        body: {
-          items: items.map(item => ({
-            wooCommerceId: item.wooCommerceId,
-            quantity: item.quantity,
-            name: item.name,
-            price: item.price,
-          })),
-        },
-      });
-
-      if (error) throw error;
-      if (data?.payUrl) {
-        clearCart();
-        window.location.href = data.payUrl;
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      toast({ title: 'Something went wrong. Please try again.', variant: 'destructive' });
-    } finally {
-      setLoading(false);
-    }
+  const handleCheckout = () => {
+    const products = items
+      .map(item => `${item.wooCommerceId}:${item.quantity}`)
+      .join(',');
+    const url = `https://vicorpus.co/?lovable_cart=1&products=${encodeURIComponent(products)}`;
+    clearCart();
+    window.location.href = url;
   };
 
   return (
@@ -102,17 +79,9 @@ const Checkout = () => {
               variant="gold"
               size="lg"
               className="w-full mt-6"
-              disabled={loading}
               onClick={handleCheckout}
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Redirecting...
-                </>
-              ) : (
-                'Proceed to Checkout'
-              )}
+              Proceed to Checkout
             </Button>
 
             <p className="text-xs text-muted-foreground text-center mt-3">
