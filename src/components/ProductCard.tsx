@@ -3,17 +3,16 @@ import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Eye, Package } from 'lucide-react';
+import { ShoppingCart, Package } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface ProductCardProps {
   product: Product;
-  onViewDetails: (product: Product) => void;
 }
 
-export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
+export const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCart();
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
@@ -32,7 +31,7 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
     : null;
 
   return (
-    <div className="group relative bg-card rounded-lg border border-border overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1">
+    <Link to={`/product/${product.id}`} className="group relative bg-card rounded-lg border border-border overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1 block">
       {/* Image Container */}
       <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
         {!imgError && imageSrc ? (
@@ -67,19 +66,6 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
             </Badge>
           )}
         </div>
-
-        {/* Quick View Overlay */}
-        <div className="absolute inset-0 bg-primary/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-          <Button
-            variant="gold"
-            size="sm"
-            onClick={() => onViewDetails(product)}
-            className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300"
-          >
-            <Eye className="w-4 h-4 mr-1" />
-            Quick View
-          </Button>
-        </div>
       </div>
 
       {/* Content */}
@@ -90,11 +76,9 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
         </p>
 
         {/* Name */}
-        <Link to={`/product/${product.id}`} className="block">
-          <h3 className="font-serif text-lg font-semibold text-foreground mb-1 line-clamp-1 hover:text-accent transition-colors">
-            {product.name}
-          </h3>
-        </Link>
+        <h3 className="font-serif text-lg font-semibold text-foreground mb-1 line-clamp-1 group-hover:text-accent transition-colors">
+          {product.name}
+        </h3>
 
         {/* Concentration */}
         {product.concentration && (
@@ -113,7 +97,7 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
           <Button
             variant="gold"
             size="sm"
-            onClick={() => addItem(product)}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); addItem(product); }}
             disabled={!product.inStock}
             className={cn(!product.inStock && "opacity-50 cursor-not-allowed")}
           >
@@ -126,6 +110,6 @@ export const ProductCard = ({ product, onViewDetails }: ProductCardProps) => {
           <p className="text-xs text-destructive mt-2 font-medium">Out of Stock</p>
         )}
       </div>
-    </div>
+    </Link>
   );
 };

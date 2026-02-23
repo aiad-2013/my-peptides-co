@@ -1,14 +1,12 @@
-import { Product } from '@/types/product';
 import { ProductCard } from './ProductCard';
 import { useProductsByCategory } from '@/hooks/useProducts';
 import { Loader2 } from 'lucide-react';
 
 interface ProductGridProps {
   category: 'all' | 'sarms' | 'peptides';
-  onViewDetails: (product: Product) => void;
 }
 
-export const ProductGrid = ({ category, onViewDetails }: ProductGridProps) => {
+export const ProductGrid = ({ category }: ProductGridProps) => {
   const { data: filteredProducts, isLoading, isError } = useProductsByCategory(category);
 
   const categoryTitles = {
@@ -59,7 +57,7 @@ export const ProductGrid = ({ category, onViewDetails }: ProductGridProps) => {
                 className="animate-fade-in"
                 style={{ animationDelay: `${index * 0.05}s` }}
               >
-                <ProductCard product={product} onViewDetails={onViewDetails} />
+                <ProductCard product={product} />
               </div>
             ))}
           </div>
