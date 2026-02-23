@@ -4,7 +4,7 @@ import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
-import { CartProvider } from '@/context/CartContext';
+
 
 const IndexContent = () => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'sarms' | 'peptides'>('all');
@@ -36,11 +36,7 @@ const IndexContent = () => {
 };
 
 const Index = () => {
-  return (
-    <CartProvider>
-      <IndexContent />
-    </CartProvider>
-  );
+  return <IndexContent />;
 };
 
 export default Index;

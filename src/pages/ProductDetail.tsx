@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { CartProvider } from '@/context/CartContext';
+
 import { useCart } from '@/context/CartContext';
 import { useProducts } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
@@ -366,10 +366,6 @@ const ProductDetailContent = () => {
   );
 };
 
-const ProductDetail = () => (
-  <CartProvider>
-    <ProductDetailContent />
-  </CartProvider>
-);
+const ProductDetail = () => <ProductDetailContent />;
 
 export default ProductDetail;
