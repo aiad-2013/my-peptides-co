@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { CartProvider } from '@/context/CartContext';
+
 import { CheckCircle, Package, ArrowLeft, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -221,11 +221,7 @@ const OrderConfirmationContent = () => {
 };
 
 const OrderConfirmation = () => {
-  return (
-    <CartProvider>
-      <OrderConfirmationContent />
-    </CartProvider>
-  );
+  return <OrderConfirmationContent />;
 };
 
 export default OrderConfirmation;

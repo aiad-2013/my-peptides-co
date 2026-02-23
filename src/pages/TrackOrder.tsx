@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { CartProvider } from '@/context/CartContext';
+
 import { Package, Search, ArrowLeft, Loader2, CheckCircle, Clock, Truck, XCircle, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -330,10 +330,6 @@ const TrackOrderContent = () => {
   );
 };
 
-const TrackOrder = () => (
-  <CartProvider>
-    <TrackOrderContent />
-  </CartProvider>
-);
+const TrackOrder = () => <TrackOrderContent />;
 
 export default TrackOrder;
