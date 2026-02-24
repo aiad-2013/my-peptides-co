@@ -36,6 +36,11 @@
         window.omnisend = window.omnisend || [];
         window.omnisend.push(['openForm', '699d0afddb477ff1a8b2f09a']);
       }
+
+      // Auto-trigger popup after 2 seconds on site visit
+      setTimeout(function() {
+        openOmnisendForm();
+      }, 2000);
     </script>
   </body>
 </html>
