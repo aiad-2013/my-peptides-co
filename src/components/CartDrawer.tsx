@@ -29,8 +29,8 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       />
 
       {/* Drawer */}
-      <div className="fixed right-0 top-0 h-screen w-full max-w-md animate-slide-in-right" style={{ backgroundColor: 'hsl(var(--background))', boxShadow: '-12px 0 40px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.2)' }}>
-        <div className="flex flex-col h-full">
+      <div className="fixed right-0 top-0 w-full max-w-md max-h-screen animate-slide-in-right" style={{ backgroundColor: 'hsl(var(--background))', boxShadow: '-12px 0 40px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.2)' }}>
+        <div className="flex flex-col max-h-screen">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ backgroundColor: 'hsl(var(--background))' }}>
             <div className="flex items-center gap-2">
