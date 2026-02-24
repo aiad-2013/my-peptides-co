@@ -22,7 +22,7 @@ const IndexContent = () => {
       />
 
       <main>
-        <Hero onShopClick={scrollToProducts} />
+        <Hero onShopClick={scrollToProducts} activeCategory={activeCategory} />
         
         <div ref={productsRef}>
           <ProductGrid category={activeCategory} />
