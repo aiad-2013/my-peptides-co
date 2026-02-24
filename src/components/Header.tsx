@@ -79,7 +79,7 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
               onClick={() => {
                 const win = window as any;
                 win.omnisend = win.omnisend || [];
-                win.omnisend.push(['openForm', '698ec82bfb5415a0f3880dc']);
+                win.omnisend.push(['openForm', '699cff09ab3b5d06ef4e699d']);
               }}
             >
               Subscribe now
