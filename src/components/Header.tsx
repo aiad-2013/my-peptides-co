@@ -79,21 +79,8 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
               size="sm"
               onClick={() => {
                 const win = window as any;
-                console.log('Omnisend test clicked');
-                console.log('window.omnisend:', win.omnisend);
-                console.log('typeof omnisend.push:', win.omnisend ? typeof win.omnisend.push : 'N/A');
-                
-                // Try direct push first
                 win.omnisend = win.omnisend || [];
-                win.omnisend.push(['openForm', '699cff09ab3b5d06ef4e699d']);
-                console.log('openForm command pushed');
-                
-                // Also try with a delay as fallback
-                setTimeout(() => {
-                  console.log('Retrying openForm after delay...');
-                  console.log('window.omnisend now:', win.omnisend);
-                  win.omnisend.push(['openForm', '699cff09ab3b5d06ef4e699d']);
-                }, 3000);
+                win.omnisend.push(['openForm', '698ec82bfb5415a0f3880dc9']);
               }}
               className="hidden md:inline-flex text-xs"
             >
