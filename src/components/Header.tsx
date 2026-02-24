@@ -83,11 +83,11 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
                 let attempts = 0;
                 const tryOpen = setInterval(() => {
                   attempts++;
-                  if (win.omnisend && typeof win.omnisend.push === 'function') {
-                    win.omnisend.push(['openForm', '66a861cad7d4da38988ae316']);
+                if (win.omnisend && typeof win.omnisend.push === 'function') {
+                    win.omnisend.push(['openForm', '69298e637ec3421d14fc4c5a']);
                     clearInterval(tryOpen);
                   }
-                  if (attempts > 50) clearInterval(tryOpen); // stop after 5s
+                  if (attempts > 50) clearInterval(tryOpen);
                 }, 100);
               }}
               className="hidden md:inline-flex text-xs"
