@@ -28,15 +28,10 @@
       omnisend.push(["track", "$pageViewed"]);
       !function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="https://omnisnippet1.com/inshop/launcher-698ec82bfb5415a0f3880dc9.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}();
 
-      // Open Omnisend popup form once SDK is initialized
-      function openOmnisendPopup() {
-        if (window.omnisend && typeof window.omnisend.push === 'function' && window.omnisend.length === undefined) {
-          window.omnisend.push(['openForm', '699cff09ab3b5d06ef4e699d']);
-        } else {
-          setTimeout(openOmnisendPopup, 500);
-        }
+      function openOmnisendForm() {
+        window.omnisend = window.omnisend || [];
+        window.omnisend.push(['openForm', '698ec82bfb5415a0f3880dc9']);
       }
-      openOmnisendPopup();
     </script>
   </body>
 </html>
