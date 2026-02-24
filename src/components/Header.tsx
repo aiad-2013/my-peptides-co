@@ -78,8 +78,17 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
               variant="outline"
               size="sm"
               onClick={() => {
-                (window as any).omnisend = (window as any).omnisend || [];
-                (window as any).omnisend.push(['openForm', '66a861cad7d4da38988ae316']);
+                const win = window as any;
+                // Retry until omnisend is truly initialized
+                let attempts = 0;
+                const tryOpen = setInterval(() => {
+                  attempts++;
+                  if (win.omnisend && typeof win.omnisend.push === 'function') {
+                    win.omnisend.push(['openForm', '66a861cad7d4da38988ae316']);
+                    clearInterval(tryOpen);
+                  }
+                  if (attempts > 50) clearInterval(tryOpen); // stop after 5s
+                }, 100);
               }}
               className="hidden md:inline-flex text-xs"
             >
