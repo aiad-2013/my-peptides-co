@@ -75,6 +75,17 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
 
           <div className="flex items-center gap-2">
             <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                (window as any).omnisend = (window as any).omnisend || [];
+                (window as any).omnisend.push(['openForm', '66a861cad7d4da38988ae316']);
+              }}
+              className="hidden md:inline-flex text-xs"
+            >
+              Test Omnisend
+            </Button>
+            <Button
               variant="ghost"
               size="icon"
               onClick={totalItems > 0 ? handleCartClick : undefined}
