@@ -78,9 +78,7 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
               variant="outline"
               size="sm"
               onClick={() => {
-                const win = window as any;
-                win.omnisend = win.omnisend || [];
-                win.omnisend.push(['openForm', '698ec82bfb5415a0f3880dc9']);
+                (window as any).openOmnisendForm();
               }}
               className="hidden md:inline-flex text-xs"
             >
