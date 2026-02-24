@@ -27,6 +27,13 @@
       omnisend.push(["accountID", "66a824c07c04304a81414054"]);
       omnisend.push(["track", "$pageViewed"]);
       !function(){var e=document.createElement("script");e.type="text/javascript",e.async=!0,e.src="https://omnisnippet1.com/in498/66a824c07c04304a81414054.js";var t=document.getElementsByTagName("script")[0];t.parentNode.insertBefore(e,t)}();
+      // Open Omnisend popup form after script loads
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          window.omnisend = window.omnisend || [];
+          window.omnisend.push(['openForm', '66a861cad7d4da38988ae316']);
+        }, 2000);
+      });
     </script>
   </body>
 </html>
