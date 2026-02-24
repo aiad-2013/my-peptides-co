@@ -59,13 +59,6 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               <div className="space-y-3">
                 {items.map((item) => (
                   <div key={item.id} className="flex gap-3 pb-3 border-b border-border last:border-0">
-                    <div className="w-14 h-14 rounded bg-gradient-to-b from-muted to-secondary flex-shrink-0 flex items-center justify-center">
-                      <div className="w-7 h-10 rounded bg-gradient-navy">
-                        <div className="h-full flex items-center justify-center">
-                          <div className="w-3 h-3 rounded-full bg-gradient-gold" />
-                        </div>
-                      </div>
-                    </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-medium text-foreground line-clamp-1">{item.name}</h3>
                       <p className="text-xs text-muted-foreground">{item.quantity} × AUD ${item.price.toFixed(2)}</p>
