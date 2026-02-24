@@ -71,8 +71,9 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
             <Button
               variant="ghost"
               size="icon"
-              onClick={handleCartClick}
-              className="relative"
+              onClick={totalItems > 0 ? handleCartClick : undefined}
+              className={cn("relative", totalItems === 0 && "opacity-50 cursor-default")}
+              disabled={totalItems === 0}
             >
               <ShoppingCart className="w-5 h-5" />
               {totalItems > 0 && (
