@@ -29,7 +29,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       />
 
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-card shadow-2xl animate-slide-up">
+      <div className="absolute right-0 top-0 h-full w-full max-w-md bg-background shadow-2xl animate-slide-up">
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border">
@@ -46,7 +46,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
           </div>
 
           {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-6 scrollbar-none">
             {items.length === 0 ? (
               <div className="text-center py-12">
                 <ShoppingBag className="w-16 h-16 text-muted-foreground/30 mx-auto mb-4" />
