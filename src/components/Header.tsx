@@ -44,7 +44,13 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
             {navItems.map((item) => (
               <button
                 key={item.value}
-                onClick={() => onCategoryChange(item.value)}
+                onClick={() => {
+                  if (onCategoryChange) {
+                    onCategoryChange(item.value);
+                  } else {
+                    navigate(`/?category=${item.value}`);
+                  }
+                }}
                 className={cn(
                   "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200",
                   activeCategory === item.value
@@ -100,7 +106,11 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
               <button
                 key={item.value}
                 onClick={() => {
-                  onCategoryChange(item.value);
+                  if (onCategoryChange) {
+                    onCategoryChange(item.value);
+                  } else {
+                    navigate(`/?category=${item.value}`);
+                  }
                   setMobileMenuOpen(false);
                 }}
                 className={cn(
