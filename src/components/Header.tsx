@@ -4,7 +4,7 @@ import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
+import { CartDrawer } from '@/components/CartDrawer';
 import logo from '@/assets/logo.png';
 
 interface HeaderProps {
@@ -13,16 +13,12 @@ interface HeaderProps {
 }
 
 export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps = {}) => {
-  const { totalItems } = useCart();
+  const { totalItems, isOpen, setIsOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleCartClick = () => {
-    if (totalItems === 0) {
-      toast.info('Your cart is empty');
-      return;
-    }
-    navigate('/checkout');
+    setIsOpen(true);
   };
 
   const navItems = [
@@ -130,6 +126,7 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
           </nav>
         )}
       </div>
+      <CartDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </header>
   );
 };
