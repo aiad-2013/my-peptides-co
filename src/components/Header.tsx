@@ -84,7 +84,7 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
                 const tryOpen = setInterval(() => {
                   attempts++;
                 if (win.omnisend && typeof win.omnisend.push === 'function') {
-                    win.omnisend.push(['openForm', '69298e637ec3421d14fc4c5a']);
+                    win.omnisend.push(['openForm', '699cff09ab3b5d06ef4e699d']);
                     clearInterval(tryOpen);
                   }
                   if (attempts > 50) clearInterval(tryOpen);
