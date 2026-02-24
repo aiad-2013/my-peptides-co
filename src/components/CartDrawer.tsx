@@ -46,7 +46,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
           </div>
 
           {/* Cart Items */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 scrollbar-none" style={{ backgroundColor: 'hsl(var(--background))' }}>
+          <div className="flex-1 overflow-y-auto px-4 py-3 scrollbar-none min-h-[120px]" style={{ backgroundColor: 'hsl(var(--background))' }}>
             {items.length === 0 ? (
               <div className="text-center py-8">
                 <ShoppingBag className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
