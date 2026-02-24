@@ -22,14 +22,14 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
   return (
     <div className="fixed inset-0 z-50">
-      {/* Backdrop */}
+      {/* Backdrop - transparent click area */}
       <div
-        className="absolute inset-0 bg-primary/60 backdrop-blur-sm animate-fade-in"
+        className="absolute inset-0"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md animate-slide-in-right" style={{ backgroundColor: 'hsl(var(--background))', boxShadow: '-8px 0 30px -5px rgba(0,0,0,0.2), 0 8px 30px -5px rgba(0,0,0,0.15)' }}>
+      <div className="absolute right-0 top-0 h-full w-full max-w-md animate-slide-in-right" style={{ backgroundColor: 'hsl(var(--background))', boxShadow: '-12px 0 40px rgba(0,0,0,0.25), 0 12px 40px rgba(0,0,0,0.2)' }}>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-border" style={{ backgroundColor: 'hsl(var(--background))' }}>
