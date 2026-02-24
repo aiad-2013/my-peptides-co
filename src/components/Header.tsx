@@ -74,16 +74,16 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
+            <button
+              className="hidden md:inline-flex px-3 py-1.5 text-xs font-medium border border-border rounded-md hover:bg-muted transition-colors"
               onClick={() => {
-                (window as any).openOmnisendForm();
+                const win = window as any;
+                win.omnisend = win.omnisend || [];
+                win.omnisend.push(['openForm', '698ec82bfb5415a0f3880dc']);
               }}
-              className="hidden md:inline-flex text-xs"
             >
-              Test Omnisend
-            </Button>
+              Subscribe now
+            </button>
             <Button
               variant="ghost"
               size="icon"
