@@ -29,7 +29,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       />
 
       {/* Drawer */}
-      <div className="absolute right-0 top-0 h-full w-full max-w-md shadow-2xl animate-slide-up" style={{ backgroundColor: 'hsl(var(--background))' }}>
+      <div className="absolute right-0 top-0 h-full w-full max-w-md shadow-2xl animate-slide-in-right" style={{ backgroundColor: 'hsl(var(--background))' }}>
         <div className="flex flex-col h-full">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-border">
