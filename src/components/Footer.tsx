@@ -36,8 +36,8 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Products</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="#" className="hover:text-accent transition-colors">SARMs</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Peptides</a></li>
+              <li><a href="/sarms" className="hover:text-accent transition-colors">SARMs</a></li>
+              <li><a href="/peptides" className="hover:text-accent transition-colors">Peptides</a></li>
               <li><a href="/blog" className="hover:text-accent transition-colors">Blog</a></li>
               <li><a href="#" className="hover:text-accent transition-colors">Lab Reports</a></li>
             </ul>
@@ -47,9 +47,9 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4">Support</h4>
             <ul className="space-y-2 text-sm text-primary-foreground/70">
-              <li><a href="#" className="hover:text-accent transition-colors">FAQ</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Shipping</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Returns</a></li>
+              <li><a href="/faq" className="hover:text-accent transition-colors">FAQ</a></li>
+              <li><a href="/shipping" className="hover:text-accent transition-colors">Shipping</a></li>
+              <li><a href="/returns" className="hover:text-accent transition-colors">Returns</a></li>
               <li><a href="/track-order" className="hover:text-accent transition-colors">Track Order</a></li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
@@ -67,8 +67,8 @@ export const Footer = () => {
             © {new Date().getFullYear()} Vicorpus. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm text-primary-foreground/50">
-            <a href="#" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
+            <a href="/privacy-policy" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
+            <a href="/terms-of-service" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>

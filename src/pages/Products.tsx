@@ -5,7 +5,11 @@ import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 
-const Index = () => {
+interface ProductsProps {
+  category: 'all' | 'sarms' | 'peptides';
+}
+
+const Products = ({ category }: ProductsProps) => {
   const productsRef = useRef<HTMLDivElement>(null);
 
   const scrollToProducts = () => {
@@ -16,9 +20,9 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <Hero onShopClick={scrollToProducts} activeCategory="all" />
+        <Hero onShopClick={scrollToProducts} activeCategory={category} />
         <div ref={productsRef}>
-          <ProductGrid category="all" />
+          <ProductGrid category={category} />
         </div>
       </main>
       <Footer />
@@ -27,4 +31,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default Products;
