@@ -112,10 +112,7 @@ const TrackOrderContent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header
-        onCategoryChange={() => {}}
-        activeCategory="all"
-      />
+      <Header />
 
       <main className="container mx-auto px-4 py-12 max-w-2xl">
         <div className="text-center mb-8">

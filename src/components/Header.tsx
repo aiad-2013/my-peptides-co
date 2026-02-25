@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
@@ -7,24 +7,19 @@ import { cn } from '@/lib/utils';
 import { CartDrawer } from '@/components/CartDrawer';
 import logo from '@/assets/logo.png';
 
-interface HeaderProps {
-  onCategoryChange?: (category: 'all' | 'sarms' | 'peptides') => void;
-  activeCategory?: 'all' | 'sarms' | 'peptides';
-}
-
-export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps = {}) => {
+export const Header = () => {
   const { totalItems, isOpen, setIsOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  
 
   const handleCartClick = () => {
     setIsOpen(true);
   };
 
   const navItems = [
-    { label: 'All Products', value: 'all' as const },
-    { label: 'SARMs', value: 'sarms' as const },
-    { label: 'Peptides', value: 'peptides' as const },
+    { label: 'All Products', to: '/products' },
+    { label: 'SARMs', to: '/sarms' },
+    { label: 'Peptides', to: '/peptides' },
   ];
 
   const linkItems = [
@@ -42,24 +37,13 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
 
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
-              <button
-                key={item.value}
-                onClick={() => {
-                  if (onCategoryChange) {
-                    onCategoryChange(item.value);
-                  } else {
-                    navigate(`/?category=${item.value}`);
-                  }
-                }}
-                className={cn(
-                  "px-4 py-2 text-sm font-medium rounded-md transition-all duration-200",
-                  activeCategory === item.value
-                    ? "bg-accent/10 text-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
+              <Link
+                key={item.to}
+                to={item.to}
+                className="px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
             <span className="w-px h-5 bg-border mx-1" />
             {linkItems.map((item) => (
@@ -103,25 +87,14 @@ export const Header = ({ onCategoryChange, activeCategory = 'all' }: HeaderProps
         {mobileMenuOpen && (
           <nav className="md:hidden py-4 border-t border-border animate-fade-in">
             {navItems.map((item) => (
-              <button
-                key={item.value}
-                onClick={() => {
-                  if (onCategoryChange) {
-                    onCategoryChange(item.value);
-                  } else {
-                    navigate(`/?category=${item.value}`);
-                  }
-                  setMobileMenuOpen(false);
-                }}
-                className={cn(
-                  "block w-full text-left px-4 py-3 text-sm font-medium rounded-md transition-all duration-200",
-                  activeCategory === item.value
-                    ? "bg-accent/10 text-accent"
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
-                )}
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-left px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
               >
                 {item.label}
-              </button>
+              </Link>
             ))}
             <div className="h-px bg-border my-2 mx-4" />
             {linkItems.map((item) => (

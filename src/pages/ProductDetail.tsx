@@ -23,7 +23,7 @@ const ProductDetailContent = () => {
     window.scrollTo(0, 0);
   }, [slug]);
   const [retryCount, setRetryCount] = useState(0);
-  const [activeCategory, setActiveCategory] = useState<'all' | 'sarms' | 'peptides'>('all');
+  
 
   const product = products?.find(p => p.id === slug);
 
@@ -72,7 +72,7 @@ const ProductDetailContent = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
-        <Header onCategoryChange={setActiveCategory} activeCategory={activeCategory} />
+        <Header />
         <main className="container mx-auto px-4 py-12">
           <div className="grid md:grid-cols-2 gap-12">
             <Skeleton className="aspect-square rounded-xl" />
@@ -93,7 +93,7 @@ const ProductDetailContent = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-background">
-        <Header onCategoryChange={setActiveCategory} activeCategory={activeCategory} />
+        <Header />
         <main className="container mx-auto px-4 py-24 text-center">
           <h1 className="text-3xl font-serif font-semibold text-foreground mb-4">Product Not Found</h1>
           <p className="text-muted-foreground mb-8">The product you're looking for doesn't exist or has been removed.</p>
@@ -108,7 +108,7 @@ const ProductDetailContent = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header onCategoryChange={setActiveCategory} activeCategory={activeCategory} />
+      <Header />
 
       <main className="container mx-auto px-4 py-8 md:py-12">
         {/* Breadcrumb */}
