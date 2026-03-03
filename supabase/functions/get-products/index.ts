@@ -28,6 +28,17 @@ interface ProductFAQ {
   answer: string;
 }
 
+interface BundledItem {
+  id: string;
+  wooCommerceId: number;
+  name: string;
+  image: string;
+  price: number;
+  qty: number;
+  concentration?: string;
+  volume?: string;
+}
+
 interface TransformedProduct {
   id: string;
   wooCommerceId: number;
@@ -46,7 +57,10 @@ interface TransformedProduct {
   faqs?: ProductFAQ[];
   peopleViewing?: number;
   isBundle?: boolean;
+  bundledItems?: BundledItem[];
+  woosb_ids?: Record<string, { id: string; qty: string; sku?: string }>;
   discountTiers?: Array<{ qty: number; discount: number }>;
+  woosb_after_text?: string;
 }
 
 serve(async (req) => {
