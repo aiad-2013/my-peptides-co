@@ -209,9 +209,42 @@ serve(async (req) => {
         faqs: faqs.length > 0 ? faqs : undefined,
         peopleViewing: peopleViewing || undefined,
         isBundle: isBundle || undefined,
+        woosb_ids: woosb_ids || undefined,
+        woosb_after_text: woosb_after_text || undefined,
         discountTiers: discountTiers.length > 0 ? discountTiers : undefined,
       };
     });
+
+    // Second pass: resolve bundledItems for bundle products by cross-referencing wooCommerceId
+    const idMap = new Map<number, TransformedProduct>();
+    for (const p of products) {
+      idMap.set(p.wooCommerceId, p);
+    }
+    for (const p of products) {
+      if (p.isBundle && p.woosb_ids) {
+        const items: BundledItem[] = [];
+        for (const entry of Object.values(p.woosb_ids)) {
+          const childId = parseInt(entry.id, 10);
+          const child = idMap.get(childId);
+          if (child) {
+            items.push({
+              id: child.id,
+              wooCommerceId: child.wooCommerceId,
+              name: child.name,
+              image: child.image,
+              price: child.price,
+              qty: parseInt(entry.qty, 10) || 1,
+              concentration: child.concentration,
+              volume: child.volume,
+            });
+          }
+        }
+        if (items.length > 0) p.bundledItems = items;
+      }
+      // Clean up internal fields before sending
+      delete p.woosb_ids;
+      delete p.woosb_after_text;
+    }
 
     return new Response(JSON.stringify({ products }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
