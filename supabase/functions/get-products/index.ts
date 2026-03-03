@@ -243,6 +243,7 @@ serve(async (req) => {
         woosb_ids: woosb_ids || undefined,
         savingsText: woosb_after_text || undefined,
         discountTiers: discountTiers.length > 0 ? discountTiers : undefined,
+        _isBundle: isBundle,
       };
     });
 
