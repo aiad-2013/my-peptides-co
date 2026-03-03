@@ -210,7 +210,7 @@ serve(async (req) => {
         peopleViewing: peopleViewing || undefined,
         isBundle: isBundle || undefined,
         woosb_ids: woosb_ids || undefined,
-        woosb_after_text: woosb_after_text || undefined,
+        savingsText: woosb_after_text || undefined,
         discountTiers: discountTiers.length > 0 ? discountTiers : undefined,
       };
     });
@@ -241,9 +241,8 @@ serve(async (req) => {
         }
         if (items.length > 0) p.bundledItems = items;
       }
-      // Clean up internal fields before sending
+      // Remove internal-only field before sending to client
       delete p.woosb_ids;
-      delete p.woosb_after_text;
     }
 
     return new Response(JSON.stringify({ products }), {
