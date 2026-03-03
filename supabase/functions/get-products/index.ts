@@ -242,8 +242,12 @@ serve(async (req) => {
         isBundle: isBundle || undefined,
         woosb_ids: woosb_ids || undefined,
         savingsText: woosb_after_text || undefined,
-        discountTiers: discountTiers.length > 0 ? discountTiers : undefined,
-        _isBundle: isBundle,
+        // Use product-level tiers if set; otherwise fall back to the store-wide volume discount rules for non-bundle products
+        discountTiers: discountTiers.length > 0 ? discountTiers : (!isBundle ? [
+          { qty: 3, discount: 10 },
+          { qty: 6, discount: 15 },
+          { qty: 9, discount: 20 },
+        ] : undefined),
       };
     });
 
