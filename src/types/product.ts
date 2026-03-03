@@ -38,6 +38,7 @@ export interface Product {
   peopleViewing?: number;
   isBundle?: boolean;
   bundledItems?: BundledItem[];
+  savingsText?: string;
   discountTiers?: DiscountTier[];
 }
 

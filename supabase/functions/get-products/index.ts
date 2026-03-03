@@ -58,9 +58,9 @@ interface TransformedProduct {
   peopleViewing?: number;
   isBundle?: boolean;
   bundledItems?: BundledItem[];
+  savingsText?: string;
   woosb_ids?: Record<string, { id: string; qty: string; sku?: string }>;
   discountTiers?: Array<{ qty: number; discount: number }>;
-  woosb_after_text?: string;
 }
 
 serve(async (req) => {
