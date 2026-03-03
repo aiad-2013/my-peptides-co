@@ -37,6 +37,7 @@ export interface Product {
   faqs?: ProductFAQ[];
   peopleViewing?: number;
   isBundle?: boolean;
+  bundledItems?: BundledItem[];
   discountTiers?: DiscountTier[];
 }
 
