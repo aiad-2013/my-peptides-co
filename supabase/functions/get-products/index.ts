@@ -78,28 +78,59 @@ serve(async (req) => {
     }
 
     const storeUrl = 'https://vicorpus.co';
-    const apiUrl = `${storeUrl}/wp-json/wc/v3/products?per_page=100&status=publish`;
+    const baseApi = `${storeUrl}/wp-json/wc/v3/products`;
 
     // Create Basic Auth header
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
+    const authHeaders = { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' };
 
     console.log('Fetching products from WooCommerce...');
 
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Basic ${auth}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    // Fetch regular products AND woosb bundles in parallel
+    const [regularRes, bundleRes] = await Promise.all([
+      fetch(`${baseApi}?per_page=100&status=publish`, { headers: authHeaders }),
+      fetch(`${baseApi}?per_page=100&status=publish&type=woosb`, { headers: authHeaders }),
+    ]);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('WooCommerce API error:', response.status, errorText);
-      throw new Error(`WooCommerce API error: ${response.status}`);
+    if (!regularRes.ok) throw new Error(`WooCommerce API error: ${regularRes.status}`);
+    if (!bundleRes.ok) throw new Error(`WooCommerce bundles API error: ${bundleRes.status}`);
+
+    const [regularProducts, bundleProducts]: [WooCommerceProduct[], WooCommerceProduct[]] = await Promise.all([
+      regularRes.json(),
+      bundleRes.json(),
+    ]);
+
+    // Merge, deduplicating by ID
+    const seenIds = new Set<number>();
+    const merged: WooCommerceProduct[] = [];
+    for (const p of [...regularProducts, ...bundleProducts]) {
+      if (!seenIds.has(p.id)) { seenIds.add(p.id); merged.push(p); }
     }
 
-    const wooProducts: WooCommerceProduct[] = await response.json();
+    // Collect any child product IDs referenced by bundles that aren't already fetched
+    const missingIds: number[] = [];
+    for (const p of merged) {
+      const woosb_ids = p.meta_data?.find((m) => m.key === 'woosb_ids')?.value as Record<string, { id: string }> | undefined;
+      if (woosb_ids) {
+        for (const entry of Object.values(woosb_ids)) {
+          const cid = parseInt(entry.id, 10);
+          if (!seenIds.has(cid)) missingIds.push(cid);
+        }
+      }
+    }
+
+    // Fetch any missing child products in one request
+    if (missingIds.length > 0) {
+      const childRes = await fetch(`${baseApi}?include=${[...new Set(missingIds)].join(',')}&per_page=100`, { headers: authHeaders });
+      if (childRes.ok) {
+        const children: WooCommerceProduct[] = await childRes.json();
+        for (const c of children) {
+          if (!seenIds.has(c.id)) { seenIds.add(c.id); merged.push(c); }
+        }
+      }
+    }
+
+    const wooProducts = merged;
     console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
 
 
