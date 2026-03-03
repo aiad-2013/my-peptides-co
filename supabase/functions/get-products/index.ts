@@ -136,6 +136,9 @@ serve(async (req) => {
       let peopleViewing = 0;
       let discountTiers: Array<{ qty: number; discount: number }> = [];
 
+      let woosb_ids: Record<string, { id: string; qty: string; sku?: string }> | undefined;
+      let woosb_after_text = '';
+
       for (const meta of product.meta_data || []) {
         if (meta.key === '_product_badge' || meta.key === 'badge') {
           badge = meta.value as string;
@@ -159,6 +162,12 @@ serve(async (req) => {
               discountTiers = parsed.filter((t: { qty?: number; discount?: number }) => t.qty && t.discount);
             }
           } catch { /* ignore parse errors */ }
+        }
+        if (meta.key === 'woosb_ids' && meta.value && typeof meta.value === 'object') {
+          woosb_ids = meta.value as Record<string, { id: string; qty: string; sku?: string }>;
+        }
+        if (meta.key === 'woosb_after_text' && meta.value) {
+          woosb_after_text = (meta.value as string).replace(/<[^>]*>/g, '').trim();
         }
         if (meta.key === 'faqs' && meta.value && typeof meta.value === 'string' && meta.value.trim()) {
           // FAQs are HTML with <h3>question</h3> followed by answer text
