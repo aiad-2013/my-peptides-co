@@ -8,6 +8,17 @@ export interface DiscountTier {
   discount: number;
 }
 
+export interface BundledItem {
+  id: string;
+  wooCommerceId: number;
+  name: string;
+  image: string;
+  price: number;
+  qty: number;
+  concentration?: string;
+  volume?: string;
+}
+
 export interface Product {
   id: string;
   wooCommerceId?: number;
