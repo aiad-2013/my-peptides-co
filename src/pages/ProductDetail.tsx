@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles } from 'lucide-react';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 const ProductDetailContent = () => {
@@ -216,6 +216,82 @@ const ProductDetailContent = () => {
                   <Tag className="w-3.5 h-3.5" />
                   To get a discount, simply add products to the cart and continue to the checkout page, and the discount will automatically be applied.
                 </p>
+              </div>
+            )}
+
+            {/* Bundle: What's in this stack */}
+            {product.isBundle && product.bundledItems && product.bundledItems.length > 0 && (
+              <div className="mb-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <Layers className="w-5 h-5 text-accent" />
+                  <h2 className="text-lg font-semibold text-foreground">What's in this stack</h2>
+                </div>
+
+                {/* Savings callout */}
+                {product.savingsText && (
+                  <div className="flex items-start gap-2 mb-4 p-3 rounded-lg bg-accent/10 border border-accent/30">
+                    <Sparkles className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
+                    <p className="text-sm font-medium text-accent">{product.savingsText}</p>
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  {product.bundledItems.map((item) => {
+                    const itemImg = item.image && item.image !== '/placeholder.svg'
+                      ? getProxiedImageUrl(item.image) : null;
+                    return (
+                      <Link
+                        key={item.id}
+                        to={`/product/${item.id}`}
+                        className="flex items-center gap-4 p-3 rounded-lg border border-border bg-muted/30 hover:border-accent/50 hover:bg-muted/60 transition-all group"
+                      >
+                        {/* Thumbnail */}
+                        <div className="w-14 h-14 rounded-md overflow-hidden bg-gradient-to-b from-muted to-secondary flex-shrink-0">
+                          {itemImg ? (
+                            <img src={itemImg} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <div className="w-6 h-8 rounded bg-gradient-navy" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Info */}
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-foreground text-sm leading-tight group-hover:text-accent transition-colors truncate">
+                            {item.qty > 1 && <span className="text-accent mr-1">{item.qty}×</span>}
+                            {item.name}
+                          </p>
+                          {(item.concentration || item.volume) && (
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {item.concentration}{item.volume && ` • ${item.volume}`}
+                            </p>
+                          )}
+                        </div>
+
+                        {/* Price */}
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-sm font-semibold text-foreground">${item.price.toFixed(2)}</p>
+                          <p className="text-xs text-muted-foreground">AUD</p>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+
+                {/* Individual total vs bundle price */}
+                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Individual total</p>
+                    <p className="text-base font-semibold text-muted-foreground line-through">
+                      ${product.bundledItems.reduce((sum, i) => sum + i.price * i.qty, 0).toFixed(2)} AUD
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-accent font-medium">Bundle price</p>
+                    <p className="text-xl font-bold text-foreground">${product.price.toFixed(2)} AUD</p>
+                  </div>
+                </div>
               </div>
             )}
 

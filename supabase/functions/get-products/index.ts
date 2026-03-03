@@ -28,6 +28,17 @@ interface ProductFAQ {
   answer: string;
 }
 
+interface BundledItem {
+  id: string;
+  wooCommerceId: number;
+  name: string;
+  image: string;
+  price: number;
+  qty: number;
+  concentration?: string;
+  volume?: string;
+}
+
 interface TransformedProduct {
   id: string;
   wooCommerceId: number;
@@ -46,6 +57,9 @@ interface TransformedProduct {
   faqs?: ProductFAQ[];
   peopleViewing?: number;
   isBundle?: boolean;
+  bundledItems?: BundledItem[];
+  savingsText?: string;
+  woosb_ids?: Record<string, { id: string; qty: string; sku?: string }>;
   discountTiers?: Array<{ qty: number; discount: number }>;
 }
 
@@ -122,6 +136,9 @@ serve(async (req) => {
       let peopleViewing = 0;
       let discountTiers: Array<{ qty: number; discount: number }> = [];
 
+      let woosb_ids: Record<string, { id: string; qty: string; sku?: string }> | undefined;
+      let woosb_after_text = '';
+
       for (const meta of product.meta_data || []) {
         if (meta.key === '_product_badge' || meta.key === 'badge') {
           badge = meta.value as string;
@@ -145,6 +162,12 @@ serve(async (req) => {
               discountTiers = parsed.filter((t: { qty?: number; discount?: number }) => t.qty && t.discount);
             }
           } catch { /* ignore parse errors */ }
+        }
+        if (meta.key === 'woosb_ids' && meta.value && typeof meta.value === 'object') {
+          woosb_ids = meta.value as Record<string, { id: string; qty: string; sku?: string }>;
+        }
+        if (meta.key === 'woosb_after_text' && meta.value) {
+          woosb_after_text = (meta.value as string).replace(/<[^>]*>/g, '').trim();
         }
         if (meta.key === 'faqs' && meta.value && typeof meta.value === 'string' && meta.value.trim()) {
           // FAQs are HTML with <h3>question</h3> followed by answer text
@@ -186,9 +209,41 @@ serve(async (req) => {
         faqs: faqs.length > 0 ? faqs : undefined,
         peopleViewing: peopleViewing || undefined,
         isBundle: isBundle || undefined,
+        woosb_ids: woosb_ids || undefined,
+        savingsText: woosb_after_text || undefined,
         discountTiers: discountTiers.length > 0 ? discountTiers : undefined,
       };
     });
+
+    // Second pass: resolve bundledItems for bundle products by cross-referencing wooCommerceId
+    const idMap = new Map<number, TransformedProduct>();
+    for (const p of products) {
+      idMap.set(p.wooCommerceId, p);
+    }
+    for (const p of products) {
+      if (p.isBundle && p.woosb_ids) {
+        const items: BundledItem[] = [];
+        for (const entry of Object.values(p.woosb_ids)) {
+          const childId = parseInt(entry.id, 10);
+          const child = idMap.get(childId);
+          if (child) {
+            items.push({
+              id: child.id,
+              wooCommerceId: child.wooCommerceId,
+              name: child.name,
+              image: child.image,
+              price: child.price,
+              qty: parseInt(entry.qty, 10) || 1,
+              concentration: child.concentration,
+              volume: child.volume,
+            });
+          }
+        }
+        if (items.length > 0) p.bundledItems = items;
+      }
+      // Remove internal-only field before sending to client
+      delete p.woosb_ids;
+    }
 
     return new Response(JSON.stringify({ products }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
