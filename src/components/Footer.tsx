@@ -4,16 +4,6 @@ import logoWhite from '@/assets/logo-white.png';
 export const Footer = () => {
   return (
     <footer className="bg-primary text-primary-foreground">
-      {/* Research Disclaimer */}
-      <div className="border-b border-primary-foreground/10">
-        <div className="container mx-auto px-4 py-6">
-          <div className="bg-accent/10 border border-accent/20 rounded-lg p-4 text-center">
-            <p className="text-sm text-primary-foreground/80">
-              <strong className="text-accent">Research Use Only:</strong> All products sold by Vicorpus are intended for laboratory and research purposes only. Not for human consumption.
-            </p>
-          </div>
-        </div>
-      </div>
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
