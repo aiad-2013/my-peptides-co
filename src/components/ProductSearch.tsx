@@ -26,8 +26,7 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
     : (products ?? []).filter(p =>
         p.name.toLowerCase().includes(sanitized) ||
         p.id.toLowerCase().includes(sanitized) ||
-        (p.sku && p.sku.toLowerCase().includes(sanitized)) ||
-        (p.category && p.category.toLowerCase().includes(sanitized))
+        p.category.toLowerCase().includes(sanitized)
       ).slice(0, 8);
 
   useEffect(() => {
