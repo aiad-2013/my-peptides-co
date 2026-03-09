@@ -73,7 +73,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {product.isBundle && (
             <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest px-2 py-1 bg-primary/90 text-primary-foreground rounded-sm backdrop-blur-sm">
               <Package className="w-3 h-3" />
-              Bundle
+              Bundle &amp; Save
             </span>
           )}
           {product.badge && product.badge !== 'Bundle' && (
