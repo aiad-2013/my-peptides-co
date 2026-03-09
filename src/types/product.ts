@@ -29,6 +29,7 @@ export interface Product {
   volume?: string;
   description: string;
   image: string;
+  images?: string[];
   badge?: string;
   inStock: boolean;
   wooCommerceUrl: string;

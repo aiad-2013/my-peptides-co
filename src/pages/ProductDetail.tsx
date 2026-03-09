@@ -18,9 +18,11 @@ const ProductDetailContent = () => {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setSelectedImageIndex(0);
   }, [slug]);
   const [retryCount, setRetryCount] = useState(0);
   
@@ -55,8 +57,16 @@ const ProductDetailContent = () => {
     }
   };
 
-  const imageSrc = product?.image && product.image !== '/placeholder.svg'
-    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+  // Build proxied image list - use all images if available
+  const allImages = product?.images && product.images.length > 0
+    ? product.images
+    : product?.image && product.image !== '/placeholder.svg' ? [product.image] : [];
+
+  const proxiedImages = allImages.map(img => getProxiedImageUrl(img));
+  const activeImageSrc = proxiedImages[selectedImageIndex] || null;
+
+  const imageSrc = activeImageSrc
+    ? `${activeImageSrc}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
 
   const handleAddToCart = () => {
@@ -121,36 +131,58 @@ const ProductDetailContent = () => {
         </nav>
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Product Image */}
-          <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden">
-            {!imgError && imageSrc ? (
-              <img
-                src={imageSrc}
-                alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover"
-                onError={handleImgError}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-40 h-56 rounded-lg bg-gradient-navy shadow-xl">
-                  <div className="h-full flex flex-col items-center justify-center p-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-gold mb-4" />
-                    <div className="w-full h-2 bg-accent/30 rounded mb-2" />
-                    <div className="w-2/3 h-1.5 bg-accent/20 rounded" />
+          {/* Product Image Gallery */}
+          <div className="flex flex-col gap-3">
+            {/* Main image */}
+            <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden">
+              {!imgError && imageSrc ? (
+                <img
+                  src={imageSrc}
+                  alt={product.name}
+                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                  onError={handleImgError}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-40 h-56 rounded-lg bg-gradient-navy shadow-xl">
+                    <div className="h-full flex flex-col items-center justify-center p-4">
+                      <div className="w-16 h-16 rounded-full bg-gradient-gold mb-4" />
+                      <div className="w-full h-2 bg-accent/30 rounded mb-2" />
+                      <div className="w-2/3 h-1.5 bg-accent/20 rounded" />
+                    </div>
                   </div>
                 </div>
+              )}
+              {product.isBundle && (
+                <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm px-3 py-1">
+                  <Package className="w-4 h-4 mr-1.5" />
+                  Bundle
+                </Badge>
+              )}
+              {product.badge && product.badge !== 'Bundle' && (
+                <Badge className="absolute top-4 left-4 mt-10 bg-accent text-accent-foreground text-sm px-3 py-1">
+                  {product.badge}
+                </Badge>
+              )}
+            </div>
+
+            {/* Thumbnail strip – only shown when there are multiple images */}
+            {proxiedImages.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto pb-1">
+                {proxiedImages.map((src, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => { setSelectedImageIndex(idx); setImgError(false); setRetryCount(0); }}
+                    className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                      selectedImageIndex === idx
+                        ? 'border-accent shadow-md scale-105'
+                        : 'border-border opacity-60 hover:opacity-100 hover:border-accent/50'
+                    }`}
+                  >
+                    <img src={src} alt={`${product.name} view ${idx + 1}`} className="w-full h-full object-cover" />
+                  </button>
+                ))}
               </div>
-            )}
-            {product.isBundle && (
-              <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm px-3 py-1">
-                <Package className="w-4 h-4 mr-1.5" />
-                Bundle
-              </Badge>
-            )}
-            {product.badge && product.badge !== 'Bundle' && (
-              <Badge className="absolute top-4 left-4 mt-10 bg-accent text-accent-foreground text-sm px-3 py-1">
-                {product.badge}
-              </Badge>
             )}
           </div>
 
