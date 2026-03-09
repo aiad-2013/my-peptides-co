@@ -20,7 +20,7 @@ export const Footer = () => {
           {/* Brand */}
           <div className="md:col-span-2">
             <div className="mb-4">
-              <img src={logoWhite} alt="VI CORPUS" className="h-10 w-auto" />
+              <img src={logoWhite} alt="mypeptideco" className="h-8 w-auto" />
             </div>
             <p className="text-primary-foreground/70 max-w-md mb-6">
               Australia's trusted supplier of premium research compounds. 
