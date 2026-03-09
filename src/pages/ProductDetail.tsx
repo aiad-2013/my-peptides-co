@@ -233,14 +233,19 @@ const ProductDetailContent = () => {
               <div className="mb-6">
                 <div className="grid grid-cols-3 gap-3">
                   {product.discountTiers.map((tier, idx) => (
-                    <div
+                    <button
                       key={idx}
-                      className="rounded-lg border border-border bg-muted/30 p-3 text-center hover:border-accent/50 transition-colors"
+                      onClick={() => setQuantity(tier.qty)}
+                      className={`rounded-lg border p-3 text-center transition-all duration-200 ${
+                        quantity === tier.qty
+                          ? 'border-accent bg-accent/10 shadow-sm scale-[1.02]'
+                          : 'border-border bg-muted/30 hover:border-accent/50 hover:bg-muted/50'
+                      }`}
                     >
                       <p className="text-xs text-muted-foreground mb-1">By Buying</p>
                       <p className="text-lg font-bold text-foreground">{tier.qty} Bottles</p>
                       <p className="text-xs font-medium text-accent mt-1">You can get {tier.discount}% off</p>
-                    </div>
+                    </button>
                   ))}
                 </div>
                 <p className="text-xs text-accent mt-3 text-center flex items-center justify-center gap-1.5">
