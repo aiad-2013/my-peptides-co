@@ -54,7 +54,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="group relative bg-card rounded-sm border border-border overflow-hidden flex flex-col h-full transition-shadow duration-500 hover:shadow-[var(--shadow-card-hover)]"
+      className="group relative bg-card rounded-sm border border-border overflow-hidden flex flex-col w-full h-full transition-shadow duration-500 hover:shadow-[var(--shadow-card-hover)]"
     >
       {/* Image */}
       <div className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden">
