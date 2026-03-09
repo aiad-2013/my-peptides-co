@@ -81,30 +81,8 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
               Lab Reports
             </Button>
           </div>
-
-          {/* Trust marks — minimal rule-separated */}
-          <div
-            className="flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-primary-foreground/8 animate-fade-in"
-            style={{ animationDelay: '0.24s' }}
-          >
-            <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-accent/60" />
-              <span className="text-[11px] uppercase tracking-widest text-primary-foreground/40">99%+ Purity</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Beaker className="w-4 h-4 text-accent/60" />
-              <span className="text-[11px] uppercase tracking-widest text-primary-foreground/40">Lab Tested</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <Award className="w-4 h-4 text-accent/60" />
-              <span className="text-[11px] uppercase tracking-widest text-primary-foreground/40">Australian Made</span>
-            </div>
-          </div>
         </div>
       </div>
-
-      {/* Fade to background */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 };
