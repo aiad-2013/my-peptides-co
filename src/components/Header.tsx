@@ -59,6 +59,17 @@ export const Header = () => {
           </nav>
 
           <div className="flex items-center gap-2">
+            {/* Search */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearchOpen(true)}
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Search products"
+            >
+              <Search className="w-5 h-5" />
+            </Button>
+
             <Button
               variant="ghost"
               size="icon"
