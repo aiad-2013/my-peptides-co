@@ -54,7 +54,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   return (
     <Link
       to={`/product/${product.id}`}
-      className="group relative bg-card rounded-sm border border-border overflow-hidden block transition-shadow duration-500 hover:shadow-[var(--shadow-card-hover)]"
+      className="group relative bg-card rounded-sm border border-border overflow-hidden flex flex-col h-full transition-shadow duration-500 hover:shadow-[var(--shadow-card-hover)]"
     >
       {/* Image */}
       <div className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden">
@@ -100,7 +100,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5">
           {product.category}
         </p>
@@ -110,12 +110,12 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         </h3>
 
         {product.concentration && (
-          <p className="text-xs text-muted-foreground mb-4 tracking-wide">
+          <p className="text-xs text-muted-foreground tracking-wide">
             {product.concentration}{product.volume && ` · ${product.volume}`}
           </p>
         )}
 
-        <div className="flex items-center justify-between pt-3 border-t border-border/60">
+        <div className="flex items-center justify-between pt-3 mt-auto border-t border-border/60">
           <div>
             <span className="text-base font-medium text-foreground tabular-nums">
               ${product.price.toFixed(2)}

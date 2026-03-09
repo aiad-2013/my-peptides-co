@@ -72,11 +72,11 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
 
         {/* Grid */}
         {!isLoading && filteredProducts && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-stretch">
             {filteredProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="animate-fade-in"
+                className="animate-fade-in flex"
                 style={{ animationDelay: `${index * 0.06}s` }}
               >
                 <ProductCard product={product} />
