@@ -76,7 +76,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
             {filteredProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="animate-fade-in flex"
+                className="animate-fade-in flex w-full"
                 style={{ animationDelay: `${index * 0.06}s` }}
               >
                 <ProductCard product={product} />
