@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -9,9 +9,46 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles, Flame, TrendingUp, Clock } from 'lucide-react';
 import { LabTestForm } from '@/components/LabTestForm';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+
+// Deterministic scarcity seed from product id
+function seededRandom(id: string, offset = 0): number {
+  let hash = offset;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return (hash >>> 0) / 0xFFFFFFFF;
+}
+function getStockLeft(id: string) { return Math.floor(seededRandom(id, 7) * 8) + 3; } // 3–10
+function getSoldThisWeek(id: string) { return Math.floor(seededRandom(id, 13) * 40) + 12; } // 12–51
+
+function useOrderDeadline() {
+  const endOfDayRef = useRef<Date | null>(null);
+  if (!endOfDayRef.current) {
+    const d = new Date();
+    d.setHours(23, 59, 59, 0);
+    endOfDayRef.current = d;
+  }
+
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const diff = (endOfDayRef.current?.getTime() ?? 0) - now.getTime();
+      if (diff <= 0) { setTimeLeft('00:00:00'); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return timeLeft;
+}
 
 const ProductDetailContent = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -21,6 +58,7 @@ const ProductDetailContent = () => {
   const [imgError, setImgError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
+  const orderDeadline = useOrderDeadline();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -221,12 +259,51 @@ const ProductDetailContent = () => {
             )}
 
             {/* Price */}
-            <div className="mb-6 pb-6 border-b border-border">
+            <div className="mb-6 pb-4 border-b border-border">
               <span className="text-4xl font-semibold text-foreground">
                 ${product.price.toFixed(2)}
               </span>
               <span className="text-muted-foreground ml-2 text-lg">AUD</span>
             </div>
+
+            {/* ── Scarcity Block ── */}
+            {product.inStock && (() => {
+              const stockLeft = getStockLeft(product.id);
+              const soldThisWeek = getSoldThisWeek(product.id);
+              const stockPct = Math.round((stockLeft / 15) * 100);
+              return (
+                <div className="mb-6 space-y-3">
+                  {/* Stock bar */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="flex items-center gap-1.5 text-sm font-medium text-destructive">
+                        <Flame className="w-4 h-4" />
+                        Only {stockLeft} left in stock
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <TrendingUp className="w-3.5 h-3.5 text-accent" />
+                        {soldThisWeek} sold this week
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-destructive to-accent rounded-full transition-all"
+                        style={{ width: `${stockPct}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Order deadline */}
+                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-accent/10 border border-accent/20">
+                    <Clock className="w-4 h-4 text-accent flex-shrink-0" />
+                    <p className="text-xs text-foreground">
+                      Order in <strong className="text-accent font-mono">{orderDeadline}</strong> for same-day dispatch
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
+
 
             {/* Volume Discount Tiers */}
             {product.discountTiers && product.discountTiers.length > 0 && (

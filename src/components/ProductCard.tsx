@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, Package } from 'lucide-react';
+import { ShoppingCart, Package, Eye, Flame } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
@@ -11,6 +11,13 @@ import moleculePlaceholder from '@/assets/molecule-placeholder.jpg';
 
 interface ProductCardProps {
   product: Product;
+}
+
+// Deterministic "stock" number seeded by product id so it doesn't flicker
+function getSeededStock(id: string): number {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return (hash % 8) + 3; // 3–10
 }
 
 export const ProductCard = ({ product }: ProductCardProps) => {
@@ -32,10 +39,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
 
-  // Temporarily use molecule placeholder for all non-BPC products
   const displaySrc = isBpc
     ? (!imgError && realImageSrc ? realImageSrc : '/placeholder.svg')
     : moleculePlaceholder;
+
+  const stockLeft = getSeededStock(product.id);
+  const isLowStock = stockLeft <= 5;
+  const showPeopleViewing = product.peopleViewing && product.peopleViewing > 0;
 
   return (
     <Link to={`/product/${product.id}`} className="group relative bg-card rounded-lg border border-border overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1 block">
@@ -61,7 +71,21 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               {product.badge}
             </Badge>
           )}
+          {isLowStock && product.inStock && (
+            <Badge className="bg-destructive/90 text-destructive-foreground font-medium text-xs">
+              <Flame className="w-3 h-3 mr-1" />
+              Only {stockLeft} left
+            </Badge>
+          )}
         </div>
+
+        {/* People Viewing */}
+        {showPeopleViewing && (
+          <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-background/80 backdrop-blur-sm rounded-full px-2 py-1">
+            <Eye className="w-3 h-3 text-accent" />
+            <span className="text-xs text-foreground font-medium">{product.peopleViewing} viewing</span>
+          </div>
+        )}
       </div>
 
       {/* Content */}
