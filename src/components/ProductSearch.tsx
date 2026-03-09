@@ -75,7 +75,7 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
             type="text"
             value={query}
             onChange={e => setQuery(e.target.value.slice(0, 100))}
-            placeholder="Search by name or SKU…"
+            placeholder="Search by product name or SKU…"
             className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
           />
           {query && (
