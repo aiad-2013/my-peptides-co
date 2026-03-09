@@ -18,9 +18,11 @@ const ProductDetailContent = () => {
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    setSelectedImageIndex(0);
   }, [slug]);
   const [retryCount, setRetryCount] = useState(0);
   
