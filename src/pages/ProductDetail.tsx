@@ -411,6 +411,9 @@ const ProductDetailContent = () => {
                 </Accordion>
               </div>
             )}
+
+            {/* Lab Test Request Form */}
+            <LabTestForm productId={product.id} productName={product.name} />
           </div>
         </div>
 
