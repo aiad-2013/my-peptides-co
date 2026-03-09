@@ -113,7 +113,7 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         <span className="uppercase tracking-wide">{product.category}</span>
-                        {product.sku && <><span>·</span><span>SKU: {product.sku}</span></>}
+                        <span>·</span><span>ID: {product.id}</span>
                         {product.concentration && <><span>·</span><span>{product.concentration}</span></>}
                       </div>
                     </div>
