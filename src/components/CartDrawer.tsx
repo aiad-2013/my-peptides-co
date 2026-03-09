@@ -26,7 +26,7 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
 
       {/* Drawer */}
       <div
-        className="fixed right-0 top-0 w-full max-w-sm h-full flex flex-col animate-slide-in-right bg-card border-l border-border"
+        className="fixed right-0 top-0 w-full max-w-sm h-screen flex flex-col animate-slide-in-right bg-card border-l border-border"
         style={{
           boxShadow: '-20px 0 60px hsl(213 22% 12% / 0.18), -4px 0 16px hsl(213 22% 12% / 0.08)',
         }}
