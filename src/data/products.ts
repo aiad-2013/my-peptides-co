@@ -78,18 +78,6 @@ export const products: Product[] = [
   },
   // Peptides
   {
-    id: 'bpc-157',
-    name: 'BPC-157',
-    category: 'peptides',
-    price: 89.00,
-    concentration: '5mg',
-    description: 'BPC-157 is a synthetic peptide derived from body protection compound found in gastric juice. For research purposes only.',
-    image: '/products/bpc157.jpg',
-    badge: 'New',
-    inStock: true,
-    wooCommerceUrl: 'https://vicorpus.com/product/bpc-157/',
-  },
-  {
     id: 'tb-500',
     name: 'TB-500',
     category: 'peptides',
