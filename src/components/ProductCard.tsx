@@ -7,6 +7,7 @@ import { ShoppingCart, Package } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import moleculePlaceholder from '@/assets/molecule-placeholder.jpg';
 
 interface ProductCardProps {
   product: Product;
