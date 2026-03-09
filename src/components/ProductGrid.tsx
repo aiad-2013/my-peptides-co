@@ -12,7 +12,12 @@ interface ProductGridProps {
 export const ProductGrid = ({ category, limit }: ProductGridProps) => {
   const { data: allProducts, isLoading, isError } = useProductsByCategory(category);
 
-  const filteredProducts = limit ? allProducts?.slice(0, limit) : allProducts;
+  const filteredProducts = limit
+    ? allProducts
+        ?.slice()
+        .sort(() => Math.random() - 0.5)
+        .slice(0, limit)
+    : allProducts;
 
   const categoryTitles = {
     all: 'All Products',
