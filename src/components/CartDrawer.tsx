@@ -138,6 +138,21 @@ export const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             >
               Clear cart
             </button>
+
+            {/* Trust badges */}
+            <div className="grid grid-cols-2 gap-2 pt-3 border-t border-border/40">
+              {[
+                { icon: ShieldCheck, label: 'Secure Checkout' },
+                { icon: Beaker, label: '99%+ Purity' },
+                { icon: Truck, label: 'Same-Day Dispatch' },
+                { icon: RotateCcw, label: 'Easy Returns' },
+              ].map(({ icon: Icon, label }) => (
+                <div key={label} className="flex items-center gap-1.5">
+                  <Icon className="w-3 h-3 text-accent flex-shrink-0" />
+                  <span className="text-[10px] text-muted-foreground/70 leading-tight">{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
