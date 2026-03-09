@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -9,9 +9,45 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles, Flame, TrendingUp, Clock } from 'lucide-react';
 import { LabTestForm } from '@/components/LabTestForm';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+
+// Deterministic scarcity seed from product id
+function seededRandom(id: string, offset = 0): number {
+  let hash = offset;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return (hash >>> 0) / 0xFFFFFFFF;
+}
+function getStockLeft(id: string) { return Math.floor(seededRandom(id, 7) * 8) + 3; } // 3–10
+function getSoldThisWeek(id: string) { return Math.floor(seededRandom(id, 13) * 40) + 12; } // 12–51
+
+function useOrderDeadline() {
+  const endOfDay = useRef<Date>(() => {
+    const d = new Date();
+    d.setHours(23, 59, 59, 0);
+    return d;
+  } as unknown as Date);
+
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const diff = endOfDay.current.getTime() - now.getTime();
+      if (diff <= 0) { setTimeLeft('00:00:00'); return; }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      setTimeLeft(`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return timeLeft;
+}
 
 const ProductDetailContent = () => {
   const { slug } = useParams<{ slug: string }>();
