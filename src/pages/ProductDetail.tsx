@@ -57,8 +57,16 @@ const ProductDetailContent = () => {
     }
   };
 
-  const imageSrc = product?.image && product.image !== '/placeholder.svg'
-    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+  // Build proxied image list - use all images if available
+  const allImages = product?.images && product.images.length > 0
+    ? product.images
+    : product?.image && product.image !== '/placeholder.svg' ? [product.image] : [];
+
+  const proxiedImages = allImages.map(img => getProxiedImageUrl(img));
+  const activeImageSrc = proxiedImages[selectedImageIndex] || null;
+
+  const imageSrc = activeImageSrc
+    ? `${activeImageSrc}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
 
   const handleAddToCart = () => {
