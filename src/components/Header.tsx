@@ -1,16 +1,17 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { CartDrawer } from '@/components/CartDrawer';
+import { ProductSearch } from '@/components/ProductSearch';
 import logo from '@/assets/logo.png';
 
 export const Header = () => {
   const { totalItems, isOpen, setIsOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const handleCartClick = () => {
     setIsOpen(true);
