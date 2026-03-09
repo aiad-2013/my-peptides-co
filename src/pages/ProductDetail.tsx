@@ -259,12 +259,51 @@ const ProductDetailContent = () => {
             )}
 
             {/* Price */}
-            <div className="mb-6 pb-6 border-b border-border">
+            <div className="mb-6 pb-4 border-b border-border">
               <span className="text-4xl font-semibold text-foreground">
                 ${product.price.toFixed(2)}
               </span>
               <span className="text-muted-foreground ml-2 text-lg">AUD</span>
             </div>
+
+            {/* ── Scarcity Block ── */}
+            {product.inStock && (() => {
+              const stockLeft = getStockLeft(product.id);
+              const soldThisWeek = getSoldThisWeek(product.id);
+              const stockPct = Math.round((stockLeft / 15) * 100);
+              return (
+                <div className="mb-6 space-y-3">
+                  {/* Stock bar */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="flex items-center gap-1.5 text-sm font-medium text-destructive">
+                        <Flame className="w-4 h-4" />
+                        Only {stockLeft} left in stock
+                      </span>
+                      <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <TrendingUp className="w-3.5 h-3.5 text-accent" />
+                        {soldThisWeek} sold this week
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-destructive to-accent rounded-full transition-all"
+                        style={{ width: `${stockPct}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Order deadline */}
+                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-accent/10 border border-accent/20">
+                    <Clock className="w-4 h-4 text-accent flex-shrink-0" />
+                    <p className="text-xs text-foreground">
+                      Order in <strong className="text-accent font-mono">{orderDeadline}</strong> for same-day dispatch
+                    </p>
+                  </div>
+                </div>
+              );
+            })()}
+
 
             {/* Volume Discount Tiers */}
             {product.discountTiers && product.discountTiers.length > 0 && (
