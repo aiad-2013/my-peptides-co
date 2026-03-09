@@ -58,6 +58,7 @@ const ProductDetailContent = () => {
   const [imgError, setImgError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [retryCount, setRetryCount] = useState(0);
+  const orderDeadline = useOrderDeadline();
 
   useEffect(() => {
     window.scrollTo(0, 0);
