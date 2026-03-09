@@ -233,6 +233,7 @@ serve(async (req) => {
         volume: volume || undefined,
         description,
         image: product.images?.[0]?.src || '/placeholder.svg',
+        images: product.images?.map(img => img.src).filter(Boolean) || [],
         badge: badge || (isBundle ? 'Bundle' : undefined),
         inStock: product.stock_status === 'instock',
         wooCommerceUrl: product.permalink,
