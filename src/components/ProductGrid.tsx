@@ -108,7 +108,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
           <div className="hidden sm:flex justify-center mt-10">
             <Button variant="outline" className="rounded-sm px-8 text-sm" asChild>
               <Link to={categoryHref[category]}>
-                View all {allProducts.length} products <ArrowRight className="w-4 h-4" />
+                View all products <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
           </div>
