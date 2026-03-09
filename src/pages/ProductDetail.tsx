@@ -35,7 +35,7 @@ function useOrderDeadline() {
   useEffect(() => {
     const tick = () => {
       const now = new Date();
-      const diff = endOfDay.current.getTime() - now.getTime();
+      const diff = (endOfDayRef.current?.getTime() ?? 0) - now.getTime();
       if (diff <= 0) { setTimeLeft('00:00:00'); return; }
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
