@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Package, Eye } from 'lucide-react';
@@ -21,6 +21,7 @@ function getSeededStock(id: string): number {
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
@@ -123,23 +124,35 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             <span className="text-xs text-muted-foreground ml-1">AUD</span>
           </div>
 
-          <Button
-            variant="gold"
-            size="sm"
-            onClick={handleAddToCart}
-            disabled={!product.inStock}
-            className={cn(
-              "text-xs h-8 px-3 rounded-sm transition-all duration-300",
-              added && "bg-foreground text-background scale-95",
-              !product.inStock && "opacity-30 cursor-not-allowed"
-            )}
-          >
-            {added ? (
-              <span className="tracking-wide">Added</span>
-            ) : (
-              <ShoppingCart className="w-3.5 h-3.5" />
-            )}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/product/${product.id}`); }}
+              className="h-8 w-8 p-0 rounded-sm border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
+              aria-label="View product"
+            >
+              <Eye className="w-3.5 h-3.5" />
+            </Button>
+
+            <Button
+              variant="gold"
+              size="sm"
+              onClick={handleAddToCart}
+              disabled={!product.inStock}
+              className={cn(
+                "text-xs h-8 px-3 rounded-sm transition-all duration-300",
+                added && "bg-foreground text-background scale-95",
+                !product.inStock && "opacity-30 cursor-not-allowed"
+              )}
+            >
+              {added ? (
+                <span className="tracking-wide">Added</span>
+              ) : (
+                <ShoppingCart className="w-3.5 h-3.5" />
+              )}
+            </Button>
+          </div>
         </div>
 
         {!product.inStock && (
