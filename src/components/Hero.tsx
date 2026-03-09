@@ -8,25 +8,25 @@ interface HeroProps {
 
 const heroContent = {
   all: {
-    badge: 'Third-Party Tested • Pharma Grade',
+    badge: 'Third-Party Tested · Pharma Grade',
     titleLine1: 'Premium Research',
     titleLine2: 'Compounds',
-    description: 'Highest purity SARMs and Peptides for laboratory research. Every batch independently verified for quality assurance.',
-    cta: 'Shop All Products',
+    description: 'Highest purity SARMs and Peptides for laboratory research. Every batch independently verified.',
+    cta: 'View Products',
   },
   sarms: {
     badge: 'Selective Androgen Receptor Modulators',
     titleLine1: 'Research Grade',
     titleLine2: 'SARMs',
     description: 'Precisely dosed SARMs for advanced laboratory research. Each compound independently tested for purity and potency.',
-    cta: 'Shop SARMs',
+    cta: 'View SARMs',
   },
   peptides: {
     badge: 'Bioactive Peptide Compounds',
     titleLine1: 'Clinical Grade',
     titleLine2: 'Peptides',
-    description: 'Premium peptides synthesized to the highest standards for cutting-edge research applications.',
-    cta: 'Shop Peptides',
+    description: 'Premium peptides synthesised to the highest standards for cutting-edge research applications.',
+    cta: 'View Peptides',
   },
 };
 
@@ -35,65 +35,76 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
 
   return (
     <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
-      {/* Subtle pattern overlay */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-          backgroundSize: '40px 40px',
-        }} />
-      </div>
+      {/* Very subtle grid — structural, not decorative */}
+      <div className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
+          backgroundSize: '64px 64px',
+        }}
+      />
 
-      <div className="container mx-auto px-4 py-16 md:py-24 lg:py-32 relative">
-        <div className="max-w-3xl mx-auto text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20 mb-6 animate-fade-in">
-            {activeCategory === 'sarms' ? <FlaskConical className="w-4 h-4 text-accent" /> :
-             activeCategory === 'peptides' ? <Syringe className="w-4 h-4 text-accent" /> :
-             <Award className="w-4 h-4 text-accent" />}
-            <span className="text-sm font-medium text-accent">{content.badge}</span>
+      <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative">
+        <div className="max-w-2xl mx-auto text-center">
+
+          {/* Clinical badge */}
+          <div className="inline-flex items-center gap-2 mb-8 animate-fade-in">
+            <span className="w-4 h-px bg-accent/60" />
+            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent/80">
+              {content.badge}
+            </span>
+            <span className="w-4 h-px bg-accent/60" />
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-semibold leading-tight mb-6 animate-slide-up">
+          <h1 className="text-4xl md:text-5xl lg:text-[56px] font-serif font-normal leading-[1.1] mb-6 animate-slide-up tracking-tight">
             {content.titleLine1}
-            <span className="block text-gradient-gold">{content.titleLine2}</span>
+            <span className="block text-gradient-gold italic">{content.titleLine2}</span>
           </h1>
 
           {/* Description */}
-          <p className="text-lg md:text-xl text-primary-foreground/70 mb-8 max-w-2xl mx-auto animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <p
+            className="text-base md:text-lg text-primary-foreground/50 mb-10 max-w-xl mx-auto leading-relaxed font-light animate-slide-up"
+            style={{ animationDelay: '0.08s' }}
+          >
             {content.description}
           </p>
 
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <div
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16 animate-slide-up"
+            style={{ animationDelay: '0.16s' }}
+          >
             <Button variant="hero" onClick={onShopClick}>
               {content.cta}
             </Button>
             <Button variant="hero-outline">
-              View Lab Reports
+              Lab Reports
             </Button>
           </div>
 
-          {/* Trust Badges */}
-          <div className="flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-primary-foreground/10 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <div className="flex items-center gap-2 text-sm">
-              <Shield className="w-5 h-5 text-accent" />
-              <span className="text-primary-foreground/70">99%+ Purity</span>
+          {/* Trust marks — minimal rule-separated */}
+          <div
+            className="flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-primary-foreground/8 animate-fade-in"
+            style={{ animationDelay: '0.24s' }}
+          >
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-accent/60" />
+              <span className="text-[11px] uppercase tracking-widest text-primary-foreground/40">99%+ Purity</span>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Beaker className="w-5 h-5 text-accent" />
-              <span className="text-primary-foreground/70">Lab Tested</span>
+            <div className="flex items-center gap-2">
+              <Beaker className="w-4 h-4 text-accent/60" />
+              <span className="text-[11px] uppercase tracking-widest text-primary-foreground/40">Lab Tested</span>
             </div>
-            <div className="flex items-center gap-2 text-sm">
-              <Award className="w-5 h-5 text-accent" />
-              <span className="text-primary-foreground/70">Australian Made</span>
+            <div className="flex items-center gap-2">
+              <Award className="w-4 h-4 text-accent/60" />
+              <span className="text-[11px] uppercase tracking-widest text-primary-foreground/40">Australian Made</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom gradient fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />
+      {/* Fade to background */}
+      <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 };
