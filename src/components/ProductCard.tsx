@@ -21,6 +21,7 @@ function getSeededStock(id: string): number {
 
 export const ProductCard = ({ product }: ProductCardProps) => {
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
