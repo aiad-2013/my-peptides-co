@@ -27,28 +27,26 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     }
   };
 
-  const imageSrc = product.image && product.image !== '/placeholder.svg'
+  const isBpc = product.id === 'bpc-157' || product.name?.toLowerCase().includes('bpc');
+  const realImageSrc = product.image && product.image !== '/placeholder.svg'
     ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
+
+  // Temporarily use molecule placeholder for all non-BPC products
+  const displaySrc = isBpc
+    ? (!imgError && realImageSrc ? realImageSrc : '/placeholder.svg')
+    : moleculePlaceholder;
 
   return (
     <Link to={`/product/${product.id}`} className="group relative bg-card rounded-lg border border-border overflow-hidden transition-all duration-300 hover:shadow-[var(--shadow-card-hover)] hover:-translate-y-1 block">
       {/* Image Container */}
       <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
-        {!imgError && imageSrc ? (
-          <img
-            src={imageSrc}
-            alt={product.name}
-            className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-            onError={handleImgError}
-          />
-        ) : (
-          <img
-            src={product.id !== 'bpc-157' ? moleculePlaceholder : '/placeholder.svg'}
-            alt={product.name}
-            className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
-          />
-        )}
+        <img
+          src={isBpc && !imgError && realImageSrc ? realImageSrc : displaySrc}
+          alt={product.name}
+          className={`absolute inset-0 w-full h-full group-hover:scale-105 transition-transform duration-500 ${isBpc ? 'object-cover' : 'object-contain p-4'}`}
+          onError={isBpc ? handleImgError : undefined}
+        />
 
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
