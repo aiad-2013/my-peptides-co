@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Shield, Beaker, Award, FlaskConical, Syringe } from 'lucide-react';
 
 interface HeroProps {
   onShopClick: () => void;

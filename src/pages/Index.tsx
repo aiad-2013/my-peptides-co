@@ -7,23 +7,23 @@ import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { HomepageFAQ } from '@/components/HomepageFAQ';
 import { Button } from '@/components/ui/button';
-import { ShieldCheck, FlaskConical, Truck, ArrowRight, Beaker } from 'lucide-react';
+import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
 
 /* ── Trust Strip ───────────────────────────────────── */
 const TrustStrip = () => (
-  <div className="bg-primary text-primary-foreground">
+  <div className="border-y border-border/60 bg-background">
     <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-primary-foreground/10">
+      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
         {[
           { icon: ShieldCheck, label: '99%+ Purity', sub: 'Third-party verified' },
           { icon: Beaker, label: 'Lab Tested', sub: 'Certificate of Analysis on every batch' },
           { icon: Truck, label: 'Same-Day Dispatch', sub: 'Order before 12pm AEDT, Mon–Fri' },
         ].map(({ icon: Icon, label, sub }) => (
           <div key={label} className="flex items-center gap-4 px-6 py-5">
-            <Icon className="w-5 h-5 text-accent flex-shrink-0" />
+            <Icon className="w-4 h-4 text-accent flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium">{label}</p>
-              <p className="text-xs text-primary-foreground/50 mt-0.5">{sub}</p>
+              <p className="text-sm font-medium text-foreground">{label}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>
             </div>
           </div>
         ))}
@@ -34,15 +34,15 @@ const TrustStrip = () => (
 
 /* ── Category Split ────────────────────────────────── */
 const CategorySplit = () => (
-  <section className="py-12 md:py-16 border-t border-border/40">
+  <section className="py-12 md:py-16">
     <div className="container mx-auto px-4">
       <div className="grid md:grid-cols-2 gap-4">
-        {/* SARMs */}
+
+        {/* SARMs — dark */}
         <Link
           to="/sarms"
-          className="group relative overflow-hidden rounded-sm bg-primary aspect-[16/7] flex flex-col justify-end p-8"
+          className="group relative overflow-hidden rounded-sm bg-primary flex flex-col justify-end p-8 min-h-[280px]"
         >
-          {/* Grid texture */}
           <div
             className="absolute inset-0 opacity-[0.04]"
             style={{
@@ -50,37 +50,38 @@ const CategorySplit = () => (
               backgroundSize: '48px 48px',
             }}
           />
-          {/* Teal glow */}
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-accent/10 blur-3xl translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute top-0 right-0 w-72 h-72 bg-accent/15 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
           <div className="relative">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-accent/70 mb-2">Category</p>
-            <h3 className="text-2xl md:text-3xl font-serif font-normal text-white mb-1">SARMs</h3>
-            <p className="text-sm text-white/50 mb-5">Selective Androgen Receptor Modulators</p>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent group-hover:gap-3 transition-all duration-300">
-              Explore range <ArrowRight className="w-3.5 h-3.5" />
+            <p className="text-[10px] uppercase tracking-[0.2em] text-accent/70 mb-3">Category</p>
+            <h3 className="text-3xl font-serif font-normal text-white mb-2">SARMs</h3>
+            <p className="text-sm text-white/50 mb-6 font-light">Selective Androgen Receptor Modulators</p>
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-accent group-hover:gap-3 transition-all duration-300">
+              Explore range <ArrowRight className="w-4 h-4" />
             </span>
           </div>
         </Link>
 
-        {/* Peptides */}
+        {/* Peptides — light with accent border top */}
         <Link
           to="/peptides"
-          className="group relative overflow-hidden rounded-sm bg-secondary aspect-[16/7] flex flex-col justify-end p-8 border border-border"
+          className="group relative overflow-hidden rounded-sm border border-border bg-secondary/40 flex flex-col justify-end p-8 min-h-[280px]"
         >
           <div
-            className="absolute inset-0 opacity-[0.03]"
+            className="absolute inset-0 opacity-[0.025]"
             style={{
               backgroundImage: `radial-gradient(circle at 1px 1px, hsl(213 22% 12%) 1px, transparent 0)`,
               backgroundSize: '32px 32px',
             }}
           />
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-accent/6 blur-3xl translate-x-1/3 -translate-y-1/3" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/8 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          {/* Accent top-left corner accent line */}
+          <div className="absolute top-0 left-0 w-12 h-px bg-accent/40" />
           <div className="relative">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-2">Category</p>
-            <h3 className="text-2xl md:text-3xl font-serif font-normal text-foreground mb-1">Peptides</h3>
-            <p className="text-sm text-muted-foreground mb-5">Bioactive compounds for precision research</p>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-accent group-hover:gap-3 transition-all duration-300">
-              Explore range <ArrowRight className="w-3.5 h-3.5" />
+            <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-3">Category</p>
+            <h3 className="text-3xl font-serif font-normal text-foreground mb-2">Peptides</h3>
+            <p className="text-sm text-muted-foreground mb-6 font-light">Bioactive compounds for precision research</p>
+            <span className="inline-flex items-center gap-2 text-sm font-medium text-accent group-hover:gap-3 transition-all duration-300">
+              Explore range <ArrowRight className="w-4 h-4" />
             </span>
           </div>
         </Link>
@@ -99,9 +100,8 @@ const EditorialBand = () => (
         backgroundSize: '64px 64px',
       }}
     />
-    {/* Glow orbs */}
-    <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
-    <div className="absolute -right-32 top-1/2 -translate-y-1/2 w-64 h-64 bg-accent/6 rounded-full blur-3xl" />
+    <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+    <div className="absolute -right-32 top-1/2 -translate-y-1/2 w-64 h-64 bg-accent/6 rounded-full blur-3xl pointer-events-none" />
 
     <div className="container mx-auto px-4 relative">
       <div className="max-w-2xl">
@@ -114,7 +114,7 @@ const EditorialBand = () => (
           <span className="text-accent/80 italic">Every single batch.</span>
         </h2>
         <p className="text-base text-primary-foreground/50 leading-relaxed mb-8 max-w-lg font-light">
-          Every compound we carry is independently tested by an accredited third-party laboratory. 
+          Every compound we carry is independently tested by an accredited third-party laboratory.
           Certificates of Analysis are available on request — because transparency is the baseline, not a selling point.
         </p>
         <div className="flex flex-wrap gap-3">
