@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-
 import { useCart } from '@/context/CartContext';
 import { useProducts } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles } from 'lucide-react';
 import { LabTestForm } from '@/components/LabTestForm';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
@@ -20,17 +20,17 @@ const ProductDetailContent = () => {
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
     setSelectedImageIndex(0);
+    setImgError(false);
+    setRetryCount(0);
   }, [slug]);
-  const [retryCount, setRetryCount] = useState(0);
-  
 
   const product = products?.find(p => p.id === slug);
 
-  // SEO: Update document title and meta
   useEffect(() => {
     if (product) {
       document.title = `${product.name} | Vi Corpus - Premium Research Compounds`;
@@ -58,14 +58,12 @@ const ProductDetailContent = () => {
     }
   };
 
-  // Build proxied image list - use all images if available
   const allImages = product?.images && product.images.length > 0
     ? product.images
     : product?.image && product.image !== '/placeholder.svg' ? [product.image] : [];
 
   const proxiedImages = allImages.map(img => getProxiedImageUrl(img));
   const activeImageSrc = proxiedImages[selectedImageIndex] || null;
-
   const imageSrc = activeImageSrc
     ? `${activeImageSrc}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
@@ -77,7 +75,6 @@ const ProductDetailContent = () => {
     }
   };
 
-  // Related products
   const relatedProducts = products?.filter(p => p.category === product?.category && p.id !== product?.id).slice(0, 4);
 
   if (isLoading) {
@@ -131,10 +128,11 @@ const ProductDetailContent = () => {
           <span className="text-foreground">{product.name}</span>
         </nav>
 
-        <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-          {/* Product Image Gallery */}
+        {/* ── TOP SECTION: Image + Purchase Info ── */}
+        <div className="grid md:grid-cols-2 gap-8 lg:gap-12 mb-12">
+
+          {/* Left: Product Image Gallery */}
           <div className="flex flex-col gap-3">
-            {/* Main image */}
             <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden">
               {!imgError && imageSrc ? (
                 <img
@@ -167,7 +165,7 @@ const ProductDetailContent = () => {
               )}
             </div>
 
-            {/* Thumbnail strip – only shown when there are multiple images */}
+            {/* Thumbnails */}
             {proxiedImages.length > 1 && (
               <div className="flex gap-2 overflow-x-auto pb-1">
                 {proxiedImages.map((src, idx) => (
@@ -187,7 +185,7 @@ const ProductDetailContent = () => {
             )}
           </div>
 
-          {/* Product Info */}
+          {/* Right: Core Purchase Info */}
           <div>
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-accent uppercase tracking-wider">
@@ -206,14 +204,14 @@ const ProductDetailContent = () => {
             </h1>
 
             {product.concentration && (
-              <p className="text-lg text-muted-foreground mb-6">
+              <p className="text-lg text-muted-foreground mb-4">
                 {product.concentration} {product.volume && `• ${product.volume}`}
               </p>
             )}
 
             {/* Dosage */}
             {product.dosage && (
-              <div className="flex items-center gap-3 mb-6 p-3 rounded-lg bg-accent/10 border border-accent/20">
+              <div className="flex items-center gap-3 mb-5 p-3 rounded-lg bg-accent/10 border border-accent/20">
                 <Pill className="w-5 h-5 text-accent flex-shrink-0" />
                 <div>
                   <span className="text-xs font-medium text-accent uppercase tracking-wider">Dosage</span>
@@ -259,15 +257,12 @@ const ProductDetailContent = () => {
                   <Layers className="w-5 h-5 text-accent" />
                   <h2 className="text-lg font-semibold text-foreground">What's in this stack</h2>
                 </div>
-
-                {/* Savings callout */}
                 {product.savingsText && (
                   <div className="flex items-start gap-2 mb-4 p-3 rounded-lg bg-accent/10 border border-accent/30">
                     <Sparkles className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                     <p className="text-sm font-medium text-accent">{product.savingsText}</p>
                   </div>
                 )}
-
                 <div className="space-y-3">
                   {product.bundledItems.map((item) => {
                     const itemImg = item.image && item.image !== '/placeholder.svg'
@@ -278,7 +273,6 @@ const ProductDetailContent = () => {
                         to={`/product/${item.id}`}
                         className="flex items-center gap-4 p-3 rounded-lg border border-border bg-muted/30 hover:border-accent/50 hover:bg-muted/60 transition-all group"
                       >
-                        {/* Thumbnail */}
                         <div className="w-14 h-14 rounded-md overflow-hidden bg-gradient-to-b from-muted to-secondary flex-shrink-0">
                           {itemImg ? (
                             <img src={itemImg} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -288,8 +282,6 @@ const ProductDetailContent = () => {
                             </div>
                           )}
                         </div>
-
-                        {/* Info */}
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold text-foreground text-sm leading-tight group-hover:text-accent transition-colors truncate">
                             {item.qty > 1 && <span className="text-accent mr-1">{item.qty}×</span>}
@@ -301,8 +293,6 @@ const ProductDetailContent = () => {
                             </p>
                           )}
                         </div>
-
-                        {/* Price */}
                         <div className="text-right flex-shrink-0">
                           <p className="text-sm font-semibold text-foreground">${item.price.toFixed(2)}</p>
                           <p className="text-xs text-muted-foreground">AUD</p>
@@ -311,8 +301,6 @@ const ProductDetailContent = () => {
                     );
                   })}
                 </div>
-
-                {/* Individual total vs bundle price */}
                 <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
                   <div>
                     <p className="text-xs text-muted-foreground">Individual total</p>
@@ -366,39 +354,73 @@ const ProductDetailContent = () => {
                 Currently out of stock
               </p>
             )}
+          </div>
+        </div>
 
-            {/* Description */}
-            <div className="mt-8 mb-8">
-              <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
-              <p className="text-foreground/80 leading-relaxed">
-                {product.description}
-              </p>
-            </div>
-
-            {/* Key Features */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <Shield className="w-5 h-5 text-accent flex-shrink-0" />
-                <span className="text-sm text-foreground">Third-party tested</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
-                <span className="text-sm text-foreground">99%+ purity guaranteed</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <FlaskConical className="w-5 h-5 text-accent flex-shrink-0" />
-                <span className="text-sm text-foreground">Research grade quality</span>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
-                <ShoppingCart className="w-5 h-5 text-accent flex-shrink-0" />
-                <span className="text-sm text-foreground">Fast Australian shipping</span>
-              </div>
-            </div>
-
-            {/* FAQs */}
+        {/* ── BOTTOM SECTION: Tabs ── */}
+        <Tabs defaultValue="description" className="mb-16">
+          <TabsList className="w-full justify-start border-b border-border rounded-none bg-transparent h-auto p-0 mb-8 gap-0">
+            <TabsTrigger
+              value="description"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
+            >
+              Description
+            </TabsTrigger>
             {product.faqs && product.faqs.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-lg font-semibold text-foreground mb-3">Frequently Asked Questions</h2>
+              <TabsTrigger
+                value="faq"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
+              >
+                FAQ's
+              </TabsTrigger>
+            )}
+            <TabsTrigger
+              value="lab-test"
+              className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
+            >
+              Lab Test
+            </TabsTrigger>
+          </TabsList>
+
+          {/* Description Tab */}
+          <TabsContent value="description" className="mt-0">
+            <div className="max-w-3xl space-y-8">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
+                <p className="text-foreground/80 leading-relaxed">
+                  {product.description}
+                </p>
+              </div>
+
+              {/* Key Features */}
+              <div>
+                <h2 className="text-lg font-semibold text-foreground mb-3">Key Features</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <Shield className="w-5 h-5 text-accent flex-shrink-0" />
+                    <span className="text-sm text-foreground">Third-party tested</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
+                    <span className="text-sm text-foreground">99%+ purity guaranteed</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <FlaskConical className="w-5 h-5 text-accent flex-shrink-0" />
+                    <span className="text-sm text-foreground">Research grade quality</span>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                    <ShoppingCart className="w-5 h-5 text-accent flex-shrink-0" />
+                    <span className="text-sm text-foreground">Fast Australian shipping</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          {/* FAQ Tab */}
+          {product.faqs && product.faqs.length > 0 && (
+            <TabsContent value="faq" className="mt-0">
+              <div className="max-w-3xl">
                 <Accordion type="single" collapsible className="w-full">
                   {product.faqs.map((faq, idx) => (
                     <AccordionItem key={idx} value={`faq-${idx}`}>
@@ -410,16 +432,20 @@ const ProductDetailContent = () => {
                   ))}
                 </Accordion>
               </div>
-            )}
+            </TabsContent>
+          )}
 
-            {/* Lab Test Request Form */}
-            <LabTestForm productId={product.id} productName={product.name} />
-          </div>
-        </div>
+          {/* Lab Test Tab */}
+          <TabsContent value="lab-test" className="mt-0">
+            <div className="max-w-xl">
+              <LabTestForm productId={product.id} productName={product.name} />
+            </div>
+          </TabsContent>
+        </Tabs>
 
         {/* Related Products */}
         {relatedProducts && relatedProducts.length > 0 && (
-          <section className="mt-16 pt-12 border-t border-border">
+          <section className="pt-12 border-t border-border">
             <h2 className="text-2xl font-serif font-semibold text-foreground mb-8">
               Related Products
             </h2>
