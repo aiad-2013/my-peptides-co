@@ -11,9 +11,9 @@ import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
 
 /* ── Trust Strip ───────────────────────────────────── */
 const TrustStrip = () => (
-  <div className="border-y border-border/60 bg-background">
+  <div className="bg-primary text-primary-foreground">
     <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
+      <div className="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-primary-foreground/10">
         {[
           { icon: ShieldCheck, label: '99%+ Purity', sub: 'Third-party verified' },
           { icon: Beaker, label: 'Lab Tested', sub: 'Certificate of Analysis on every batch' },
@@ -22,8 +22,8 @@ const TrustStrip = () => (
           <div key={label} className="flex items-center gap-4 px-6 py-5">
             <Icon className="w-4 h-4 text-accent flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-foreground">{label}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>
+              <p className="text-sm font-medium text-primary-foreground">{label}</p>
+              <p className="text-xs text-primary-foreground/50 mt-0.5">{sub}</p>
             </div>
           </div>
         ))}
