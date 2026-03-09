@@ -50,6 +50,36 @@ export type Database = {
         }
         Relationships: []
       }
+      lab_test_requests: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          product_id: string
+          product_name: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          product_id: string
+          product_name: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          product_id?: string
+          product_name?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           billing_address: Json | null
