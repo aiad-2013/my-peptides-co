@@ -7,6 +7,7 @@ import { ShoppingCart, Package } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import moleculePlaceholder from '@/assets/molecule-placeholder.jpg';
 
 interface ProductCardProps {
   product: Product;
@@ -42,14 +43,11 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             onError={handleImgError}
           />
         ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-24 h-32 rounded-lg bg-gradient-navy shadow-lg">
-              <div className="h-full flex flex-col items-center justify-center p-2">
-                <div className="w-8 h-8 rounded-full bg-gradient-gold mb-2" />
-                <div className="w-full h-1 bg-accent/30 rounded" />
-              </div>
-            </div>
-          </div>
+          <img
+            src={product.id !== 'bpc-157' ? moleculePlaceholder : '/placeholder.svg'}
+            alt={product.name}
+            className="absolute inset-0 w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
+          />
         )}
 
         {/* Badges */}
