@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { X, ShoppingBag, ArrowRight } from 'lucide-react';
+import { X, ShoppingBag, ArrowRight, ShieldCheck, Beaker, Truck, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 
