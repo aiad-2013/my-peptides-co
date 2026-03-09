@@ -123,6 +123,7 @@ export const Header = () => {
         )}
       </div>
       <CartDrawer isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      <ProductSearch isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </header>
   );
 };
