@@ -4,6 +4,7 @@ import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
+import { HomepageFAQ } from '@/components/HomepageFAQ';
 
 const Index = () => {
   const productsRef = useRef<HTMLDivElement>(null);
@@ -20,6 +21,7 @@ const Index = () => {
         <div ref={productsRef}>
           <ProductGrid category="all" />
         </div>
+        <HomepageFAQ />
       </main>
       <Footer />
       <SocialProofNotification />
