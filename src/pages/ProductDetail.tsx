@@ -23,11 +23,12 @@ function getStockLeft(id: string) { return Math.floor(seededRandom(id, 7) * 8) +
 function getSoldThisWeek(id: string) { return Math.floor(seededRandom(id, 13) * 40) + 12; } // 12–51
 
 function useOrderDeadline() {
-  const endOfDay = useRef<Date>(() => {
+  const endOfDayRef = useRef<Date | null>(null);
+  if (!endOfDayRef.current) {
     const d = new Date();
     d.setHours(23, 59, 59, 0);
-    return d;
-  } as unknown as Date);
+    endOfDayRef.current = d;
+  }
 
   const [timeLeft, setTimeLeft] = useState('');
 
