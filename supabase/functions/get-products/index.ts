@@ -131,8 +131,9 @@ serve(async (req) => {
       }
     }
 
-    const wooProducts = merged;
-    console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
+    // Safety filter: only keep products explicitly marked as published
+    const wooProducts = merged.filter(p => p.status === 'publish' || (p as { post_status?: string }).post_status === 'publish' || !('status' in p));
+    console.log(`Fetched ${wooProducts.length} published products from WooCommerce (${merged.length} total before filter)`);
 
 
     // Transform WooCommerce products to our format
