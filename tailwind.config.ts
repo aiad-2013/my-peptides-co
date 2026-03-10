@@ -14,9 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Space Grotesk', 'sans-serif'],
+        sans: ['"Space Grotesk"', 'sans-serif'],
         serif: ['Poppins', 'sans-serif'],
         heading: ['Poppins', 'sans-serif'],
+        mono: ['"Space Grotesk"', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
