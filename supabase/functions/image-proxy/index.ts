@@ -18,10 +18,10 @@ serve(async (req) => {
       return new Response('Missing url parameter', { status: 400, headers: corsHeaders });
     }
 
-    // Only allow proxying images from vicorpus.co
+    // Only allow proxying images from vicorpus.co or vicorpus.com
     const parsedUrl = new URL(imageUrl);
-    if (!parsedUrl.hostname.endsWith('vicorpus.co')) {
-      return new Response('Only vicorpus.co images allowed', { status: 403, headers: corsHeaders });
+    if (!parsedUrl.hostname.endsWith('vicorpus.co') && !parsedUrl.hostname.endsWith('vicorpus.com')) {
+      return new Response('Only vicorpus images allowed', { status: 403, headers: corsHeaders });
     }
 
     const response = await fetch(imageUrl, {
