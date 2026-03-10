@@ -59,9 +59,6 @@ export const Footer = () => {
           <p className="text-sm text-primary-foreground/50">
             © {new Date().getFullYear()} Vicorpus. All rights reserved.
           </p>
-          <p className="text-sm text-primary-foreground/40">
-            Powered by <a href="https://vicorpus.co" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Vicorpus</a>
-          </p>
           <div className="flex items-center gap-6 text-sm text-primary-foreground/50">
             <a href="/privacy-policy" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
             <a href="/terms-of-service" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
