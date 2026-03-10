@@ -719,6 +719,15 @@ const ProductDetailContent = () => {
 
       <Footer />
     </div>
+
+    {/* Zoom Lightbox */}
+    {zoomOpen && proxiedImages.length > 0 && (
+      <ZoomLightbox
+        images={proxiedImages}
+        initialIndex={selectedImageIndex}
+        onClose={() => setZoomOpen(false)}
+      />
+    )}
   );
 };
 
