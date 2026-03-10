@@ -756,9 +756,6 @@ const ProductDetailContent = () => {
                       </div>
                       <div className="text-right flex-shrink-0">
                         <StarRating rating={review.rating} size={3} />
-                        <p className="text-[11px] text-muted-foreground mt-1">
-                          {new Date(review.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </p>
                       </div>
                     </div>
                     <p className="text-sm text-foreground/80 leading-relaxed">{review.review}</p>
