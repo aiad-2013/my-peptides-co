@@ -120,9 +120,9 @@ serve(async (req) => {
       }
     }
 
-    // Fetch any missing child products in one request
+    // Fetch any missing child products in one request — status=publish excludes drafts
     if (missingIds.length > 0) {
-      const childRes = await fetch(`${baseApi}?include=${[...new Set(missingIds)].join(',')}&per_page=100`, { headers: authHeaders });
+      const childRes = await fetch(`${baseApi}?include=${[...new Set(missingIds)].join(',')}&status=publish&per_page=100`, { headers: authHeaders });
       if (childRes.ok) {
         const children: WooCommerceProduct[] = await childRes.json();
         for (const c of children) {
