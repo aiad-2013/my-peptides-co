@@ -59,13 +59,13 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       {/* Image */}
       <div className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden">
         <img
-          src={isBpc && !imgError && realImageSrc ? realImageSrc : displaySrc}
+          src={displaySrc}
           alt={product.name}
           className={cn(
             "absolute inset-0 w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-            isBpc ? 'object-cover' : 'object-contain p-6 opacity-90'
+            hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90'
           )}
-          onError={isBpc ? handleImgError : undefined}
+          onError={hasRealImage ? handleImgError : undefined}
         />
 
         {/* Overlays — top-left */}
