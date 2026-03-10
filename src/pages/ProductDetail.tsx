@@ -50,6 +50,127 @@ function useOrderDeadline() {
   return timeLeft;
 }
 
+// ── Image Zoom Lightbox ──────────────────────────────────────────────────────
+interface ZoomLightboxProps {
+  images: string[];
+  initialIndex: number;
+  onClose: () => void;
+}
+
+const ZoomLightbox = ({ images, initialIndex, onClose }: ZoomLightboxProps) => {
+  const [index, setIndex] = useState(initialIndex);
+  const [scale, setScale] = useState(1);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
+
+  const prev = useCallback(() => { setIndex(i => (i - 1 + images.length) % images.length); setScale(1); setOffset({ x: 0, y: 0 }); }, [images.length]);
+  const next = useCallback(() => { setIndex(i => (i + 1) % images.length); setScale(1); setOffset({ x: 0, y: 0 }); }, [images.length]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'ArrowRight') next();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose, prev, next]);
+
+  const onWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    setScale(s => Math.min(4, Math.max(1, s - e.deltaY * 0.001)));
+  };
+
+  const onMouseDown = (e: React.MouseEvent) => {
+    if (scale <= 1) return;
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setOffset({
+      x: dragStart.current.ox + e.clientX - dragStart.current.x,
+      y: dragStart.current.oy + e.clientY - dragStart.current.y,
+    });
+  };
+
+  const onMouseUp = () => setIsDragging(false);
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 animate-fade-in">
+      {/* Close */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+      >
+        <X className="w-6 h-6" />
+      </button>
+
+      {/* Zoom hint */}
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs tracking-widest uppercase">
+        Scroll to zoom · Drag to pan
+      </p>
+
+      {/* Prev / Next */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={prev}
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <button
+            onClick={next}
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+          >
+            <ChevronRight className="w-6 h-6" />
+          </button>
+        </>
+      )}
+
+      {/* Image */}
+      <div
+        className="relative w-full h-full flex items-center justify-center overflow-hidden"
+        onWheel={onWheel}
+        onMouseDown={onMouseDown}
+        onMouseMove={onMouseMove}
+        onMouseUp={onMouseUp}
+        onMouseLeave={onMouseUp}
+        style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
+        onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      >
+        <img
+          src={images[index]}
+          alt=""
+          draggable={false}
+          className="max-w-[90vw] max-h-[90vh] object-contain select-none transition-transform duration-100"
+          style={{ transform: `scale(${scale}) translate(${offset.x / scale}px, ${offset.y / scale}px)` }}
+          onClick={() => scale === 1 && setScale(2)}
+        />
+      </div>
+
+      {/* Thumbnail strip */}
+      {images.length > 1 && (
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-2">
+          {images.map((src, i) => (
+            <button
+              key={i}
+              onClick={() => { setIndex(i); setScale(1); setOffset({ x: 0, y: 0 }); }}
+              className={`w-12 h-12 rounded overflow-hidden border-2 transition-all ${i === index ? 'border-accent scale-110' : 'border-white/20 opacity-50 hover:opacity-80'}`}
+            >
+              <img src={src} alt="" className="w-full h-full object-cover" />
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ────────────────────────────────────────────────────────────────────────────
 const ProductDetailContent = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: products, isLoading } = useProducts();
