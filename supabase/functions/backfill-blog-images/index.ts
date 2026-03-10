@@ -5,13 +5,14 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const WP_API = 'https://vicorpus.co/wp-json/wp/v2';
+const WP_API = 'https://vicorpus.com/wp-json/wp/v2';
 
 async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
   try {
-    const res = await fetch(`${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`, {
-      headers: { 'User-Agent': 'Mozilla/5.0' },
-    });
+    const res = await fetch(
+      `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`,
+      { headers: { 'User-Agent': 'Mozilla/5.0' } }
+    );
     if (!res.ok) return null;
     const posts = await res.json();
     if (!posts || posts.length === 0) return null;
@@ -37,18 +38,19 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   );
 
-  // Support batch processing: pass offset and limit in body
   let offset = 0;
-  let batchSize = 5;
+  let batchSize = 10;
   try {
     const body = await req.json().catch(() => ({}));
     if (body.offset !== undefined) offset = body.offset;
     if (body.batch_size !== undefined) batchSize = body.batch_size;
   } catch {}
 
+  // Only fetch posts that don't have a featured image yet
   const { data: posts, error } = await supabase
     .from('blog_posts')
     .select('id, slug, featured_image')
+    .or('featured_image.is.null,featured_image.eq.')
     .range(offset, offset + batchSize - 1);
 
   if (error) {
@@ -61,7 +63,7 @@ Deno.serve(async (req) => {
 
   for (const post of posts ?? []) {
     const imageUrl = await getFeaturedImageForSlug(post.slug);
-    console.log(`Slug: ${post.slug} → ${imageUrl ?? 'no image'}`);
+    console.log(`Slug: ${post.slug} → ${imageUrl ?? 'no image found'}`);
     if (imageUrl) {
       const { error: updateErr } = await supabase
         .from('blog_posts')
@@ -73,18 +75,18 @@ Deno.serve(async (req) => {
     }
   }
 
-  // Get total count for pagination
   const { count } = await supabase
     .from('blog_posts')
-    .select('id', { count: 'exact', head: true });
+    .select('id', { count: 'exact', head: true })
+    .or('featured_image.is.null,featured_image.eq.');
 
-  return new Response(JSON.stringify({ 
-    total: count, 
-    offset, 
-    batchSize, 
+  return new Response(JSON.stringify({
+    remaining: count,
+    offset,
+    batchSize,
     processed: results.length,
-    hasMore: offset + batchSize < (count ?? 0),
-    results 
+    hasMore: (count ?? 0) > 0,
+    results,
   }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
