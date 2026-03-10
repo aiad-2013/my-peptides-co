@@ -1,12 +1,12 @@
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Footer } from '@/components/Footer';
+import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import logo from '@/assets/logo.png';
 
 interface BlogPostData {
   id: string;
