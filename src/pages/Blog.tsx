@@ -8,6 +8,7 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 interface BlogPostItem {
   id: string;
@@ -116,8 +117,8 @@ const Blog = () => {
               >
                 {post.featured_image ? (
                   <div className="aspect-[16/10] overflow-hidden bg-muted">
-                    <img
-                      src={post.featured_image}
+                  <img
+                      src={getProxiedImageUrl(post.featured_image)}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"

@@ -18,17 +18,21 @@ serve(async (req) => {
       return new Response('Missing url parameter', { status: 400, headers: corsHeaders });
     }
 
-    // Only allow proxying images from vicorpus.co
+    // Only allow proxying images from vicorpus.co or vicorpus.com
     const parsedUrl = new URL(imageUrl);
-    if (!parsedUrl.hostname.endsWith('vicorpus.co')) {
-      return new Response('Only vicorpus.co images allowed', { status: 403, headers: corsHeaders });
+    if (!parsedUrl.hostname.endsWith('vicorpus.co') && !parsedUrl.hostname.endsWith('vicorpus.com')) {
+      return new Response('Only vicorpus images allowed', { status: 403, headers: corsHeaders });
     }
+
+    const referer = parsedUrl.hostname.endsWith('vicorpus.com')
+      ? 'https://vicorpus.com/'
+      : 'https://vicorpus.co/';
 
     const response = await fetch(imageUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Accept': 'image/*',
-        'Referer': 'https://vicorpus.co/',
+        'Referer': referer,
       },
     });
 
