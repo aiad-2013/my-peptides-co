@@ -61,25 +61,24 @@ const CategorySplit = () => (
           </div>
         </Link>
 
-        {/* Peptides — light with accent border top */}
+        {/* Peptides — mid-dark */}
         <Link
           to="/peptides"
-          className="group relative overflow-hidden rounded-sm border border-border bg-muted flex flex-col justify-end p-8 min-h-[280px]"
+          className="group relative overflow-hidden rounded-sm flex flex-col justify-end p-8 min-h-[280px]"
+          style={{ backgroundColor: 'hsl(213 18% 22%)' }}
         >
           <div
-            className="absolute inset-0 opacity-[0.025]"
+            className="absolute inset-0 opacity-[0.04]"
             style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, hsl(213 22% 12%) 1px, transparent 0)`,
-              backgroundSize: '32px 32px',
+              backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
+              backgroundSize: '48px 48px',
             }}
           />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/8 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-          {/* Accent top-left corner accent line */}
-          <div className="absolute top-0 left-0 w-12 h-px bg-accent/40" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
           <div className="relative">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-accent mb-3">Category</p>
-            <h3 className="text-3xl font-serif font-normal text-foreground mb-2">Peptides</h3>
-            <p className="text-sm text-muted-foreground mb-6 font-light">Bioactive compounds for precision research</p>
+            <p className="text-[10px] uppercase tracking-[0.2em] text-accent/70 mb-3">Category</p>
+            <h3 className="text-3xl font-serif font-normal text-white mb-2">Peptides</h3>
+            <p className="text-sm text-white/50 mb-6 font-light">Bioactive compounds for precision research</p>
             <span className="inline-flex items-center gap-2 text-sm font-medium text-accent group-hover:gap-3 transition-all duration-300">
               Explore range <ArrowRight className="w-4 h-4" />
             </span>
