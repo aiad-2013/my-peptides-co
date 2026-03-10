@@ -37,10 +37,19 @@ Deno.serve(async (req) => {
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
   );
 
-  // Fetch all posts
+  // Support batch processing: pass offset and limit in body
+  let offset = 0;
+  let batchSize = 5;
+  try {
+    const body = await req.json().catch(() => ({}));
+    if (body.offset !== undefined) offset = body.offset;
+    if (body.batch_size !== undefined) batchSize = body.batch_size;
+  } catch {}
+
   const { data: posts, error } = await supabase
     .from('blog_posts')
-    .select('id, slug, featured_image');
+    .select('id, slug, featured_image')
+    .range(offset, offset + batchSize - 1);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
@@ -52,21 +61,31 @@ Deno.serve(async (req) => {
 
   for (const post of posts ?? []) {
     const imageUrl = await getFeaturedImageForSlug(post.slug);
+    console.log(`Slug: ${post.slug} → ${imageUrl ?? 'no image'}`);
     if (imageUrl) {
       const { error: updateErr } = await supabase
         .from('blog_posts')
         .update({ featured_image: imageUrl })
         .eq('id', post.id);
       results.push({ slug: post.slug, image: imageUrl, updated: !updateErr });
-      if (updateErr) console.error(`Update failed for ${post.slug}:`, updateErr.message);
     } else {
       results.push({ slug: post.slug, image: null, updated: false });
     }
-    // Small delay to avoid hammering the WP API
-    await new Promise(r => setTimeout(r, 300));
   }
 
-  return new Response(JSON.stringify({ total: posts?.length, results }), {
+  // Get total count for pagination
+  const { count } = await supabase
+    .from('blog_posts')
+    .select('id', { count: 'exact', head: true });
+
+  return new Response(JSON.stringify({ 
+    total: count, 
+    offset, 
+    batchSize, 
+    processed: results.length,
+    hasMore: offset + batchSize < (count ?? 0),
+    results 
+  }), {
     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
   });
 });
