@@ -104,12 +104,15 @@
 @layer base {
   * {
     @apply border-border;
+    /* Ensure font inheritance propagates everywhere */
+    font-family: inherit;
   }
 
   html {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    font-family: 'Space Grotesk', sans-serif;
   }
 
   body {
@@ -120,14 +123,29 @@
     letter-spacing: -0.01em;
   }
 
+  /* Override browser resets on form elements — they default to system font */
+  input, textarea, select, button, optgroup, option {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+  }
+
+  /* Navigation, links, labels */
+  a, nav, label, span, p, li, td, th, caption, blockquote, figcaption, small, strong, em {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  /* All headings — Poppins only */
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Poppins', sans-serif;
     letter-spacing: -0.02em;
   }
 
-  h1 {
-    font-weight: 700;
-  }
+  h1 { font-weight: 700; }
+  h2 { font-weight: 600; }
+  h3 { font-weight: 600; }
+  h4 { font-weight: 500; }
+  h5 { font-weight: 500; }
+  h6 { font-weight: 500; }
 
   /* Smoother, longer transitions for all interactive elements */
   a, button {
