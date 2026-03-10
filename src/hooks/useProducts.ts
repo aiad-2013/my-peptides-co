@@ -30,7 +30,16 @@ async function fetchProducts(): Promise<Product[]> {
     throw new Error(data.error);
   }
 
-  return data.products;
+  // Inject local image overrides
+  const extraImages: Record<string, string[]> = {
+    'mk677-growth': [mk677LabTest],
+  };
+
+  return data.products.map(p => {
+    const extras = extraImages[p.id];
+    if (!extras) return p;
+    return { ...p, images: [...(p.images || [p.image]), ...extras] };
+  });
 }
 
 export function useProducts() {
