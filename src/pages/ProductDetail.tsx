@@ -633,6 +633,14 @@ const ProductDetailContent = () => {
                 FAQ's
               </TabsTrigger>
             )}
+            {reviews && reviews.length > 0 && (
+              <TabsTrigger
+                value="reviews"
+                className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
+              >
+                Reviews ({reviews.length})
+              </TabsTrigger>
+            )}
             <TabsTrigger
               value="lab-test"
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
@@ -690,6 +698,81 @@ const ProductDetailContent = () => {
                     </AccordionItem>
                   ))}
                 </Accordion>
+              </div>
+            </TabsContent>
+          )}
+
+          {/* Reviews Tab */}
+          {reviews && reviews.length > 0 && (
+            <TabsContent value="reviews" className="mt-0">
+              {/* Summary bar */}
+              <div className="flex items-center gap-6 mb-8 p-5 rounded-xl bg-muted/40 border border-border w-fit">
+                <div className="text-center">
+                  <p className="text-4xl font-serif font-semibold text-foreground">
+                    {(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)}
+                  </p>
+                  <StarRating rating={Math.round(reviews.reduce((s, r) => s + r.rating, 0) / reviews.length)} size={4} />
+                  <p className="text-xs text-muted-foreground mt-1">{reviews.length} review{reviews.length !== 1 ? 's' : ''}</p>
+                </div>
+                <div className="space-y-1.5 min-w-[160px]">
+                  {[5, 4, 3, 2, 1].map(star => {
+                    const count = reviews.filter(r => r.rating === star).length;
+                    const pct = reviews.length ? Math.round((count / reviews.length) * 100) : 0;
+                    return (
+                      <div key={star} className="flex items-center gap-2">
+                        <span className="text-xs text-muted-foreground w-4">{star}</span>
+                        <Star className="w-3 h-3 fill-accent text-accent flex-shrink-0" />
+                        <div className="flex-1 h-1.5 bg-border rounded-full overflow-hidden">
+                          <div className="h-full bg-accent rounded-full transition-all" style={{ width: `${pct}%` }} />
+                        </div>
+                        <span className="text-xs text-muted-foreground w-6 text-right">{count}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Review list */}
+              <div className="space-y-5 max-w-3xl">
+                {reviews.map(review => (
+                  <div key={review.id} className="p-5 rounded-xl border border-border bg-card">
+                    <div className="flex items-start justify-between gap-4 mb-3">
+                      <div className="flex items-center gap-3">
+                        {review.avatar ? (
+                          <img src={review.avatar} alt={review.reviewer} className="w-9 h-9 rounded-full" />
+                        ) : (
+                          <div className="w-9 h-9 rounded-full bg-accent/20 flex items-center justify-center text-accent font-semibold text-sm">
+                            {review.reviewer.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <p className="font-semibold text-sm text-foreground leading-tight">{review.reviewer}</p>
+                          {review.verified && (
+                            <p className="text-[10px] text-accent flex items-center gap-1 mt-0.5">
+                              <CheckCircle2 className="w-3 h-3" /> Verified purchase
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right flex-shrink-0">
+                        <StarRating rating={review.rating} size={3} />
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                          {new Date(review.date).toLocaleDateString('en-AU', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-foreground/80 leading-relaxed">{review.review}</p>
+                  </div>
+                ))}
+              </div>
+            </TabsContent>
+          )}
+
+          {/* Reviews loading skeleton */}
+          {reviewsLoading && (
+            <TabsContent value="reviews" className="mt-0">
+              <div className="space-y-4 max-w-3xl">
+                {[1, 2, 3].map(i => <Skeleton key={i} className="h-28 w-full rounded-xl" />)}
               </div>
             </TabsContent>
           )}
