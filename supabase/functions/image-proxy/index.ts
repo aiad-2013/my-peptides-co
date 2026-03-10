@@ -24,11 +24,15 @@ serve(async (req) => {
       return new Response('Only vicorpus images allowed', { status: 403, headers: corsHeaders });
     }
 
+    const referer = parsedUrl.hostname.endsWith('vicorpus.com')
+      ? 'https://vicorpus.com/'
+      : 'https://vicorpus.co/';
+
     const response = await fetch(imageUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Accept': 'image/*',
-        'Referer': 'https://vicorpus.co/',
+        'Referer': referer,
       },
     });
 
