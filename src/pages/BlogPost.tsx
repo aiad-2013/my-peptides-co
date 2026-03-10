@@ -1,12 +1,12 @@
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, Calendar, ChevronLeft } from 'lucide-react';
+import { ArrowLeft, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Footer } from '@/components/Footer';
+import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import logo from '@/assets/logo.png';
 
 interface BlogPostData {
   id: string;
@@ -40,19 +40,7 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
-          <Link to="/">
-            <img src={logo} alt="VI CORPUS" className="h-10 md:h-12 w-auto" />
-          </Link>
-          <Link to="/blog">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ChevronLeft className="w-4 h-4" />
-              All Articles
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-12 md:py-16 max-w-3xl">
         {isLoading ? (
