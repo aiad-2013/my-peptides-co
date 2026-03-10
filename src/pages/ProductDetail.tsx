@@ -102,8 +102,9 @@ const ProductDetailContent = () => {
 
   const proxiedImages = allImages.map(img => getProxiedImageUrl(img));
   const activeImageSrc = proxiedImages[selectedImageIndex] || null;
+  const isProxied = activeImageSrc?.includes('/functions/v1/image-proxy');
   const imageSrc = activeImageSrc
-    ? `${activeImageSrc}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+    ? `${activeImageSrc}${isProxied && retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
 
   const handleAddToCart = () => {
