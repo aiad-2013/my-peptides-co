@@ -64,19 +64,7 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
-          <Link to="/">
-            <img src={logo} alt="VI CORPUS" className="h-10 md:h-12 w-auto" />
-          </Link>
-          <Link to="/">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ArrowLeft className="w-4 h-4" />
-              Back to Shop
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-12 md:py-16">
         <div className="text-center mb-12">

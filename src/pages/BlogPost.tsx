@@ -40,19 +40,7 @@ const BlogPost = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
-        <div className="container mx-auto px-4 flex items-center justify-between h-16 md:h-20">
-          <Link to="/">
-            <img src={logo} alt="VI CORPUS" className="h-10 md:h-12 w-auto" />
-          </Link>
-          <Link to="/blog">
-            <Button variant="ghost" size="sm" className="gap-2">
-              <ChevronLeft className="w-4 h-4" />
-              All Articles
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <Header />
 
       <main className="container mx-auto px-4 py-12 md:py-16 max-w-3xl">
         {isLoading ? (
