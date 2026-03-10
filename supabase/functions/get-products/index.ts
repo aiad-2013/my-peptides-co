@@ -11,6 +11,7 @@ interface WooCommerceProduct {
   slug: string;
   permalink: string;
   type: string;
+  status: string;
   price: string;
   regular_price: string;
   sale_price: string;
@@ -120,9 +121,9 @@ serve(async (req) => {
       }
     }
 
-    // Fetch any missing child products in one request
+    // Fetch any missing child products in one request — status=publish excludes drafts
     if (missingIds.length > 0) {
-      const childRes = await fetch(`${baseApi}?include=${[...new Set(missingIds)].join(',')}&per_page=100`, { headers: authHeaders });
+      const childRes = await fetch(`${baseApi}?include=${[...new Set(missingIds)].join(',')}&status=publish&per_page=100`, { headers: authHeaders });
       if (childRes.ok) {
         const children: WooCommerceProduct[] = await childRes.json();
         for (const c of children) {
@@ -131,8 +132,9 @@ serve(async (req) => {
       }
     }
 
-    const wooProducts = merged;
-    console.log(`Fetched ${wooProducts.length} products from WooCommerce`);
+    // Safety filter: only keep products explicitly published (excludes draft, pending, private)
+    const wooProducts = merged.filter(p => p.status === 'publish');
+    console.log(`Fetched ${wooProducts.length} published products from WooCommerce (${merged.length} total before filter)`);
 
 
     // Transform WooCommerce products to our format
