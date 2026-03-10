@@ -294,12 +294,15 @@ const ProductDetailContent = () => {
 
           {/* Left: Product Image Gallery */}
           <div className="flex flex-col gap-3">
-            <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden">
+            <div
+              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden group cursor-zoom-in"
+              onClick={() => !imgError && imageSrc && setZoomOpen(true)}
+            >
               {!imgError && imageSrc ? (
                 <img
                   src={imageSrc}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                  className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]"
                   onError={handleImgError}
                 />
               ) : (
@@ -311,6 +314,12 @@ const ProductDetailContent = () => {
                       <div className="w-2/3 h-1.5 bg-accent/20 rounded" />
                     </div>
                   </div>
+                </div>
+              )}
+              {/* Zoom hint overlay */}
+              {!imgError && imageSrc && (
+                <div className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-sm">
+                  <ZoomIn className="w-4 h-4" />
                 </div>
               )}
               {product.isBundle && (
