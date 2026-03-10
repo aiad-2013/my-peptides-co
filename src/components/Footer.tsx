@@ -9,9 +9,12 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
-            <div className="mb-4">
+            <div className="mb-1">
               <img src={logoWhite} alt="mypeptideco" className="h-8 w-auto" />
             </div>
+            <p className="text-sm text-primary-foreground/40 mb-4">
+              Powered by <a href="https://vicorpus.co" target="_blank" rel="noopener noreferrer" className="hover:text-accent transition-colors">Vicorpus</a>
+            </p>
             <p className="text-primary-foreground/70 max-w-md mb-6">
               Australia's trusted supplier of premium research compounds. 
               Every product is third-party tested for purity and quality assurance.
