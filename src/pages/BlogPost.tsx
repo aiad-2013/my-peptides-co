@@ -85,8 +85,8 @@ const BlogPost = () => {
 
             {post.featured_image && (
               <div className="rounded-lg overflow-hidden mb-8">
-                <img
-                  src={post.featured_image}
+               <img
+                  src={getProxiedImageUrl(post.featured_image)}
                   alt={post.title}
                   className="w-full h-auto object-cover"
                 />

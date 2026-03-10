@@ -117,8 +117,8 @@ const Blog = () => {
               >
                 {post.featured_image ? (
                   <div className="aspect-[16/10] overflow-hidden bg-muted">
-                    <img
-                      src={post.featured_image}
+                  <img
+                      src={getProxiedImageUrl(post.featured_image)}
                       alt={post.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                       loading="lazy"
