@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useCart } from '@/context/CartContext';
@@ -9,9 +10,51 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles, Clock, ZoomIn, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles, Clock, ZoomIn, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { LabTestForm } from '@/components/LabTestForm';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+
+// ── Reviews hook ─────────────────────────────────────────────────────────────
+interface WooReview {
+  id: number;
+  date: string;
+  review: string;
+  rating: number;
+  reviewer: string;
+  avatar: string | null;
+  verified: boolean;
+}
+
+function useProductReviews(wooCommerceId: number | undefined) {
+  return useQuery<WooReview[]>({
+    queryKey: ['reviews', wooCommerceId],
+    enabled: !!wooCommerceId,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+      const anonKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      const res = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/get-reviews?product_id=${wooCommerceId}`,
+        { headers: { 'apikey': anonKey, 'Authorization': `Bearer ${anonKey}` } }
+      );
+      if (!res.ok) throw new Error('Failed to fetch reviews');
+      const data = await res.json();
+      return data.reviews ?? [];
+    },
+  });
+}
+
+// ── Star Rating display ───────────────────────────────────────────────────────
+const StarRating = ({ rating, size = 4 }: { rating: number; size?: number }) => (
+  <div className="flex items-center gap-0.5">
+    {[1, 2, 3, 4, 5].map(i => (
+      <Star
+        key={i}
+        className={`w-${size} h-${size} ${i <= rating ? 'fill-accent text-accent' : 'text-muted-foreground/30'}`}
+      />
+    ))}
+  </div>
+);
 
 // Deterministic scarcity seed from product id
 function seededRandom(id: string, offset = 0): number {
