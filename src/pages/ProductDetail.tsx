@@ -233,6 +233,7 @@ const ProductDetailContent = () => {
   }, [slug]);
 
   const product = products?.find(p => p.id === slug);
+  const { data: reviews, isLoading: reviewsLoading } = useProductReviews(product?.wooCommerceId);
 
   useEffect(() => {
     if (product) {
