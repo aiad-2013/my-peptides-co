@@ -11,6 +11,7 @@ interface WooCommerceProduct {
   slug: string;
   permalink: string;
   type: string;
+  status: string;
   price: string;
   regular_price: string;
   sale_price: string;
