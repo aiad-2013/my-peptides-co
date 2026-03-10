@@ -36,7 +36,7 @@ export function useProducts() {
   return useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 0, // Always fetch fresh from WooCommerce
     gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
     retry: 2,
     // Fall back to local products if fetch fails
