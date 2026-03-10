@@ -729,6 +729,7 @@ const ProductDetailContent = () => {
         onClose={() => setZoomOpen(false)}
       />
     )}
+    </>
   );
 };
 
