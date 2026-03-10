@@ -178,6 +178,7 @@ const ProductDetailContent = () => {
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const orderDeadline = useOrderDeadline();
 
