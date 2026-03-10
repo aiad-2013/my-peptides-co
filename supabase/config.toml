@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.create-wc-order]
 verify_jwt = false
+
+[functions.backfill-blog-images]
+verify_jwt = false
