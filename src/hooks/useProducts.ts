@@ -32,7 +32,7 @@ async function fetchProducts(): Promise<Product[]> {
 
   // Inject local image overrides
   const extraImages: Record<string, string[]> = {
-    'mk677-growth': [mk677LabTest],
+    'growth-mk677': [mk677LabTest],
   };
 
   return data.products.map(p => {
