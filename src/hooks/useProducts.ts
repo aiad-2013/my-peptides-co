@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Product } from '@/types/product';
 import { products as fallbackProducts, getProductsByCategory as getFallbackByCategory } from '@/data/products';
+import mk677LabTest from '@/assets/mk677-lab-test.png';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
