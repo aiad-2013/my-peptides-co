@@ -64,7 +64,7 @@ const CategorySplit = () => (
         {/* Peptides — light with accent border top */}
         <Link
           to="/peptides"
-          className="group relative overflow-hidden rounded-sm border border-border bg-secondary flex flex-col justify-end p-8 min-h-[280px]"
+          className="group relative overflow-hidden rounded-sm border border-border bg-muted flex flex-col justify-end p-8 min-h-[280px]"
         >
           <div
             className="absolute inset-0 opacity-[0.025]"
