@@ -77,8 +77,8 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
             <Button variant="hero" onClick={onShopClick}>
               {content.cta}
             </Button>
-            <Button variant="hero-outline">
-              Lab Reports
+            <Button variant="hero-outline" asChild>
+              <Link to="/lab-reports">Lab Reports</Link>
             </Button>
           </div>
         </div>
