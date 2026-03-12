@@ -11,7 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles, Clock, ZoomIn, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { LabTestForm } from '@/components/LabTestForm';
+
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 // ── Reviews hook ─────────────────────────────────────────────────────────────
@@ -641,12 +641,6 @@ const ProductDetailContent = () => {
                 Reviews ({reviews.length})
               </TabsTrigger>
             )}
-            <TabsTrigger
-              value="lab-test"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
-            >
-              Lab Test
-            </TabsTrigger>
           </TabsList>
 
           {/* Description Tab */}
@@ -774,12 +768,6 @@ const ProductDetailContent = () => {
             </TabsContent>
           )}
 
-          {/* Lab Test Tab */}
-          <TabsContent value="lab-test" className="mt-0">
-            <div className="max-w-xl">
-              <LabTestForm productId={product.id} productName={product.name} />
-            </div>
-          </TabsContent>
         </Tabs>
 
         {/* Related Products */}
