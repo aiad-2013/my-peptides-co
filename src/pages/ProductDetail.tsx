@@ -641,12 +641,6 @@ const ProductDetailContent = () => {
                 Reviews ({reviews.length})
               </TabsTrigger>
             )}
-            <TabsTrigger
-              value="lab-test"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-accent data-[state=active]:bg-transparent data-[state=active]:text-accent px-6 py-3 text-sm font-medium text-muted-foreground data-[state=active]:shadow-none"
-            >
-              Lab Test
-            </TabsTrigger>
           </TabsList>
 
           {/* Description Tab */}
