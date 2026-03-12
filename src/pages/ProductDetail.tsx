@@ -768,12 +768,6 @@ const ProductDetailContent = () => {
             </TabsContent>
           )}
 
-          {/* Lab Test Tab */}
-          <TabsContent value="lab-test" className="mt-0">
-            <div className="max-w-xl">
-              <LabTestForm productId={product.id} productName={product.name} />
-            </div>
-          </TabsContent>
         </Tabs>
 
         {/* Related Products */}
