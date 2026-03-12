@@ -18,6 +18,7 @@ import Returns from "./pages/Returns";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
+import LabReports from "./pages/LabReports";
 
 const queryClient = new QueryClient();
 
