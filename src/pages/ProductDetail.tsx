@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, type MouseEvent as ReactMouseEvent } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/Header';
@@ -223,6 +223,9 @@ const ProductDetailContent = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
+  const imgContainerRef = useRef<HTMLDivElement>(null);
   const orderDeadline = useOrderDeadline();
 
   useEffect(() => {
@@ -260,6 +263,22 @@ const ProductDetailContent = () => {
     } else {
       setImgError(true);
     }
+  };
+
+  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!imgContainerRef.current || imgError || !imageSrc) return;
+    const rect = imgContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomStyle({ transformOrigin: `${x}% ${y}%` });
+  };
+
+  const handleMouseEnter = () => {
+    if (!imgError && imageSrc) setIsZooming(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsZooming(false);
   };
 
   const allImages = product?.images && product.images.length > 0
@@ -340,14 +359,22 @@ const ProductDetailContent = () => {
           {/* Left: Product Image Gallery */}
           <div className="flex flex-col gap-3">
             <div
-              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden group cursor-zoom-in"
+              ref={imgContainerRef}
+              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden cursor-crosshair"
               onClick={() => !imgError && imageSrc && setZoomOpen(true)}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               {!imgError && imageSrc ? (
                 <img
                   src={imageSrc}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 ease-out"
+                  style={{
+                    transform: isZooming ? 'scale(2.2)' : 'scale(1)',
+                    ...zoomStyle,
+                  }}
                   onError={handleImgError}
                 />
               ) : (
@@ -363,7 +390,10 @@ const ProductDetailContent = () => {
               )}
               {/* Zoom hint overlay */}
               {!imgError && imageSrc && (
-                <div className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-sm">
+                <div
+                  className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white transition-opacity duration-200 backdrop-blur-sm pointer-events-none"
+                  style={{ opacity: isZooming ? 0 : 1 }}
+                >
                   <ZoomIn className="w-4 h-4" />
                 </div>
               )}

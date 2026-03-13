@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, type MouseEvent as ReactMouseEvent } from 'react';
 import { X, Minus, Plus, ShoppingCart, Shield } from 'lucide-react';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,9 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomOrigin, setZoomOrigin] = useState('50% 50%');
+  const imgWrapRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
 
   if (!isOpen || !product) return null;
@@ -26,6 +29,14 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
     } else {
       setImgError(true);
     }
+  };
+
+  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!imgWrapRef.current) return;
+    const rect = imgWrapRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomOrigin(`${x}% ${y}%`);
   };
 
   const imageSrc = product.image && product.image !== '/placeholder.svg'
@@ -58,12 +69,23 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
 
         <div className="grid md:grid-cols-2 gap-0">
           {/* Image */}
-          <div className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden">
+          <div
+            ref={imgWrapRef}
+            className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden cursor-crosshair"
+            onMouseMove={handleMouseMove}
+            onMouseEnter={() => { if (!imgError && imageSrc) setIsZooming(true); }}
+            onMouseLeave={() => setIsZooming(false)}
+          >
             {!imgError && imageSrc ? (
               <img
                 src={imageSrc}
                 alt={product.name}
                 className="absolute inset-0 w-full h-full object-cover"
+                style={{
+                  transform: isZooming ? 'scale(2.5)' : 'scale(1)',
+                  transformOrigin: zoomOrigin,
+                  transition: isZooming ? 'transform 0.15s ease-out' : 'transform 0.3s ease-out',
+                }}
                 onError={handleImgError}
               />
             ) : (
@@ -78,9 +100,15 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
               </div>
             )}
             {product.badge && (
-              <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground">
+              <Badge className="absolute top-4 left-4 bg-accent text-accent-foreground pointer-events-none">
                 {product.badge}
               </Badge>
+            )}
+            {/* Zoom hint */}
+            {!imgError && imageSrc && !isZooming && (
+              <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/50 uppercase tracking-widest pointer-events-none">
+                Hover to zoom
+              </p>
             )}
           </div>
 
