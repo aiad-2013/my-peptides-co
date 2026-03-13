@@ -440,9 +440,12 @@ const ProductDetailContent = () => {
               {!imgError && imageSrc && (
                 <div
                   className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white transition-opacity duration-200 backdrop-blur-sm pointer-events-none"
-                  style={{ opacity: isZooming ? 0 : 1 }}
+                  style={{ opacity: (isZooming || touchScale > 1) ? 0 : 1 }}
                 >
-                  <ZoomIn className="w-4 h-4" />
+                  {/* Desktop hint */}
+                  <ZoomIn className="w-4 h-4 hidden md:block" />
+                  {/* Mobile hint */}
+                  <span className="text-[10px] uppercase tracking-widest block md:hidden">Pinch to zoom</span>
                 </div>
               )}
               {product.isBundle && (
