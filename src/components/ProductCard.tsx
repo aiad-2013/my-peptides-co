@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, type MouseEvent as ReactMouseEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
@@ -26,6 +26,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [zoomOrigin, setZoomOrigin] = useState('50% 50%');
+  const imgWrapRef = useRef<HTMLDivElement>(null);
   const maxRetries = 2;
 
   const handleImgError = () => {
@@ -39,6 +41,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     addItem(product);
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
+  };
+
+  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!imgWrapRef.current) return;
+    const rect = imgWrapRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomOrigin(`${x}% ${y}%`);
   };
 
   const hasRealImage = product.image && product.image !== '/placeholder.svg';
@@ -70,32 +80,48 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image */}
-      <div className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden">
-        {/* Primary image */}
+      <div
+        ref={imgWrapRef}
+        className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden cursor-crosshair"
+        onMouseMove={handleMouseMove}
+      >
+        {/* Primary image — zoom on hover when no secondary swap */}
         <img
           src={displaySrc}
           alt={product.name}
           className={cn(
             "absolute inset-0 w-full h-full transition-all duration-500 ease-out",
             hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90',
-            hoverSrc ? (isHovered ? 'opacity-0 scale-[1.03]' : 'opacity-100 scale-100') : (isHovered ? 'scale-[1.03]' : 'scale-100')
+            hoverSrc
+              ? (isHovered ? 'opacity-0 scale-[1.04]' : 'opacity-100 scale-100')
+              : 'scale-100'
           )}
+          style={!hoverSrc && isHovered ? {
+            transform: 'scale(1.8)',
+            transformOrigin: zoomOrigin,
+            transition: 'transform 0.15s ease-out',
+          } : undefined}
           onError={hasRealImage ? handleImgError : undefined}
         />
-        {/* Secondary image (hover reveal) */}
+        {/* Secondary image (hover reveal) — also zoom on hover */}
         {hoverSrc && (
           <img
             src={hoverSrc}
             alt={`${product.name} — chemical structure`}
             className={cn(
               "absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 ease-out",
-              isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.97]'
+              isHovered ? 'opacity-100' : 'opacity-0 scale-[0.97]'
             )}
+            style={isHovered ? {
+              transform: 'scale(1.5)',
+              transformOrigin: zoomOrigin,
+              transition: 'transform 0.15s ease-out, opacity 0.5s ease-out',
+            } : undefined}
           />
         )}
 
         {/* Overlays — top-left */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5">
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
           {product.isBundle && (
             <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-widest px-2 py-1 bg-primary/90 text-primary-foreground rounded-sm backdrop-blur-sm">
               <Package className="w-3 h-3" />
@@ -111,14 +137,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
         {/* Multi-image indicator — top-right */}
         {hasMultipleImages && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-medium text-foreground/60 bg-background/75 backdrop-blur-sm rounded-sm px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-medium text-foreground/60 bg-background/75 backdrop-blur-sm rounded-sm px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
             <Images className="w-3 h-3" />
             <span>{allImages.length}</span>
           </div>
         )}
 
         {/* Stock & viewing — bottom */}
-        <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
           {isLowStock && product.inStock && (
             <span className="text-[10px] font-medium tracking-widest uppercase text-foreground/70 bg-background/80 backdrop-blur-sm rounded-sm px-2 py-1">
               {stockLeft} remaining
