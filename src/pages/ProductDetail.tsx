@@ -270,6 +270,7 @@ const ProductDetailContent = () => {
     setSelectedImageIndex(0);
     setImgError(false);
     setRetryCount(0);
+    setTouchScale(1);
   }, [slug]);
 
   const product = products?.find(p => p.id === slug);
