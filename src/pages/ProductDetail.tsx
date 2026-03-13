@@ -399,18 +399,28 @@ const ProductDetailContent = () => {
             <div
               ref={imgContainerRef}
               className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden cursor-crosshair"
-              onClick={() => !imgError && imageSrc && setZoomOpen(true)}
+              onClick={() => !imgError && imageSrc && touchScale === 1 && setZoomOpen(true)}
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               {!imgError && imageSrc ? (
                 <img
                   src={imageSrc}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 ease-out"
-                  style={{
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={touchScale > 1 ? {
+                    // Touch: pinch zoom takes priority
+                    transform: `scale(${touchScale})`,
+                    transformOrigin: touchOrigin,
+                    transition: 'transform 0.05s linear',
+                  } : {
+                    // Mouse: cursor-tracking zoom
                     transform: isZooming ? 'scale(2.2)' : 'scale(1)',
+                    transition: 'transform 0.2s ease-out',
                     ...zoomStyle,
                   }}
                   onError={handleImgError}
