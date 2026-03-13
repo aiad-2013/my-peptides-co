@@ -25,6 +25,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const maxRetries = 2;
 
   const handleImgError = () => {
@@ -41,12 +42,22 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const hasRealImage = product.image && product.image !== '/placeholder.svg';
-  const realImageSrc = hasRealImage
-    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+
+  // Build proxied image list — use the full images array when available
+  const allImages = product.images && product.images.length > 0
+    ? product.images
+    : hasRealImage ? [product.image] : [];
+  const hasMultipleImages = allImages.length > 1;
+
+  // On hover, show the 2nd image (chemical structure) if available
+  const primarySrc = hasRealImage
+    ? `${getProxiedImageUrl(allImages[0])}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
+  const secondarySrc = hasMultipleImages ? getProxiedImageUrl(allImages[1]) : null;
 
   // Show real WooCommerce image when available; fall back to molecule placeholder
-  const displaySrc = !imgError && realImageSrc ? realImageSrc : moleculePlaceholder;
+  const displaySrc = !imgError && primarySrc ? primarySrc : moleculePlaceholder;
+  const hoverSrc = !imgError && secondarySrc ? secondarySrc : null;
 
   const stockLeft = getSeededStock(product.id);
   const isLowStock = stockLeft <= 5;
