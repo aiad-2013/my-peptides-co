@@ -98,7 +98,7 @@ export const Header = () => {
         </div>
 
         {mobileMenuOpen && (
-          <nav className="md:hidden py-4 border-t border-border animate-fade-in">
+          <nav className="lg:hidden py-4 border-t border-border animate-fade-in">
             {navItems.map((item) => (
               <Link
                 key={item.to}
