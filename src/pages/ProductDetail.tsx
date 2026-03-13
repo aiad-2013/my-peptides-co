@@ -228,11 +228,49 @@ const ProductDetailContent = () => {
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const orderDeadline = useOrderDeadline();
 
+  // ── Pinch-to-zoom (touch) ──────────────────────────────────────────────────
+  const [touchScale, setTouchScale] = useState(1);
+  const [touchOrigin, setTouchOrigin] = useState('50% 50%');
+  const touchRef = useRef<{ dist: number; scale: number; midX: number; midY: number } | null>(null);
+
+  const getTouchDist = (t: React.TouchList) =>
+    Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && imgContainerRef.current) {
+      e.preventDefault();
+      const rect = imgContainerRef.current.getBoundingClientRect();
+      const midX = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left) / rect.width * 100;
+      const midY = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top) / rect.height * 100;
+      touchRef.current = { dist: getTouchDist(e.touches), scale: touchScale, midX, midY };
+      setTouchOrigin(`${midX}% ${midY}%`);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && touchRef.current) {
+      e.preventDefault();
+      const newDist = getTouchDist(e.touches);
+      const ratio = newDist / touchRef.current.dist;
+      const next = Math.min(4, Math.max(1, touchRef.current.scale * ratio));
+      setTouchScale(next);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length < 2) {
+      touchRef.current = null;
+      // Snap back to 1 if barely zoomed
+      setTouchScale(s => s < 1.15 ? 1 : s);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
     setSelectedImageIndex(0);
     setImgError(false);
     setRetryCount(0);
+    setTouchScale(1);
   }, [slug]);
 
   const product = products?.find(p => p.id === slug);
@@ -361,18 +399,28 @@ const ProductDetailContent = () => {
             <div
               ref={imgContainerRef}
               className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden cursor-crosshair"
-              onClick={() => !imgError && imageSrc && setZoomOpen(true)}
+              onClick={() => !imgError && imageSrc && touchScale === 1 && setZoomOpen(true)}
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               {!imgError && imageSrc ? (
                 <img
                   src={imageSrc}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 ease-out"
-                  style={{
+                  className="absolute inset-0 w-full h-full object-cover"
+                  style={touchScale > 1 ? {
+                    // Touch: pinch zoom takes priority
+                    transform: `scale(${touchScale})`,
+                    transformOrigin: touchOrigin,
+                    transition: 'transform 0.05s linear',
+                  } : {
+                    // Mouse: cursor-tracking zoom
                     transform: isZooming ? 'scale(2.2)' : 'scale(1)',
+                    transition: 'transform 0.2s ease-out',
                     ...zoomStyle,
                   }}
                   onError={handleImgError}
@@ -392,9 +440,12 @@ const ProductDetailContent = () => {
               {!imgError && imageSrc && (
                 <div
                   className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white transition-opacity duration-200 backdrop-blur-sm pointer-events-none"
-                  style={{ opacity: isZooming ? 0 : 1 }}
+                  style={{ opacity: (isZooming || touchScale > 1) ? 0 : 1 }}
                 >
-                  <ZoomIn className="w-4 h-4" />
+                  {/* Desktop hint */}
+                  <ZoomIn className="w-4 h-4 hidden md:block" />
+                  {/* Mobile hint */}
+                  <span className="text-[10px] uppercase tracking-widest block md:hidden">Pinch to zoom</span>
                 </div>
               )}
               {product.isBundle && (
@@ -416,7 +467,7 @@ const ProductDetailContent = () => {
                 {proxiedImages.map((src, idx) => (
                   <button
                     key={idx}
-                    onClick={() => { setSelectedImageIndex(idx); setImgError(false); setRetryCount(0); }}
+                    onClick={() => { setSelectedImageIndex(idx); setImgError(false); setRetryCount(0); setTouchScale(1); }}
                     className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                       selectedImageIndex === idx
                         ? 'border-accent shadow-md scale-105'
