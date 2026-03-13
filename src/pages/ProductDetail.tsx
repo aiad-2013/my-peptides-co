@@ -359,14 +359,22 @@ const ProductDetailContent = () => {
           {/* Left: Product Image Gallery */}
           <div className="flex flex-col gap-3">
             <div
-              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden group cursor-zoom-in"
+              ref={imgContainerRef}
+              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden cursor-crosshair"
               onClick={() => !imgError && imageSrc && setZoomOpen(true)}
+              onMouseMove={handleMouseMove}
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
             >
               {!imgError && imageSrc ? (
                 <img
                   src={imageSrc}
                   alt={product.name}
-                  className="absolute inset-0 w-full h-full object-cover transition-all duration-300 group-hover:scale-[1.02]"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-200 ease-out"
+                  style={{
+                    transform: isZooming ? 'scale(2.2)' : 'scale(1)',
+                    ...zoomStyle,
+                  }}
                   onError={handleImgError}
                 />
               ) : (
