@@ -467,7 +467,7 @@ const ProductDetailContent = () => {
                 {proxiedImages.map((src, idx) => (
                   <button
                     key={idx}
-                    onClick={() => { setSelectedImageIndex(idx); setImgError(false); setRetryCount(0); }}
+                    onClick={() => { setSelectedImageIndex(idx); setImgError(false); setRetryCount(0); setTouchScale(1); }}
                     className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                       selectedImageIndex === idx
                         ? 'border-accent shadow-md scale-105'
