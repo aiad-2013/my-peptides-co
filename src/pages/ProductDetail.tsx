@@ -228,6 +228,43 @@ const ProductDetailContent = () => {
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const orderDeadline = useOrderDeadline();
 
+  // ── Pinch-to-zoom (touch) ──────────────────────────────────────────────────
+  const [touchScale, setTouchScale] = useState(1);
+  const [touchOrigin, setTouchOrigin] = useState('50% 50%');
+  const touchRef = useRef<{ dist: number; scale: number; midX: number; midY: number } | null>(null);
+
+  const getTouchDist = (t: React.TouchList) =>
+    Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && imgContainerRef.current) {
+      e.preventDefault();
+      const rect = imgContainerRef.current.getBoundingClientRect();
+      const midX = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left) / rect.width * 100;
+      const midY = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top) / rect.height * 100;
+      touchRef.current = { dist: getTouchDist(e.touches), scale: touchScale, midX, midY };
+      setTouchOrigin(`${midX}% ${midY}%`);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && touchRef.current) {
+      e.preventDefault();
+      const newDist = getTouchDist(e.touches);
+      const ratio = newDist / touchRef.current.dist;
+      const next = Math.min(4, Math.max(1, touchRef.current.scale * ratio));
+      setTouchScale(next);
+    }
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length < 2) {
+      touchRef.current = null;
+      // Snap back to 1 if barely zoomed
+      setTouchScale(s => s < 1.15 ? 1 : s);
+    }
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
     setSelectedImageIndex(0);
