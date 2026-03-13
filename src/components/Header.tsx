@@ -37,7 +37,7 @@ export const Header = () => {
             <img src={logo} alt="mypeptideco" className="h-8 md:h-10 w-auto" />
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1">
             {navItems.map((item) => (
               <Link
                 key={item.to}
