@@ -390,7 +390,10 @@ const ProductDetailContent = () => {
               )}
               {/* Zoom hint overlay */}
               {!imgError && imageSrc && (
-                <div className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-200 backdrop-blur-sm">
+                <div
+                  className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white transition-opacity duration-200 backdrop-blur-sm pointer-events-none"
+                  style={{ opacity: isZooming ? 0 : 1 }}
+                >
                   <ZoomIn className="w-4 h-4" />
                 </div>
               )}
