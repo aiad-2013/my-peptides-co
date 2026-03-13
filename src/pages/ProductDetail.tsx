@@ -223,6 +223,9 @@ const ProductDetailContent = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  const [isZooming, setIsZooming] = useState(false);
+  const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
+  const imgContainerRef = useRef<HTMLDivElement>(null);
   const orderDeadline = useOrderDeadline();
 
   useEffect(() => {
