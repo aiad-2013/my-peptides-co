@@ -265,6 +265,22 @@ const ProductDetailContent = () => {
     }
   };
 
+  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
+    if (!imgContainerRef.current || imgError || !imageSrc) return;
+    const rect = imgContainerRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setZoomStyle({ transformOrigin: `${x}% ${y}%` });
+  };
+
+  const handleMouseEnter = () => {
+    if (!imgError && imageSrc) setIsZooming(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsZooming(false);
+  };
+
   const allImages = product?.images && product.images.length > 0
     ? product.images
     : product?.image && product.image !== '/placeholder.svg' ? [product.image] : [];
