@@ -135,6 +135,12 @@ const OrderConfirmationContent = () => {
           </div>
         ) : (
           <div className="space-y-8">
+            {/* Preview mode banner */}
+            {isPreview && (
+              <div className="bg-muted border border-border rounded-lg px-4 py-3 text-sm text-muted-foreground text-center">
+                🔍 <strong>Preview mode</strong> — this is sample data. Real orders are accessed via the link sent after checkout.
+              </div>
+            )}
             {/* Success Header */}
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-accent/10 mb-6">
