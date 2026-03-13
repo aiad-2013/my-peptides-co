@@ -66,18 +66,33 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     <Link
       to={`/product/${product.id}`}
       className="group relative bg-card rounded-sm border border-border overflow-hidden flex flex-col w-full h-full transition-shadow duration-500 hover:shadow-[var(--shadow-card-hover)]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image */}
       <div className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden">
+        {/* Primary image */}
         <img
           src={displaySrc}
           alt={product.name}
           className={cn(
-            "absolute inset-0 w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-            hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90'
+            "absolute inset-0 w-full h-full transition-all duration-500 ease-out",
+            hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90',
+            hoverSrc ? (isHovered ? 'opacity-0 scale-[1.03]' : 'opacity-100 scale-100') : (isHovered ? 'scale-[1.03]' : 'scale-100')
           )}
           onError={hasRealImage ? handleImgError : undefined}
         />
+        {/* Secondary image (hover reveal) */}
+        {hoverSrc && (
+          <img
+            src={hoverSrc}
+            alt={`${product.name} — chemical structure`}
+            className={cn(
+              "absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 ease-out",
+              isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.97]'
+            )}
+          />
+        )}
 
         {/* Overlays — top-left */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
