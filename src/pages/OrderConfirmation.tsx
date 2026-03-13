@@ -26,6 +26,23 @@ interface Order {
   created_at: string;
 }
 
+const SAMPLE_ORDER: Order = {
+  id: 'preview-001',
+  order_number: '1042',
+  status: 'processing',
+  customer_name: 'Jane Smith',
+  line_items: [
+    { name: 'MK-677 (Ibutamoren) 25mg/mL – 30mL', quantity: 2, total: '119.98' },
+    { name: 'BPC-157 5mg', quantity: 1, total: '69.99' },
+  ],
+  subtotal: 189.97,
+  shipping_total: 9.95,
+  tax_total: 0,
+  total: 199.92,
+  currency: 'AUD',
+  created_at: new Date().toISOString(),
+};
+
 const OrderConfirmationContent = () => {
   const [searchParams] = useSearchParams();
   const [order, setOrder] = useState<Order | null>(null);
@@ -34,17 +51,22 @@ const OrderConfirmationContent = () => {
 
   const orderId = searchParams.get('order_id');
   const token = searchParams.get('token');
+  const isPreview = !orderId && !token;
 
   useEffect(() => {
+    if (isPreview) {
+      setOrder(SAMPLE_ORDER);
+      setLoading(false);
+      return;
+    }
+
     const fetchOrder = async () => {
-      // Both order_id and token are required
       if (!orderId || !token) {
         setError('Invalid order link');
         setLoading(false);
         return;
       }
 
-      // Validate token format (64 hex characters)
       if (!/^[a-f0-9]{64}$/i.test(token)) {
         setError('Invalid order link');
         setLoading(false);
@@ -52,7 +74,6 @@ const OrderConfirmationContent = () => {
       }
 
       try {
-        // Use edge function to securely fetch order with token verification
         const response = await fetch(
           `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/get-order?order_id=${encodeURIComponent(orderId)}&token=${encodeURIComponent(token)}`,
           {
@@ -72,15 +93,10 @@ const OrderConfirmationContent = () => {
             setError('Order not found');
           }
         } else if (result.order) {
-          // Parse line_items from JSON
-          const lineItems = Array.isArray(result.order.line_items) 
-            ? (result.order.line_items as LineItem[]) 
+          const lineItems = Array.isArray(result.order.line_items)
+            ? (result.order.line_items as LineItem[])
             : null;
-          const orderData: Order = {
-            ...result.order,
-            line_items: lineItems,
-          };
-          setOrder(orderData);
+          setOrder({ ...result.order, line_items: lineItems });
         }
       } catch (err) {
         console.error('Error loading order');
@@ -91,7 +107,7 @@ const OrderConfirmationContent = () => {
     };
 
     fetchOrder();
-  }, [orderId, token]);
+  }, [orderId, token, isPreview]);
 
   return (
     <div className="min-h-screen bg-background">
