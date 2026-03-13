@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Package, Eye } from 'lucide-react';
+import { ShoppingCart, Package, Eye, Images } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
@@ -25,6 +25,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const maxRetries = 2;
 
   const handleImgError = () => {
@@ -41,12 +42,22 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   };
 
   const hasRealImage = product.image && product.image !== '/placeholder.svg';
-  const realImageSrc = hasRealImage
-    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+
+  // Build proxied image list — use the full images array when available
+  const allImages = product.images && product.images.length > 0
+    ? product.images
+    : hasRealImage ? [product.image] : [];
+  const hasMultipleImages = allImages.length > 1;
+
+  // On hover, show the 2nd image (chemical structure) if available
+  const primarySrc = hasRealImage
+    ? `${getProxiedImageUrl(allImages[0])}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
     : null;
+  const secondarySrc = hasMultipleImages ? getProxiedImageUrl(allImages[1]) : null;
 
   // Show real WooCommerce image when available; fall back to molecule placeholder
-  const displaySrc = !imgError && realImageSrc ? realImageSrc : moleculePlaceholder;
+  const displaySrc = !imgError && primarySrc ? primarySrc : moleculePlaceholder;
+  const hoverSrc = !imgError && secondarySrc ? secondarySrc : null;
 
   const stockLeft = getSeededStock(product.id);
   const isLowStock = stockLeft <= 5;
@@ -55,18 +66,33 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     <Link
       to={`/product/${product.id}`}
       className="group relative bg-card rounded-sm border border-border overflow-hidden flex flex-col w-full h-full transition-shadow duration-500 hover:shadow-[var(--shadow-card-hover)]"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image */}
       <div className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden">
+        {/* Primary image */}
         <img
           src={displaySrc}
           alt={product.name}
           className={cn(
-            "absolute inset-0 w-full h-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-            hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90'
+            "absolute inset-0 w-full h-full transition-all duration-500 ease-out",
+            hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90',
+            hoverSrc ? (isHovered ? 'opacity-0 scale-[1.03]' : 'opacity-100 scale-100') : (isHovered ? 'scale-[1.03]' : 'scale-100')
           )}
           onError={hasRealImage ? handleImgError : undefined}
         />
+        {/* Secondary image (hover reveal) */}
+        {hoverSrc && (
+          <img
+            src={hoverSrc}
+            alt={`${product.name} — chemical structure`}
+            className={cn(
+              "absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 ease-out",
+              isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-[0.97]'
+            )}
+          />
+        )}
 
         {/* Overlays — top-left */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
@@ -82,6 +108,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
             </span>
           )}
         </div>
+
+        {/* Multi-image indicator — top-right */}
+        {hasMultipleImages && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-medium text-foreground/60 bg-background/75 backdrop-blur-sm rounded-sm px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Images className="w-3 h-3" />
+            <span>{allImages.length}</span>
+          </div>
+        )}
 
         {/* Stock & viewing — bottom */}
         <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
