@@ -109,6 +109,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           )}
         </div>
 
+        {/* Multi-image indicator — top-right */}
+        {hasMultipleImages && (
+          <div className="absolute top-3 right-3 flex items-center gap-1 text-[10px] font-medium text-foreground/60 bg-background/75 backdrop-blur-sm rounded-sm px-1.5 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <Images className="w-3 h-3" />
+            <span>{allImages.length}</span>
+          </div>
+        )}
+
         {/* Stock & viewing — bottom */}
         <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           {isLowStock && product.inStock && (
