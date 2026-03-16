@@ -90,18 +90,20 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
             {content.description}
           </p>
 
-          {/* CTA Buttons */}
-          <div
-            className="flex flex-col sm:flex-row items-start gap-3 mb-16 animate-slide-up"
-            style={{ animationDelay: '0.16s' }}
-          >
-            <Button variant="hero" onClick={onShopClick}>
-              {content.cta}
-            </Button>
-            <Button variant="hero-outline" asChild>
-              <Link to="/lab-reports">Lab Reports</Link>
-            </Button>
-          </div>
+          {/* CTA Buttons — hidden on collection pages */}
+          {!compact && (
+            <div
+              className="flex flex-col sm:flex-row items-start gap-3 mb-16 animate-slide-up"
+              style={{ animationDelay: '0.16s' }}
+            >
+              <Button variant="hero" onClick={onShopClick}>
+                {content.cta}
+              </Button>
+              <Button variant="hero-outline" asChild>
+                <Link to="/lab-reports">Lab Reports</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
