@@ -10,9 +10,9 @@ const BREATHE_AMPLITUDE = 5;   // ±px oscillation
 const BREATHE_PERIOD = 7000;   // ms full breathe cycle
 const BASE_AMPLITUDE = 56;     // sine amplitude (px)
 
-const NODE_OPACITY   = 0.09;
-const STRAND_OPACITY = 0.06;
-const RUNG_OPACITY   = 0.04;
+const NODE_OPACITY   = 0.11;
+const STRAND_OPACITY = 0.072;
+const RUNG_OPACITY   = 0.048;
 const CROSS_BOND_EVERY = 3;    // draw a rung every N nodes
 
 export const MolecularCanvas = () => {
