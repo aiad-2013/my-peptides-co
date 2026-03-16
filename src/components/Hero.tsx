@@ -56,7 +56,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
       {/* Molecular network animation — above gradient, below content */}
       <MolecularCanvas />
 
-      <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative">
+      <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative" style={{ zIndex: 2 }}>
         <div className="max-w-xl text-left">
 
           {/* Clinical badge */}
