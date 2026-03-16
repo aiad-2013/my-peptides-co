@@ -44,12 +44,11 @@ const CategorySplit = () => (
         <Link
           to="/sarms"
           className="group relative overflow-hidden rounded-sm flex flex-col justify-end p-8 min-h-[280px]"
-          style={{
-            backgroundImage: `url(${sarmsBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: '60% center',
-          }}
         >
+          <div
+            className="absolute inset-0 scale-100 group-hover:scale-[1.2] transition-transform duration-700 ease-out"
+            style={{ backgroundImage: `url(${sarmsBg})`, backgroundSize: 'cover', backgroundPosition: '60% center' }}
+          />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.75) 0%, hsl(var(--primary) / 0.50) 40%, hsl(var(--primary) / 0.08) 65%, transparent 100%)' }} />
           <div className="relative">
             <h3 className="text-3xl font-serif font-bold text-white mb-6">SARMs</h3>
@@ -63,14 +62,12 @@ const CategorySplit = () => (
         <Link
           to="/peptides"
           className="group relative overflow-hidden rounded-sm flex flex-col justify-end p-8 min-h-[280px]"
-          style={{
-            backgroundImage: `url(${peptidesBg})`,
-            backgroundSize: 'cover',
-            backgroundPosition: '80% center',
-          }}
         >
+          <div
+            className="absolute inset-0 scale-100 group-hover:scale-[1.2] transition-transform duration-700 ease-out"
+            style={{ backgroundImage: `url(${peptidesBg})`, backgroundSize: 'cover', backgroundPosition: '80% center' }}
+          />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.75) 0%, hsl(var(--primary) / 0.50) 40%, hsl(var(--primary) / 0.08) 65%, transparent 100%)' }} />
-
           <div className="relative">
             <h3 className="text-3xl font-serif font-bold text-white mb-6">Peptides</h3>
             <span className="inline-flex items-center gap-2 text-sm font-medium text-accent group-hover:gap-3 transition-all duration-300">
