@@ -111,7 +111,7 @@ const EditorialBand = () => (
           Pharmaceutical-grade compounds.<br />
           <span className="text-accent/80 italic">Every single batch.</span>
         </h2>
-        <p className="text-base text-primary-foreground/50 leading-relaxed mb-8 max-w-lg font-light">
+        <p className="text-base text-primary-foreground/80 leading-relaxed mb-8 max-w-lg font-light">
           Every compound we carry is independently tested by an accredited third-party laboratory.
           Certificates of Analysis are available on request — because transparency is the baseline, not a selling point.
         </p>
