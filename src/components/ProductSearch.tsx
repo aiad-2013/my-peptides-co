@@ -11,13 +11,31 @@ interface ProductSearchProps {
   onClose: () => void;
 }
 
+function useOutsideClick(ref: React.RefObject<HTMLElement>, handler: () => void) {
+  useEffect(() => {
+    const listener = (e: MouseEvent | TouchEvent) => {
+      if (!ref.current || ref.current.contains(e.target as Node)) return;
+      handler();
+    };
+    document.addEventListener('mousedown', listener);
+    document.addEventListener('touchstart', listener);
+    return () => {
+      document.removeEventListener('mousedown', listener);
+      document.removeEventListener('touchstart', listener);
+    };
+  }, [ref, handler]);
+}
+
 export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
   const [query, setQuery] = useState('');
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const { data: products } = useProducts();
   const { addItem } = useCart();
   const navigate = useNavigate();
+
+  useOutsideClick(modalRef, () => { if (isOpen) onClose(); });
 
   // Sanitize & filter
   const sanitized = query.trim().toLowerCase().replace(/[<>"']/g, '');
@@ -60,10 +78,10 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4 bg-foreground/20 backdrop-blur-sm" onClick={onClose}>
+    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4 bg-foreground/20 backdrop-blur-sm">
 
       {/* Modal */}
-      <div className="relative w-full max-w-xl bg-card border border-border rounded-sm shadow-2xl overflow-hidden animate-slide-up" onClick={e => e.stopPropagation()}>
+      <div ref={modalRef} className="relative w-full max-w-xl bg-card border border-border rounded-sm shadow-2xl overflow-hidden animate-slide-up">
 
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
