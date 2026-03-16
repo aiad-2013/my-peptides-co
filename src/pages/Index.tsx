@@ -8,6 +8,7 @@ import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { HomepageFAQ } from '@/components/HomepageFAQ';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
+import peptidesBg from '@/assets/peptides-card-bg.webp';
 
 /* ── Trust Strip ───────────────────────────────────── */
 const TrustStrip = () => (
@@ -61,20 +62,18 @@ const CategorySplit = () => (
           </div>
         </Link>
 
-        {/* Peptides — mid-dark */}
+        {/* Peptides — photo bg */}
         <Link
           to="/peptides"
           className="group relative overflow-hidden rounded-sm flex flex-col justify-end p-8 min-h-[280px]"
-          style={{ backgroundColor: 'hsl(213 18% 22%)' }}
+          style={{
+            backgroundImage: `url(${peptidesBg})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
         >
-          <div
-            className="absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
-              backgroundSize: '48px 48px',
-            }}
-          />
-          <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-primary/20" />
+
           <div className="relative">
             <p className="text-[10px] uppercase tracking-[0.2em] text-accent/70 mb-3">Category</p>
             <h3 className="text-3xl font-serif font-normal text-white mb-2">Peptides</h3>
