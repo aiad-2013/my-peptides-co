@@ -50,7 +50,7 @@ const CategorySplit = () => (
             backgroundPosition: '60% center',
           }}
         >
-          <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-primary/20" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.95) 0%, hsl(var(--primary) / 0.75) 40%, hsl(var(--primary) / 0.15) 65%, transparent 100%)' }} />
           <div className="relative">
             <h3 className="text-3xl font-serif font-bold text-white mb-6">SARMs</h3>
             <span className="inline-flex items-center gap-2 text-sm font-medium text-accent group-hover:gap-3 transition-all duration-300">
