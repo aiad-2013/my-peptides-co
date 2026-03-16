@@ -75,8 +75,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     >
       {/* Image */}
       <div
-        ref={imgWrapRef}
-        className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden cursor-crosshair"
+        className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden"
         onMouseMove={handleMouseMove}
       >
         {/* Primary image — crossfade to secondary on hover, no zoom */}
