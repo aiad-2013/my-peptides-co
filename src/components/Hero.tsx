@@ -42,12 +42,14 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
   return (
     <section
       className="relative overflow-hidden text-primary-foreground flex flex-col"
-      style={{
+      style={compact ? {
+        background: 'hsl(var(--primary))',
+        height: '370px',
+      } : {
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
         backgroundPosition: isMobile ? 'center bottom' : 'center',
-        minHeight: compact ? '450px' : (isMobile ? '85vh' : undefined),
-        height: compact ? '450px' : undefined,
+        minHeight: isMobile ? '85vh' : undefined,
       }}
     >
       {/* Gradient overlay — left-heavy on desktop, top-fade on mobile */}
