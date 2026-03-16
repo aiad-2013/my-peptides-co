@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBanner from '@/assets/hero-banner.webp';
+import heroBannerMobile from '@/assets/hero-banner-mobile.webp';
 import { MolecularCanvas } from '@/components/MolecularCanvas';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
   onShopClick: () => void;
@@ -34,14 +36,15 @@ const heroContent = {
 
 export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
   const content = heroContent[activeCategory];
+  const isMobile = useIsMobile();
 
   return (
     <section
       className="relative overflow-hidden text-primary-foreground"
       style={{
-        backgroundImage: `url(${heroBanner})`,
+        backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: isMobile ? 'top center' : 'center',
       }}
     >
       {/* Gradient overlay — left-heavy, 40% opacity */}
