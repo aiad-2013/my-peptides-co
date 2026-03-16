@@ -26,7 +26,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const imgWrapRef = useRef<HTMLDivElement>(null);
   const maxRetries = 2;
 
   const handleImgError = () => {
