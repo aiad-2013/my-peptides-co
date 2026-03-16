@@ -3,25 +3,25 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 const TEAL = '0, 212, 170';
 const NODE_RADIUS = 5;
-const NODE_SPACING = 28;
-const CROSS_BOND_INTERVAL = 3;
-const DRIFT_SPEED = 0.4;
-const BASE_AMPLITUDE = 56;       // 2× previous scale
-const BREATHE_AMPLITUDE = 5;     // ±5px oscillation
-const BREATHE_PERIOD = 7000;     // ms full cycle
-const FREQUENCY = 0.04;          // rad per structural unit
+const N_NODES = 80;             // fixed node count, evenly distributed along path
+const N_CYCLES = 5;             // complete sine-wave cycles across the full helix length
+const DRIFT_PX_PER_MS = 0.024; // ≈ 0.4 px @ 60 fps
+const BREATHE_AMPLITUDE = 5;   // ±px oscillation
+const BREATHE_PERIOD = 7000;   // ms full breathe cycle
+const BASE_AMPLITUDE = 56;     // sine amplitude (px)
 
-// Halved opacities
-const NODE_OPACITY = 0.09;
+const NODE_OPACITY   = 0.09;
 const STRAND_OPACITY = 0.06;
-const RUNG_OPACITY = 0.04;
+const RUNG_OPACITY   = 0.04;
+const CROSS_BOND_EVERY = 3;    // draw a rung every N nodes
 
 export const MolecularCanvas = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const isMobile = useIsMobile();
-  const animRef = useRef<number>(0);
-  const totalOffsetRef = useRef<number>(0);
-  const startTimeRef = useRef<number>(0);
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const isMobile     = useIsMobile();
+  const animRef      = useRef<number>(0);
+  const accOffset    = useRef<number>(0);   // accumulated path offset (px)
+  const lastTs       = useRef<number | null>(null);
+  const startTs      = useRef<number>(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -30,89 +30,122 @@ export const MolecularCanvas = () => {
     if (!ctx) return;
 
     const resize = () => {
-      canvas.width = canvas.offsetWidth;
+      canvas.width  = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
     };
     resize();
     window.addEventListener('resize', resize);
-    startTimeRef.current = performance.now();
 
-    const draw = (timestamp: number) => {
-      if (!canvas || !ctx) return;
+    // Resync on tab-focus to prevent jump catch-up
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') lastTs.current = null;
+    };
+    document.addEventListener('visibilitychange', onVisibility);
+
+    startTs.current = performance.now();
+
+    const tick = (ts: number) => {
+      // First tick after (re)focus: skip delta to avoid jump
+      if (lastTs.current === null) {
+        lastTs.current = ts;
+        animRef.current = requestAnimationFrame(tick);
+        return;
+      }
+
+      const delta = ts - lastTs.current;
+      lastTs.current = ts;
+
+      const speed = isMobile ? DRIFT_PX_PER_MS * 0.7 : DRIFT_PX_PER_MS;
+
+      // Geometry — recalculated each frame so resize is always respected
+      const diag = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
+      const helixLen = diag * 1.25;              // total path length (with off-screen buffer)
+      const spacing  = helixLen / N_NODES;       // even gap between nodes
+      // FREQUENCY chosen so exactly N_CYCLES full sine cycles fit in helixLen
+      // → sine value at pathPos=0 equals sine value at pathPos=helixLen (seamless wrap)
+      const freq = (N_CYCLES * 2 * Math.PI) / helixLen;
+
+      // Advance offset; wrap within helixLen for modulo continuity
+      accOffset.current = (accOffset.current + speed * delta) % helixLen;
+
+      // Breathing amplitude
+      const elapsed = ts - startTs.current;
+      const amp = (isMobile ? BASE_AMPLITUDE * 0.6 : BASE_AMPLITUDE)
+                  + BREATHE_AMPLITUDE * Math.sin((elapsed / BREATHE_PERIOD) * Math.PI * 2);
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      totalOffsetRef.current += isMobile ? DRIFT_SPEED * 0.7 : DRIFT_SPEED;
-
-      const elapsed = timestamp - startTimeRef.current;
-      const breathe = BREATHE_AMPLITUDE * Math.sin((elapsed / BREATHE_PERIOD) * Math.PI * 2);
-      const amp = (isMobile ? BASE_AMPLITUDE * 0.6 : BASE_AMPLITUDE) + breathe;
-
-      const wrappedOffset = totalOffsetRef.current % NODE_SPACING;
-      const diagonalLength = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
-      const totalHelixLength = diagonalLength + 6 * NODE_SPACING;
-      const nodeCount = Math.ceil(totalHelixLength / NODE_SPACING) + 2;
-
-      // Pivot: slightly left of centre so helix doesn't obscure right-side product vials
-      const pivotX = canvas.width * (isMobile ? 0.5 : 0.38);
+      const pivotX = canvas.width  * (isMobile ? 0.5  : 0.38);
       const pivotY = canvas.height * 0.55;
 
       ctx.save();
       ctx.translate(pivotX, pivotY);
-      ctx.rotate(-Math.PI / 4); // 45° → bottom-left to top-right drift
+      ctx.rotate(-Math.PI / 4);
 
-      const strand1: { x: number; y: number }[] = [];
-      const strand2: { x: number; y: number }[] = [];
+      const nodeCount = isMobile ? Math.floor(N_NODES * 0.5) : N_NODES;
+
+      // Build node arrays — each node's pathPos is offset by i * spacing
+      // so nodes are always evenly distributed regardless of accOffset
+      type Pt = { x: number; y: number };
+      const s1: Pt[] = [];
+      const s2: Pt[] = [];
 
       for (let i = 0; i < nodeCount; i++) {
-        // localY descends from +half (bottom-left) toward -half (top-right) as offset grows
-        const localY = totalHelixLength / 2 - wrappedOffset - i * NODE_SPACING;
-        const phase = (totalOffsetRef.current + i * NODE_SPACING) * FREQUENCY;
+        const pathPos = (accOffset.current + i * spacing) % helixLen;
+        const localY  = pathPos - helixLen / 2;   // centre the helix on the pivot
+        const phase   = pathPos * freq;
 
-        strand1.push({ x: amp * Math.sin(phase),           y: localY });
-        strand2.push({ x: amp * Math.sin(phase + Math.PI), y: localY });
+        s1.push({ x:  amp * Math.sin(phase),           y: localY });
+        s2.push({ x:  amp * Math.sin(phase + Math.PI), y: localY });
       }
+
+      // Helper: draw a strand as a polyline, lifting the pen at the one
+      // wrap point (where localY jumps by ~helixLen) so no diagonal flash occurs
+      const drawStrand = (pts: Pt[]) => {
+        ctx.beginPath();
+        for (let i = 0; i < pts.length; i++) {
+          const isWrap = i > 0 && Math.abs(pts[i].y - pts[i - 1].y) > helixLen * 0.4;
+          if (i === 0 || isWrap) ctx.moveTo(pts[i].x, pts[i].y);
+          else ctx.lineTo(pts[i].x, pts[i].y);
+        }
+        ctx.stroke();
+      };
 
       ctx.lineWidth = 1;
 
-      // Strand 1 curve
-      ctx.beginPath();
       ctx.strokeStyle = `rgba(${TEAL}, ${STRAND_OPACITY})`;
-      strand1.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
-      ctx.stroke();
+      drawStrand(s1);
+      drawStrand(s2);
 
-      // Strand 2 curve
-      ctx.beginPath();
-      ctx.strokeStyle = `rgba(${TEAL}, ${STRAND_OPACITY})`;
-      strand2.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
-      ctx.stroke();
-
-      // Cross-bonds (ladder rungs) at 4% opacity
+      // Cross-bond rungs — skip the wrap node to avoid a diagonal flash
       ctx.strokeStyle = `rgba(${TEAL}, ${RUNG_OPACITY})`;
-      for (let i = 0; i < nodeCount; i += CROSS_BOND_INTERVAL) {
+      for (let i = 0; i < nodeCount; i += CROSS_BOND_EVERY) {
+        const isWrap = i > 0 && Math.abs(s1[i].y - s1[i - 1].y) > helixLen * 0.4;
+        if (isWrap) continue;
         ctx.beginPath();
-        ctx.moveTo(strand1[i].x, strand1[i].y);
-        ctx.lineTo(strand2[i].x, strand2[i].y);
+        ctx.moveTo(s1[i].x, s1[i].y);
+        ctx.lineTo(s2[i].x, s2[i].y);
         ctx.stroke();
       }
 
       // Nodes
       ctx.fillStyle = `rgba(${TEAL}, ${NODE_OPACITY})`;
-      for (const p of [...strand1, ...strand2]) {
+      for (const p of [...s1, ...s2]) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, NODE_RADIUS, 0, Math.PI * 2);
         ctx.fill();
       }
 
       ctx.restore();
-
-      animRef.current = requestAnimationFrame(draw);
+      animRef.current = requestAnimationFrame(tick);
     };
 
-    animRef.current = requestAnimationFrame(draw);
+    animRef.current = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(animRef.current);
       window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', onVisibility);
     };
   }, [isMobile]);
 
