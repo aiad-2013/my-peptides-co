@@ -48,7 +48,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
       } : {
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
-        backgroundPosition: isMobile ? 'center bottom' : 'center bottom',
+        backgroundPosition: isMobile ? 'center bottom' : 'center',
         minHeight: isMobile ? '85vh' : undefined,
       }}
     >
