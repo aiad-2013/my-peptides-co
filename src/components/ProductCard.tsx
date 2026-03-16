@@ -141,7 +141,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
+      <div className="p-3 sm:p-4 flex flex-col flex-1">
         <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5">
           {product.category}
         </p>
@@ -158,18 +158,19 @@ export const ProductCard = ({ product }: ProductCardProps) => {
 
         <div className="flex items-center justify-between pt-3 mt-auto border-t border-border/60">
           <div>
-            <span className="text-base font-medium text-foreground tabular-nums">
+            <span className="text-sm sm:text-base font-medium text-foreground tabular-nums">
               ${product.price.toFixed(2)}
             </span>
             <span className="text-xs text-muted-foreground ml-1">AUD</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Eye button hidden on mobile — whole card is a link */}
             <Button
               variant="outline"
               size="sm"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); navigate(`/product/${product.id}`); }}
-              className="h-8 w-8 p-0 rounded-sm border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
+              className="hidden sm:flex h-8 w-8 p-0 rounded-sm border-border/60 text-muted-foreground hover:text-foreground hover:border-border"
               aria-label="View product"
             >
               <Eye className="w-3.5 h-3.5" />
@@ -181,7 +182,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               onClick={handleAddToCart}
               disabled={!product.inStock}
               className={cn(
-                "text-xs h-8 px-3 rounded-sm transition-all duration-300",
+                "text-xs h-8 px-2 sm:px-3 rounded-sm transition-all duration-300",
                 added && "bg-foreground text-background scale-95",
                 !product.inStock && "opacity-30 cursor-not-allowed"
               )}
