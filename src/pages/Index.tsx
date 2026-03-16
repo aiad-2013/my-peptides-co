@@ -88,7 +88,7 @@ const EditorialBand = () => (
     style={{
       backgroundImage: `url(${editorialBg})`,
       backgroundSize: 'cover',
-      backgroundPosition: 'center',
+      backgroundPosition: 'center center',
     }}
   >
     {/* Dark overlay for text readability */}
