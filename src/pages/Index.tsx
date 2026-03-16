@@ -69,7 +69,7 @@ const CategorySplit = () => (
             backgroundPosition: '80% center',
           }}
         >
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.95) 0%, hsl(var(--primary) / 0.75) 40%, hsl(var(--primary) / 0.15) 65%, transparent 100%)' }} />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.75) 0%, hsl(var(--primary) / 0.50) 40%, hsl(var(--primary) / 0.08) 65%, transparent 100%)' }} />
 
           <div className="relative">
             <h3 className="text-3xl font-serif font-bold text-white mb-6">Peptides</h3>
