@@ -9,6 +9,7 @@ import { HomepageFAQ } from '@/components/HomepageFAQ';
 import { Button } from '@/components/ui/button';
 import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
 import peptidesBg from '@/assets/peptides-card-bg.webp';
+import sarmsBg from '@/assets/sarms-card-bg.webp';
 
 /* ── Trust Strip ───────────────────────────────────── */
 const TrustStrip = () => (
