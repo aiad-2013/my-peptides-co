@@ -141,7 +141,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
       </div>
 
       {/* Content */}
-      <div className="p-4 flex flex-col flex-1">
+      <div className="p-3 sm:p-4 flex flex-col flex-1">
         <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-1.5">
           {product.category}
         </p>
