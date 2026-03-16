@@ -30,9 +30,12 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
   const [query, setQuery] = useState('');
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const { data: products } = useProducts();
   const { addItem } = useCart();
   const navigate = useNavigate();
+
+  useOutsideClick(modalRef, () => { if (isOpen) onClose(); });
 
   // Sanitize & filter
   const sanitized = query.trim().toLowerCase().replace(/[<>"']/g, '');
