@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBanner from '@/assets/hero-banner.webp';
-import heroBannerMobile from '@/assets/hero-banner-mobile.webp';
+import heroBannerMobile from '@/assets/hero-banner-mobile.jpg';
 import { MolecularCanvas } from '@/components/MolecularCanvas';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -44,7 +44,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
       style={{
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
-        backgroundPosition: isMobile ? 'top center' : 'center',
+        backgroundPosition: isMobile ? 'center bottom' : 'center',
       }}
     >
       {/* Gradient overlay — left-heavy on desktop, top-fade on mobile */}
