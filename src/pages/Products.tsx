@@ -20,7 +20,7 @@ const Products = ({ category }: ProductsProps) => {
     <div className="min-h-screen bg-background">
       <Header />
       <main>
-        <Hero onShopClick={scrollToProducts} activeCategory={category} />
+        <Hero activeCategory={category} compact />
         <div ref={productsRef}>
           <ProductGrid category={category} />
         </div>
