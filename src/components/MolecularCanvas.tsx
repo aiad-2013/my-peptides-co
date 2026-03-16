@@ -2,14 +2,19 @@ import { useEffect, useRef } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const TEAL = '0, 212, 170';
-const NODE_RADIUS = 3.5;
-const NODE_SPACING = 24;        // vertical px between helix nodes
-const CROSS_BOND_INTERVAL = 3;  // draw a rung every N nodes
-const DRIFT_SPEED = 0.4;        // px per frame upward
-const BASE_AMPLITUDE = 28;      // base sine amplitude in px
-const BREATHE_AMPLITUDE = 5;    // ±px oscillation
-const BREATHE_PERIOD = 7000;    // ms for one full breathe cycle
-const FREQUENCY = 0.05;         // sine frequency (rad/px structural unit)
+const NODE_RADIUS = 5;
+const NODE_SPACING = 28;
+const CROSS_BOND_INTERVAL = 3;
+const DRIFT_SPEED = 0.4;
+const BASE_AMPLITUDE = 56;       // 2× previous scale
+const BREATHE_AMPLITUDE = 5;     // ±5px oscillation
+const BREATHE_PERIOD = 7000;     // ms full cycle
+const FREQUENCY = 0.04;          // rad per structural unit
+
+// Halved opacities
+const NODE_OPACITY = 0.09;
+const STRAND_OPACITY = 0.06;
+const RUNG_OPACITY = 0.04;
 
 export const MolecularCanvas = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -32,40 +37,57 @@ export const MolecularCanvas = () => {
     window.addEventListener('resize', resize);
     startTimeRef.current = performance.now();
 
-    const drawHelix = (
-      centerX: number,
-      amp: number,
-      nodeCount: number,
-      wrappedOffset: number,
-    ) => {
+    const draw = (timestamp: number) => {
+      if (!canvas || !ctx) return;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      totalOffsetRef.current += isMobile ? DRIFT_SPEED * 0.7 : DRIFT_SPEED;
+
+      const elapsed = timestamp - startTimeRef.current;
+      const breathe = BREATHE_AMPLITUDE * Math.sin((elapsed / BREATHE_PERIOD) * Math.PI * 2);
+      const amp = (isMobile ? BASE_AMPLITUDE * 0.6 : BASE_AMPLITUDE) + breathe;
+
+      const wrappedOffset = totalOffsetRef.current % NODE_SPACING;
+      const diagonalLength = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
+      const totalHelixLength = diagonalLength + 6 * NODE_SPACING;
+      const nodeCount = Math.ceil(totalHelixLength / NODE_SPACING) + 2;
+
+      // Pivot: slightly left of centre so helix doesn't obscure right-side product vials
+      const pivotX = canvas.width * (isMobile ? 0.5 : 0.38);
+      const pivotY = canvas.height * 0.55;
+
+      ctx.save();
+      ctx.translate(pivotX, pivotY);
+      ctx.rotate(-Math.PI / 4); // 45° → bottom-left to top-right drift
+
       const strand1: { x: number; y: number }[] = [];
       const strand2: { x: number; y: number }[] = [];
 
       for (let i = 0; i < nodeCount; i++) {
-        const y = canvas.height + NODE_SPACING - wrappedOffset - i * NODE_SPACING;
-        // Phase driven by total accumulated offset → helix scrolls upward seamlessly
+        // localY descends from +half (bottom-left) toward -half (top-right) as offset grows
+        const localY = totalHelixLength / 2 - wrappedOffset - i * NODE_SPACING;
         const phase = (totalOffsetRef.current + i * NODE_SPACING) * FREQUENCY;
 
-        strand1.push({ x: centerX + amp * Math.sin(phase), y });
-        strand2.push({ x: centerX + amp * Math.sin(phase + Math.PI), y });
+        strand1.push({ x: amp * Math.sin(phase),           y: localY });
+        strand2.push({ x: amp * Math.sin(phase + Math.PI), y: localY });
       }
 
       ctx.lineWidth = 1;
 
       // Strand 1 curve
       ctx.beginPath();
-      ctx.strokeStyle = `rgba(${TEAL}, 0.22)`;
+      ctx.strokeStyle = `rgba(${TEAL}, ${STRAND_OPACITY})`;
       strand1.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
       ctx.stroke();
 
       // Strand 2 curve
       ctx.beginPath();
-      ctx.strokeStyle = `rgba(${TEAL}, 0.22)`;
+      ctx.strokeStyle = `rgba(${TEAL}, ${STRAND_OPACITY})`;
       strand2.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
       ctx.stroke();
 
-      // Cross-bonds (ladder rungs) at 9% opacity
-      ctx.strokeStyle = `rgba(${TEAL}, 0.09)`;
+      // Cross-bonds (ladder rungs) at 4% opacity
+      ctx.strokeStyle = `rgba(${TEAL}, ${RUNG_OPACITY})`;
       for (let i = 0; i < nodeCount; i += CROSS_BOND_INTERVAL) {
         ctx.beginPath();
         ctx.moveTo(strand1[i].x, strand1[i].y);
@@ -73,36 +95,15 @@ export const MolecularCanvas = () => {
         ctx.stroke();
       }
 
-      // Nodes on both strands
-      ctx.fillStyle = `rgba(${TEAL}, 0.22)`;
+      // Nodes
+      ctx.fillStyle = `rgba(${TEAL}, ${NODE_OPACITY})`;
       for (const p of [...strand1, ...strand2]) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, NODE_RADIUS, 0, Math.PI * 2);
         ctx.fill();
       }
-    };
 
-    const draw = (timestamp: number) => {
-      if (!canvas || !ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      totalOffsetRef.current += DRIFT_SPEED;
-
-      const elapsed = timestamp - startTimeRef.current;
-      const breathe = BREATHE_AMPLITUDE * Math.sin((elapsed / BREATHE_PERIOD) * Math.PI * 2);
-      const amp = BASE_AMPLITUDE + breathe;
-
-      const wrappedOffset = totalOffsetRef.current % NODE_SPACING;
-      const nodeCount = Math.ceil(canvas.height / NODE_SPACING) + 3;
-
-      if (isMobile) {
-        // Single subtle column on far right, away from content
-        drawHelix(canvas.width * 0.88, amp * 0.7, nodeCount, wrappedOffset);
-      } else {
-        // Left third and right third — centre stays clear for headline + product
-        drawHelix(canvas.width * 0.15, amp, nodeCount, wrappedOffset);
-        drawHelix(canvas.width * 0.85, amp, nodeCount, wrappedOffset);
-      }
+      ctx.restore();
 
       animRef.current = requestAnimationFrame(draw);
     };
