@@ -1,4 +1,4 @@
-import { useState, useRef, type MouseEvent as ReactMouseEvent } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
