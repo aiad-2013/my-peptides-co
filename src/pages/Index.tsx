@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
@@ -132,6 +132,18 @@ const EditorialBand = () => (
 /* ── Index Page ────────────────────────────────────── */
 const Index = () => {
   const productsRef = useRef<HTMLDivElement>(null);
+  const fixedRef = useRef<HTMLDivElement>(null);
+  const [spacerHeight, setSpacerHeight] = useState(0);
+
+  // Measure the fixed hero+strip block so the scrollable content starts right below it
+  useEffect(() => {
+    const measure = () => {
+      if (fixedRef.current) setSpacerHeight(fixedRef.current.offsetHeight);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const scrollToProducts = () => {
     productsRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -140,9 +152,18 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main>
+
+      {/* Fixed hero + trust strip — anchored below sticky header */}
+      <div ref={fixedRef} className="fixed left-0 right-0 top-[64px] md:top-[80px] z-30">
         <Hero onShopClick={scrollToProducts} activeCategory="all" />
         <TrustStrip />
+      </div>
+
+      {/* Spacer = measured height of the fixed block */}
+      <div style={{ height: spacerHeight }} />
+
+      {/* Scrollable content — white bg scrolls over fixed hero */}
+      <main className="relative z-40 bg-background">
         <CategorySplit />
         <div ref={productsRef}>
           <ProductGrid category="all" limit={4} />
