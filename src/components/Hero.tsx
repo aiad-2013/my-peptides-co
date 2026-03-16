@@ -60,12 +60,12 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
         <div className="max-w-xl text-left">
 
           {/* Clinical badge */}
-          <div className="inline-flex items-center gap-2 mb-8 animate-fade-in">
-            <span className="w-4 h-px bg-accent/60" />
-            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-accent/80">
+          <div className="inline-flex items-center gap-3 mb-8 animate-fade-in">
+            <span className="w-6 h-px bg-accent/70" />
+            <span className="text-xs md:text-sm font-semibold uppercase tracking-[0.18em] text-accent">
               {content.badge}
             </span>
-            <span className="w-4 h-px bg-accent/60" />
+            <span className="w-6 h-px bg-accent/70" />
           </div>
 
           {/* Heading */}
