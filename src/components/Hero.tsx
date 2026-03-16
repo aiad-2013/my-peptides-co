@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBanner from '@/assets/hero-banner.webp';
+import { MolecularCanvas } from '@/components/MolecularCanvas';
 
 interface HeroProps {
   onShopClick: () => void;
