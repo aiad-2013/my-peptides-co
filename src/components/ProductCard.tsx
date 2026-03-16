@@ -42,12 +42,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     setTimeout(() => setAdded(false), 1800);
   };
 
-  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
-    if (!imgWrapRef.current) return;
-    const rect = imgWrapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomOrigin(`${x}% ${y}%`);
+  const handleMouseMove = (_e: ReactMouseEvent<HTMLDivElement>) => {
+    // zoom disabled
   };
 
   const hasRealImage = product.image && product.image !== '/placeholder.svg';
