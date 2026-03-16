@@ -2,13 +2,13 @@ import { useEffect, useRef } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 const TEAL = '0, 212, 170';
-const NODE_RADIUS = 5;
+const NODE_RADIUS = 7;
 const N_NODES = 80;             // fixed node count, evenly distributed along path
 const N_CYCLES = 5;             // complete sine-wave cycles across the full helix length
 const DRIFT_PX_PER_MS = 0.024; // ≈ 0.4 px @ 60 fps
 const BREATHE_AMPLITUDE = 5;   // ±px oscillation
 const BREATHE_PERIOD = 7000;   // ms full breathe cycle
-const BASE_AMPLITUDE = 56;     // sine amplitude (px)
+const BASE_AMPLITUDE = 78;     // sine amplitude (px)
 
 const NODE_OPACITY   = 0.132;
 const STRAND_OPACITY = 0.086;
