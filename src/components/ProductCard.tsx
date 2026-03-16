@@ -42,7 +42,7 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     setTimeout(() => setAdded(false), 1800);
   };
 
-  const handleMouseMove = (_e: ReactMouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = (_e: React.MouseEvent<HTMLDivElement>) => {
     // zoom disabled
   };
 
