@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBanner from '@/assets/hero-banner.webp';
-import heroBannerMobile from '@/assets/hero-banner-mobile.webp';
+import heroBannerMobile from '@/assets/hero-banner-mobile.jpg';
 import { MolecularCanvas } from '@/components/MolecularCanvas';
 import { useIsMobile } from '@/hooks/use-mobile';
 
