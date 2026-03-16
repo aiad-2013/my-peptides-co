@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
 import peptidesBg from '@/assets/peptides-card-bg.webp';
 import sarmsBg from '@/assets/sarms-card-bg.webp';
+import editorialBg from '@/assets/editorial-band-bg.webp';
 
 /* ── Trust Strip ───────────────────────────────────── */
 const TrustStrip = () => (
@@ -82,12 +83,19 @@ const CategorySplit = () => (
 
 /* ── Editorial Band ────────────────────────────────── */
 const EditorialBand = () => (
-  <section className="bg-primary text-primary-foreground py-16 md:py-24 overflow-hidden relative">
+  <section
+    className="text-primary-foreground py-16 md:py-24 overflow-hidden relative"
+    style={{
+      backgroundImage: `url(${editorialBg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  >
+    {/* Dark overlay for text readability */}
     <div
-      className="absolute inset-0 opacity-[0.035]"
+      className="absolute inset-0"
       style={{
-        backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
-        backgroundSize: '64px 64px',
+        background: 'linear-gradient(to right, hsl(213 22% 8% / 0.92) 0%, hsl(213 22% 8% / 0.80) 45%, hsl(213 22% 8% / 0.40) 75%, hsl(213 22% 8% / 0.20) 100%)',
       }}
     />
     <div className="absolute -left-32 top-1/2 -translate-y-1/2 w-96 h-96 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
