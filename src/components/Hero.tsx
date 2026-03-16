@@ -35,17 +35,19 @@ const heroContent = {
   },
 };
 
-export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
+export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: HeroProps) => {
   const content = heroContent[activeCategory];
   const isMobile = useIsMobile();
 
   return (
     <section
-      className="relative overflow-hidden text-primary-foreground min-h-[85vh] md:min-h-0 flex flex-col"
+      className="relative overflow-hidden text-primary-foreground flex flex-col"
       style={{
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
         backgroundPosition: isMobile ? 'center bottom' : 'center',
+        minHeight: compact ? '450px' : (isMobile ? '85vh' : undefined),
+        height: compact ? '450px' : undefined,
       }}
     >
       {/* Gradient overlay — left-heavy on desktop, top-fade on mobile */}
