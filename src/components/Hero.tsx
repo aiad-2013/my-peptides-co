@@ -70,7 +70,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
         className={`container mx-auto px-4 relative flex flex-col justify-center ${compact ? 'h-full py-0' : 'pt-10 pb-4 md:py-16 lg:py-20'}`}
         style={{ zIndex: 2 }}
       >
-        <div className="max-w-xl text-left">
+        <div className={`text-left ${compact ? 'max-w-3xl' : 'max-w-xl'}`}>
 
           {/* Clinical badge */}
           <div className="inline-flex items-center gap-3 mb-6 animate-fade-in">
