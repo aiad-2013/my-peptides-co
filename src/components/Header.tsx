@@ -44,8 +44,8 @@ export const Header = () => {
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16 md:h-20">
-          <Link to="/" className="flex items-center">
-            <img src={logo} alt="mypeptideco" className="h-8 md:h-10 w-auto" />
+          <Link to="/" className="flex items-center flex-shrink-0">
+            <img src={logo} alt="mypeptideco" className="h-8 md:h-10 w-auto max-w-[160px]" />
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
