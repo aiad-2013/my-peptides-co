@@ -6,8 +6,9 @@ import { MolecularCanvas } from '@/components/MolecularCanvas';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
-  onShopClick: () => void;
+  onShopClick?: () => void;
   activeCategory?: 'all' | 'sarms' | 'peptides';
+  compact?: boolean;
 }
 
 const heroContent = {
@@ -34,17 +35,19 @@ const heroContent = {
   },
 };
 
-export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
+export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: HeroProps) => {
   const content = heroContent[activeCategory];
   const isMobile = useIsMobile();
 
   return (
     <section
-      className="relative overflow-hidden text-primary-foreground min-h-[85vh] md:min-h-0 flex flex-col"
+      className="relative overflow-hidden text-primary-foreground flex flex-col"
       style={{
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
         backgroundPosition: isMobile ? 'center bottom' : 'center',
+        minHeight: compact ? '450px' : (isMobile ? '85vh' : undefined),
+        height: compact ? '450px' : undefined,
       }}
     >
       {/* Gradient overlay — left-heavy on desktop, top-fade on mobile */}
@@ -87,18 +90,20 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
             {content.description}
           </p>
 
-          {/* CTA Buttons */}
-          <div
-            className="flex flex-col sm:flex-row items-start gap-3 mb-16 animate-slide-up"
-            style={{ animationDelay: '0.16s' }}
-          >
-            <Button variant="hero" onClick={onShopClick}>
-              {content.cta}
-            </Button>
-            <Button variant="hero-outline" asChild>
-              <Link to="/lab-reports">Lab Reports</Link>
-            </Button>
-          </div>
+          {/* CTA Buttons — hidden on collection pages */}
+          {!compact && (
+            <div
+              className="flex flex-col sm:flex-row items-start gap-3 mb-16 animate-slide-up"
+              style={{ animationDelay: '0.16s' }}
+            >
+              <Button variant="hero" onClick={onShopClick}>
+                {content.cta}
+              </Button>
+              <Button variant="hero-outline" asChild>
+                <Link to="/lab-reports">Lab Reports</Link>
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </section>
