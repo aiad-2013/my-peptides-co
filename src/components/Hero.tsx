@@ -36,14 +36,15 @@ const heroContent = {
 
 export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
   const content = heroContent[activeCategory];
+  const isMobile = useIsMobile();
 
   return (
     <section
       className="relative overflow-hidden text-primary-foreground"
       style={{
-        backgroundImage: `url(${heroBanner})`,
+        backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: isMobile ? 'top center' : 'center',
       }}
     >
       {/* Gradient overlay — left-heavy, 40% opacity */}
