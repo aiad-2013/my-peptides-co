@@ -80,38 +80,26 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden cursor-crosshair"
         onMouseMove={handleMouseMove}
       >
-        {/* Primary image — zoom on hover when no secondary swap */}
+        {/* Primary image — crossfade to secondary on hover, no zoom */}
         <img
           src={displaySrc}
           alt={product.name}
           className={cn(
-            "absolute inset-0 w-full h-full transition-all duration-500 ease-out",
+            "absolute inset-0 w-full h-full transition-opacity duration-500 ease-out",
             hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90',
-            hoverSrc
-              ? (isHovered ? 'opacity-0 scale-[1.04]' : 'opacity-100 scale-100')
-              : 'scale-100'
+            hoverSrc && isHovered ? 'opacity-0' : 'opacity-100'
           )}
-          style={!hoverSrc && isHovered ? {
-            transform: 'scale(1.8)',
-            transformOrigin: zoomOrigin,
-            transition: 'transform 0.15s ease-out',
-          } : undefined}
           onError={hasRealImage ? handleImgError : undefined}
         />
-        {/* Secondary image (hover reveal) — also zoom on hover */}
+        {/* Secondary image — simple fade in on hover, no zoom */}
         {hoverSrc && (
           <img
             src={hoverSrc}
             alt={`${product.name} — chemical structure`}
             className={cn(
-              "absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 ease-out",
-              isHovered ? 'opacity-100' : 'opacity-0 scale-[0.97]'
+              "absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 ease-out",
+              isHovered ? 'opacity-100' : 'opacity-0'
             )}
-            style={isHovered ? {
-              transform: 'scale(1.5)',
-              transformOrigin: zoomOrigin,
-              transition: 'transform 0.15s ease-out, opacity 0.5s ease-out',
-            } : undefined}
           />
         )}
 
