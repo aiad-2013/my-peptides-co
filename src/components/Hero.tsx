@@ -6,8 +6,9 @@ import { MolecularCanvas } from '@/components/MolecularCanvas';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
-  onShopClick: () => void;
+  onShopClick?: () => void;
   activeCategory?: 'all' | 'sarms' | 'peptides';
+  compact?: boolean;
 }
 
 const heroContent = {
