@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import heroBanner from '@/assets/hero-banner.webp';
+import { MolecularCanvas } from '@/components/MolecularCanvas';
 
 interface HeroProps {
   onShopClick: () => void;
@@ -48,10 +49,14 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
         className="absolute inset-0"
         style={{
           background: 'linear-gradient(to right, hsl(213 22% 8% / 0.92) 0%, hsl(213 22% 8% / 0.75) 35%, hsl(213 22% 8% / 0.30) 65%, transparent 100%)',
+          zIndex: 0,
         }}
       />
 
-      <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative">
+      {/* Molecular network animation — above gradient, below content */}
+      <MolecularCanvas />
+
+      <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative" style={{ zIndex: 2 }}>
         <div className="max-w-xl text-left">
 
           {/* Clinical badge */}
