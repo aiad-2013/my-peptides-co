@@ -83,7 +83,14 @@ const CategorySplit = () => (
 
 /* ── Editorial Band ────────────────────────────────── */
 const EditorialBand = () => (
-  <section className="bg-primary text-primary-foreground py-16 md:py-24 overflow-hidden relative">
+  <section
+    className="text-primary-foreground py-16 md:py-24 overflow-hidden relative"
+    style={{
+      backgroundImage: `url(${editorialBg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+    }}
+  >
     <div
       className="absolute inset-0 opacity-[0.035]"
       style={{
