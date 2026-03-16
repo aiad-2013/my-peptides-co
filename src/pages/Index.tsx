@@ -132,6 +132,18 @@ const EditorialBand = () => (
 /* ── Index Page ────────────────────────────────────── */
 const Index = () => {
   const productsRef = useRef<HTMLDivElement>(null);
+  const fixedRef = useRef<HTMLDivElement>(null);
+  const [spacerHeight, setSpacerHeight] = useState(0);
+
+  // Measure the fixed hero+strip block so the scrollable content starts right below it
+  useEffect(() => {
+    const measure = () => {
+      if (fixedRef.current) setSpacerHeight(fixedRef.current.offsetHeight);
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const scrollToProducts = () => {
     productsRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -141,20 +153,16 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       <Header />
 
-      {/* Fixed hero + trust strip — sits below sticky header (top-[64px] md:top-[80px]) */}
-      <div className="fixed left-0 right-0 top-[64px] md:top-[80px] z-30">
+      {/* Fixed hero + trust strip — anchored below sticky header */}
+      <div ref={fixedRef} className="fixed left-0 right-0 top-[64px] md:top-[80px] z-30">
         <Hero onShopClick={scrollToProducts} activeCategory="all" />
         <TrustStrip />
       </div>
 
-      {/* Spacer pushes scrollable content below the fixed block */}
-      <div
-        className="relative z-40 bg-background"
-        style={{ marginTop: 'calc(var(--fixed-hero-height, 100vh) - 64px)' }}
-      >
-        {/* We use a dynamic spacer via a sentinel — simpler: just give it enough top margin */}
-      </div>
+      {/* Spacer = measured height of the fixed block */}
+      <div style={{ height: spacerHeight }} />
 
+      {/* Scrollable content — white bg scrolls over fixed hero */}
       <main className="relative z-40 bg-background">
         <CategorySplit />
         <div ref={productsRef}>
