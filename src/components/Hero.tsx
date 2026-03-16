@@ -40,26 +40,28 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
 
   return (
     <section
-      className="relative overflow-hidden text-primary-foreground"
+      className="relative overflow-hidden text-primary-foreground min-h-[85vh] md:min-h-0 flex flex-col"
       style={{
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
         backgroundPosition: isMobile ? 'top center' : 'center',
       }}
     >
-      {/* Gradient overlay — left-heavy, 40% opacity */}
+      {/* Gradient overlay — left-heavy on desktop, top-fade on mobile */}
       <div
         className="absolute inset-0"
         style={{
-          background: 'linear-gradient(to right, hsl(213 22% 8% / 0.92) 0%, hsl(213 22% 8% / 0.75) 35%, hsl(213 22% 8% / 0.30) 65%, transparent 100%)',
+          background: isMobile
+            ? 'linear-gradient(to bottom, hsl(213 22% 8% / 0.70) 0%, hsl(213 22% 8% / 0.45) 40%, transparent 70%)'
+            : 'linear-gradient(to right, hsl(213 22% 8% / 0.92) 0%, hsl(213 22% 8% / 0.75) 35%, hsl(213 22% 8% / 0.30) 65%, transparent 100%)',
           zIndex: 0,
         }}
       />
 
       {/* Molecular network animation — above gradient, below content */}
-      <MolecularCanvas />
+      {!isMobile && <MolecularCanvas />}
 
-      <div className="container mx-auto px-4 py-12 md:py-16 lg:py-20 relative" style={{ zIndex: 2 }}>
+      <div className="container mx-auto px-4 pt-10 pb-4 md:py-16 lg:py-20 relative" style={{ zIndex: 2 }}>
         <div className="max-w-xl text-left">
 
           {/* Clinical badge */}
