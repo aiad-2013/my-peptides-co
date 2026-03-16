@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import heroBanner from '@/assets/hero-banner.webp';
 
 interface HeroProps {
   onShopClick: () => void;
@@ -34,17 +35,24 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
   const content = heroContent[activeCategory];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
-      {/* Very subtle grid — structural, not decorative */}
-      <div className="absolute inset-0 opacity-[0.03]"
+    <section
+      className="relative overflow-hidden text-primary-foreground"
+      style={{
+        backgroundImage: `url(${heroBanner})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Gradient overlay — left-heavy, 40% opacity */}
+      <div
+        className="absolute inset-0"
         style={{
-          backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
-          backgroundSize: '64px 64px',
+          background: 'linear-gradient(to right, hsl(213 22% 8% / 0.92) 0%, hsl(213 22% 8% / 0.75) 35%, hsl(213 22% 8% / 0.30) 65%, transparent 100%)',
         }}
       />
 
       <div className="container mx-auto px-4 py-20 md:py-28 lg:py-36 relative">
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-xl text-left">
 
           {/* Clinical badge */}
           <div className="inline-flex items-center gap-2 mb-8 animate-fade-in">
@@ -63,7 +71,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
 
           {/* Description */}
           <p
-            className="text-base md:text-lg text-primary-foreground/50 mb-10 max-w-xl mx-auto leading-relaxed font-light animate-slide-up"
+            className="text-base md:text-lg text-primary-foreground/60 mb-10 max-w-md leading-relaxed font-light animate-slide-up"
             style={{ animationDelay: '0.08s' }}
           >
             {content.description}
@@ -71,7 +79,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all' }: HeroProps) => {
 
           {/* CTA Buttons */}
           <div
-            className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16 animate-slide-up"
+            className="flex flex-col sm:flex-row items-start gap-3 mb-16 animate-slide-up"
             style={{ animationDelay: '0.16s' }}
           >
             <Button variant="hero" onClick={onShopClick}>
