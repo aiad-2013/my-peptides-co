@@ -66,11 +66,14 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
       {/* Molecular network animation — above gradient, below content */}
       {!isMobile && <MolecularCanvas />}
 
-      <div className="container mx-auto px-4 pt-10 pb-4 md:py-16 lg:py-20 relative" style={{ zIndex: 2 }}>
+      <div
+        className={`container mx-auto px-4 relative flex flex-col justify-center ${compact ? 'h-full py-0' : 'pt-10 pb-4 md:py-16 lg:py-20'}`}
+        style={{ zIndex: 2 }}
+      >
         <div className="max-w-xl text-left">
 
           {/* Clinical badge */}
-          <div className="inline-flex items-center gap-3 mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-3 mb-6 animate-fade-in">
             <span className="w-6 h-px bg-accent/70" />
             <span className="text-xs md:text-sm font-semibold uppercase tracking-[0.18em] text-accent">
               {content.badge}
@@ -79,14 +82,14 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
           </div>
 
           {/* Heading */}
-          <h1 className="text-4xl md:text-5xl lg:text-[56px] font-serif font-normal leading-[1.1] mb-6 animate-slide-up tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-[56px] font-serif font-normal leading-[1.1] mb-5 animate-slide-up tracking-tight">
             {content.titleLine1}
             <span className="block text-gradient-gold italic">{content.titleLine2}</span>
           </h1>
 
           {/* Description */}
           <p
-            className="text-base md:text-lg text-primary-foreground/60 mb-10 max-w-md leading-relaxed font-light animate-slide-up"
+            className={`text-base md:text-lg text-primary-foreground/60 max-w-md leading-relaxed font-light animate-slide-up ${compact ? 'mb-0' : 'mb-10'}`}
             style={{ animationDelay: '0.08s' }}
           >
             {content.description}
@@ -95,7 +98,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
           {/* CTA Buttons — hidden on collection pages */}
           {!compact && (
             <div
-              className="flex flex-col sm:flex-row items-start gap-3 mb-16 animate-slide-up"
+              className="flex flex-col sm:flex-row items-start gap-3 mt-8 mb-16 animate-slide-up"
               style={{ animationDelay: '0.16s' }}
             >
               <Button variant="hero" onClick={onShopClick}>
