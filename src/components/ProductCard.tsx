@@ -1,4 +1,4 @@
-import { useState, useRef, type MouseEvent as ReactMouseEvent } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
@@ -26,8 +26,6 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const [retryCount, setRetryCount] = useState(0);
   const [added, setAdded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [zoomOrigin, setZoomOrigin] = useState('50% 50%');
-  const imgWrapRef = useRef<HTMLDivElement>(null);
   const maxRetries = 2;
 
   const handleImgError = () => {
@@ -43,12 +41,8 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     setTimeout(() => setAdded(false), 1800);
   };
 
-  const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
-    if (!imgWrapRef.current) return;
-    const rect = imgWrapRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomOrigin(`${x}% ${y}%`);
+  const handleMouseMove = (_e: React.MouseEvent<HTMLDivElement>) => {
+    // zoom disabled
   };
 
   const hasRealImage = product.image && product.image !== '/placeholder.svg';
@@ -81,42 +75,29 @@ export const ProductCard = ({ product }: ProductCardProps) => {
     >
       {/* Image */}
       <div
-        ref={imgWrapRef}
-        className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden cursor-crosshair"
+        className="relative aspect-square bg-gradient-to-b from-secondary/60 to-secondary overflow-hidden"
         onMouseMove={handleMouseMove}
       >
-        {/* Primary image — zoom on hover when no secondary swap */}
+        {/* Primary image — crossfade to secondary on hover, no zoom */}
         <img
           src={displaySrc}
           alt={product.name}
           className={cn(
-            "absolute inset-0 w-full h-full transition-all duration-500 ease-out",
+            "absolute inset-0 w-full h-full transition-opacity duration-500 ease-out",
             hasRealImage && !imgError ? 'object-cover' : 'object-contain p-6 opacity-90',
-            hoverSrc
-              ? (isHovered ? 'opacity-0 scale-[1.04]' : 'opacity-100 scale-100')
-              : 'scale-100'
+            hoverSrc && isHovered ? 'opacity-0' : 'opacity-100'
           )}
-          style={!hoverSrc && isHovered ? {
-            transform: 'scale(1.8)',
-            transformOrigin: zoomOrigin,
-            transition: 'transform 0.15s ease-out',
-          } : undefined}
           onError={hasRealImage ? handleImgError : undefined}
         />
-        {/* Secondary image (hover reveal) — also zoom on hover */}
+        {/* Secondary image — simple fade in on hover, no zoom */}
         {hoverSrc && (
           <img
             src={hoverSrc}
             alt={`${product.name} — chemical structure`}
             className={cn(
-              "absolute inset-0 w-full h-full object-contain p-4 transition-all duration-500 ease-out",
-              isHovered ? 'opacity-100' : 'opacity-0 scale-[0.97]'
+              "absolute inset-0 w-full h-full object-contain p-4 transition-opacity duration-500 ease-out",
+              isHovered ? 'opacity-100' : 'opacity-0'
             )}
-            style={isHovered ? {
-              transform: 'scale(1.5)',
-              transformOrigin: zoomOrigin,
-              transition: 'transform 0.15s ease-out, opacity 0.5s ease-out',
-            } : undefined}
           />
         )}
 
