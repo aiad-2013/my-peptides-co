@@ -69,15 +69,13 @@ const CategorySplit = () => (
           style={{
             backgroundImage: `url(${peptidesBg})`,
             backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            backgroundPosition: '80% center',
           }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-primary/20" />
 
           <div className="relative">
-            <p className="text-[10px] uppercase tracking-[0.2em] text-accent/70 mb-3">Category</p>
-            <h3 className="text-3xl font-serif font-normal text-white mb-2">Peptides</h3>
-            <p className="text-sm text-white/50 mb-6 font-light">Bioactive compounds for precision research</p>
+            <h3 className="text-3xl font-serif font-normal text-white mb-6">Peptides</h3>
             <span className="inline-flex items-center gap-2 text-sm font-medium text-accent group-hover:gap-3 transition-all duration-300">
               Explore range <ArrowRight className="w-4 h-4" />
             </span>
