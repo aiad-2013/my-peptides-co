@@ -75,7 +75,7 @@ export const MolecularCanvas = () => {
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const pivotX = canvas.width  * (isMobile ? 0.55 : 0.43);
+      const pivotX = canvas.width  * (isMobile ? 0.55 : 0.73);
       const pivotY = canvas.height * 0.55;
 
       ctx.save();
