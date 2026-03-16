@@ -60,12 +60,10 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-foreground/20 backdrop-blur-sm" onClick={onClose} />
+    <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4 bg-foreground/20 backdrop-blur-sm" onClick={onClose}>
 
       {/* Modal */}
-      <div className="relative w-full max-w-xl bg-card border border-border rounded-sm shadow-2xl overflow-hidden animate-slide-up">
+      <div className="relative w-full max-w-xl bg-card border border-border rounded-sm shadow-2xl overflow-hidden animate-slide-up" onClick={e => e.stopPropagation()}>
 
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
