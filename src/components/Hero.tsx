@@ -64,7 +64,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
       />
 
       {/* Molecular network animation — above gradient, below content */}
-      {!isMobile && <MolecularCanvas />}
+      {!isMobile && <MolecularCanvas pivotXFactor={compact ? 0.73 : 0.43} />}
 
       <div
         className={`container mx-auto px-4 relative flex flex-col justify-center ${compact ? 'h-full py-0' : 'pt-10 pb-4 md:py-16 lg:py-20'}`}
