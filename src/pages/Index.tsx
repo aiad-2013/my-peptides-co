@@ -140,9 +140,22 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main>
+
+      {/* Fixed hero + trust strip — sits below sticky header (top-[64px] md:top-[80px]) */}
+      <div className="fixed left-0 right-0 top-[64px] md:top-[80px] z-30">
         <Hero onShopClick={scrollToProducts} activeCategory="all" />
         <TrustStrip />
+      </div>
+
+      {/* Spacer pushes scrollable content below the fixed block */}
+      <div
+        className="relative z-40 bg-background"
+        style={{ marginTop: 'calc(var(--fixed-hero-height, 100vh) - 64px)' }}
+      >
+        {/* We use a dynamic spacer via a sentinel — simpler: just give it enough top margin */}
+      </div>
+
+      <main className="relative z-40 bg-background">
         <CategorySplit />
         <div ref={productsRef}>
           <ProductGrid category="all" limit={4} />
