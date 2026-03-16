@@ -15,7 +15,11 @@ const STRAND_OPACITY = 0.086;
 const RUNG_OPACITY   = 0.058;
 const CROSS_BOND_EVERY = 3;    // draw a rung every N nodes
 
-export const MolecularCanvas = () => {
+interface MolecularCanvasProps {
+  pivotXFactor?: number;
+}
+
+export const MolecularCanvas = ({ pivotXFactor = 0.73 }: MolecularCanvasProps) => {
   const canvasRef    = useRef<HTMLCanvasElement>(null);
   const isMobile     = useIsMobile();
   const animRef      = useRef<number>(0);
