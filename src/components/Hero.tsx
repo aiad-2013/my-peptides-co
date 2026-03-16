@@ -52,12 +52,12 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
         minHeight: isMobile ? '85vh' : undefined,
       }}
     >
-      {/* Gradient overlay — left-heavy on desktop, top-fade on mobile */}
+      {/* Gradient overlay — left-heavy on desktop, full-coverage fade on mobile */}
       <div
         className="absolute inset-0"
         style={{
           background: isMobile
-            ? 'linear-gradient(to bottom, hsl(213 22% 8% / 0.70) 0%, hsl(213 22% 8% / 0.45) 40%, transparent 70%)'
+            ? 'linear-gradient(to bottom, hsl(213 22% 8% / 0.82) 0%, hsl(213 22% 8% / 0.65) 50%, hsl(213 22% 8% / 0.50) 100%)'
             : 'linear-gradient(to right, hsl(213 22% 8% / 0.92) 0%, hsl(213 22% 8% / 0.75) 35%, hsl(213 22% 8% / 0.30) 65%, transparent 100%)',
           zIndex: 0,
         }}
