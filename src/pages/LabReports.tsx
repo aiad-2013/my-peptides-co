@@ -3,7 +3,7 @@ import { Header } from '@/components/Header';
 import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Clock, ExternalLink } from 'lucide-react';
+import { FlaskConical, ExternalLink } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
@@ -102,21 +102,13 @@ export default function LabReports() {
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          {labImageSrc ? (
+                          {labImageSrc && (
                             <Badge
                               variant="outline"
                               className="gap-1.5 text-accent border-accent/40 text-[11px] font-normal px-3 py-1"
                             >
                               <ExternalLink className="w-3 h-3" />
                               View Report
-                            </Badge>
-                          ) : (
-                            <Badge
-                              variant="outline"
-                              className="gap-1.5 text-muted-foreground border-border text-[11px] font-normal px-3 py-1"
-                            >
-                              <Clock className="w-3 h-3" />
-                              Coming Soon
                             </Badge>
                           )}
                         </div>
