@@ -40,6 +40,14 @@ const BlogPost = () => {
     enabled: !!slug,
   });
 
+  useSEO({
+    title: post ? `${post.title} | My Peptide Co Blog` : 'Blog | My Peptide Co',
+    description: post?.excerpt
+      ? post.excerpt.replace(/<[^>]+>/g, '').slice(0, 155)
+      : 'Research articles on SARMs and peptides from My Peptide Co.',
+    ogImage: post?.featured_image || undefined,
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
