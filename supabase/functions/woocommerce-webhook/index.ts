@@ -192,6 +192,40 @@ Deno.serve(async (req) => {
       console.warn('WOOCOMMERCE_WEBHOOK_SECRET not configured - skipping signature verification');
     }
     
+    console.log('Received WooCommerce webhook:', webhookTopic);
+
+    // Handle product webhooks — bump the cache invalidation timestamp so the frontend refetches
+    if (
+      webhookTopic === 'product.updated' ||
+      webhookTopic === 'product.created' ||
+      webhookTopic === 'product.deleted' ||
+      webhookTopic === 'product.restored'
+    ) {
+      const { error: ciError } = await supabase
+        .from('cache_invalidations')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', 'products');
+
+      if (ciError) {
+        console.error('Error updating cache invalidation:', ciError.message);
+      } else {
+        console.log('Product cache invalidated for topic:', webhookTopic);
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, message: 'Product cache invalidated' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Only process order events below this point
+    if (webhookTopic !== 'order.created' && webhookTopic !== 'order.updated' && webhookTopic !== 'order.completed') {
+      return new Response(
+        JSON.stringify({ message: 'Webhook topic not handled' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
     // Parse and validate the order data
     let orderData: WooCommerceOrder;
     try {
@@ -209,16 +243,6 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({ error: 'Invalid request body' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
-    
-    console.log('Received WooCommerce webhook:', webhookTopic, 'Order ID:', orderData.id);
-
-    // Only process order.created and order.updated events
-    if (webhookTopic !== 'order.created' && webhookTopic !== 'order.updated' && webhookTopic !== 'order.completed') {
-      return new Response(
-        JSON.stringify({ message: 'Webhook topic not handled' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
