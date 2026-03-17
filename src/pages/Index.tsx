@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';

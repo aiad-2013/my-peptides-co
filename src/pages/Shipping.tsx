@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Truck, Clock, MapPin, PackageCheck } from 'lucide-react';
 

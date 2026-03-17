@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSEO } from '@/hooks/useSEO';
 import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
 import { FlaskConical, Clock } from 'lucide-react';
