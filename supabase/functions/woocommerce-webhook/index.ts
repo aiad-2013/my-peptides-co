@@ -192,29 +192,9 @@ Deno.serve(async (req) => {
       console.warn('WOOCOMMERCE_WEBHOOK_SECRET not configured - skipping signature verification');
     }
     
-    // Parse and validate the order data
-    let orderData: WooCommerceOrder;
-    try {
-      const parsedJson = JSON.parse(rawBody);
-      orderData = WooCommerceOrderSchema.parse(parsedJson);
-    } catch (err) {
-      if (err instanceof z.ZodError) {
-        console.error('Validation error:', err.errors);
-        return new Response(
-          JSON.stringify({ error: 'Invalid order data format' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-        );
-      }
-      console.error('JSON parse error:', err);
-      return new Response(
-        JSON.stringify({ error: 'Invalid request body' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
-    }
-    
     console.log('Received WooCommerce webhook:', webhookTopic);
 
-    // Handle product update/stock webhooks — bump the cache invalidation timestamp
+    // Handle product webhooks — bump the cache invalidation timestamp so the frontend refetches
     if (
       webhookTopic === 'product.updated' ||
       webhookTopic === 'product.created' ||
@@ -243,6 +223,26 @@ Deno.serve(async (req) => {
       return new Response(
         JSON.stringify({ message: 'Webhook topic not handled' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Parse and validate the order data
+    let orderData: WooCommerceOrder;
+    try {
+      const parsedJson = JSON.parse(rawBody);
+      orderData = WooCommerceOrderSchema.parse(parsedJson);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        console.error('Validation error:', err.errors);
+        return new Response(
+          JSON.stringify({ error: 'Invalid order data format' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        );
+      }
+      console.error('JSON parse error:', err);
+      return new Response(
+        JSON.stringify({ error: 'Invalid request body' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
       );
     }
 
