@@ -1,7 +1,13 @@
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 
 const PrivacyPolicy = () => {
+  useSEO({
+    title: 'Privacy Policy | My Peptide Co',
+    description: "My Peptide Co's privacy policy. Learn how we collect, use, and protect your personal information in accordance with Australian Privacy Law.",
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

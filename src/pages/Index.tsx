@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';
@@ -130,6 +131,12 @@ const EditorialBand = () => (
 
 /* ── Index Page ────────────────────────────────────── */
 const Index = () => {
+  useSEO({
+    title: 'My Peptide Co | Buy SARMs & Peptides Australia — Lab Tested',
+    description: "Australia's #1 source for pharmaceutical-grade SARMs and peptides. Shop RAD-140, MK-677, BPC-157, TB-500 & more. 99%+ purity, third-party tested, same-day dispatch.",
+    canonical: 'https://mypeptideco.com.au',
+  });
+
   const productsRef = useRef<HTMLDivElement>(null);
 
   const scrollToProducts = () => {

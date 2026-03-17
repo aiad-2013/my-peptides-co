@@ -3,21 +3,41 @@ import { Hero } from '@/components/Hero';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
+import { useSEO } from '@/hooks/useSEO';
 
 interface ProductsProps {
   category: 'all' | 'sarms' | 'peptides';
 }
 
-const Products = ({ category }: ProductsProps) => (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main>
-      <Hero activeCategory={category} compact />
-      <ProductGrid category={category} />
-    </main>
-    <Footer />
-    <SocialProofNotification />
-  </div>
-);
+const SEO_MAP = {
+  all: {
+    title: 'Buy SARMs & Peptides Online Australia | My Peptide Co',
+    description: 'Shop pharmaceutical-grade SARMs and peptides in Australia. RAD-140, MK-677, BPC-157, TB-500 and more. 99%+ purity, third-party tested, fast dispatch.',
+  },
+  sarms: {
+    title: 'Buy SARMs Australia — RAD-140, MK-677, LGD-4033 | My Peptide Co',
+    description: 'High-purity SARMs for sale in Australia. Shop RAD-140, MK-677, LGD-4033, Cardarine and more. Lab-tested, same-day dispatch on orders before 12pm.',
+  },
+  peptides: {
+    title: 'Buy Peptides Australia — BPC-157, TB-500, CJC-1295 | My Peptide Co',
+    description: 'Premium research peptides for sale in Australia. BPC-157, TB-500, CJC-1295, Ipamorelin and more. Pharmaceutical-grade purity, lab-verified, fast shipping.',
+  },
+};
+
+const Products = ({ category }: ProductsProps) => {
+  const seo = SEO_MAP[category];
+  useSEO(seo);
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <Hero activeCategory={category} compact />
+        <ProductGrid category={category} />
+      </main>
+      <Footer />
+      <SocialProofNotification />
+    </div>
+  );
+};
 
 export default Products;

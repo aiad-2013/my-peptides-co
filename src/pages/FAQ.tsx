@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
@@ -38,6 +39,11 @@ const faqs = [
 ];
 
 const FAQ = () => {
+  useSEO({
+    title: 'FAQ — SARMs & Peptides Questions Answered | My Peptide Co',
+    description: 'Answers to common questions about buying SARMs and peptides in Australia. Shipping, purity, storage, returns and more — answered by My Peptide Co.',
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

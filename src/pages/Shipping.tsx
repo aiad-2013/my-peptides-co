@@ -1,8 +1,14 @@
 import { Header } from '@/components/Header';
+import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Truck, Clock, MapPin, PackageCheck } from 'lucide-react';
 
 const Shipping = () => {
+  useSEO({
+    title: 'Shipping Information — Fast Australian Delivery | My Peptide Co',
+    description: 'My Peptide Co ships SARMs and peptides Australia-wide. Same-day dispatch on orders before 12pm AEDT. Discreet packaging. 2–5 business day delivery.',
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

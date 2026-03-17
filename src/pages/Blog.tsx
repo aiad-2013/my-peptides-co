@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSEO } from '@/hooks/useSEO';
 import { Link } from 'react-router-dom';
 import { Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -38,6 +39,11 @@ const stripHtml = (html: string) => {
 };
 
 const Blog = () => {
+  useSEO({
+    title: 'SARMs & Peptides Research Blog | My Peptide Co',
+    description: 'Stay informed with the latest research articles on SARMs, peptides, fitness science, and compound guides. Expert insights from My Peptide Co.',
+  });
+
   const [category, setCategory] = useState<CategoryFilter>('all');
 
   const { data: posts = [], isLoading } = useQuery({

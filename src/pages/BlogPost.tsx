@@ -8,6 +8,7 @@ import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { useSEO } from '@/hooks/useSEO';
 
 interface BlogPostData {
   id: string;
@@ -37,6 +38,14 @@ const BlogPost = () => {
     queryKey: ['blog-post', slug],
     queryFn: () => fetchPost(slug!),
     enabled: !!slug,
+  });
+
+  useSEO({
+    title: post ? `${post.title} | My Peptide Co Blog` : 'Blog | My Peptide Co',
+    description: post?.excerpt
+      ? post.excerpt.replace(/<[^>]+>/g, '').slice(0, 155)
+      : 'Research articles on SARMs and peptides from My Peptide Co.',
+    ogImage: post?.featured_image || undefined,
   });
 
   return (
