@@ -9,7 +9,7 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { getProxiedImageUrl } from '@/lib/imageProxy';
+
 
 interface BlogPostItem {
   id: string;
@@ -104,7 +104,6 @@ const Blog = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="rounded-lg border border-border bg-card overflow-hidden">
-                <Skeleton className="aspect-[16/10] w-full" />
                 <div className="p-5 space-y-3">
                   <Skeleton className="h-4 w-20" />
                   <Skeleton className="h-5 w-full" />
@@ -121,20 +120,6 @@ const Blog = () => {
                 to={`/blog/${post.slug}`}
                 className="group rounded-lg border border-border bg-card overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
               >
-                {post.featured_image ? (
-                  <div className="aspect-[16/10] overflow-hidden bg-muted">
-                  <img
-                      src={getProxiedImageUrl(post.featured_image)}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  </div>
-                ) : (
-                  <div className="aspect-[16/10] bg-gradient-navy flex items-center justify-center">
-                    <span className="text-primary-foreground/40 font-serif text-lg">VI CORPUS</span>
-                  </div>
-                )}
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-3 flex-wrap">
                     {(Array.isArray(post.categories) ? post.categories : []).map((c: any) => (
