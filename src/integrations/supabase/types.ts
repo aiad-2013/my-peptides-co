@@ -50,6 +50,21 @@ export type Database = {
         }
         Relationships: []
       }
+      cache_invalidations: {
+        Row: {
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       lab_test_requests: {
         Row: {
           created_at: string
