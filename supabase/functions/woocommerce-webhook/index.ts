@@ -212,9 +212,33 @@ Deno.serve(async (req) => {
       );
     }
     
-    console.log('Received WooCommerce webhook:', webhookTopic, 'Order ID:', orderData.id);
+    console.log('Received WooCommerce webhook:', webhookTopic);
 
-    // Only process order.created and order.updated events
+    // Handle product update/stock webhooks — bump the cache invalidation timestamp
+    if (
+      webhookTopic === 'product.updated' ||
+      webhookTopic === 'product.created' ||
+      webhookTopic === 'product.deleted' ||
+      webhookTopic === 'product.restored'
+    ) {
+      const { error: ciError } = await supabase
+        .from('cache_invalidations')
+        .update({ updated_at: new Date().toISOString() })
+        .eq('id', 'products');
+
+      if (ciError) {
+        console.error('Error updating cache invalidation:', ciError.message);
+      } else {
+        console.log('Product cache invalidated for topic:', webhookTopic);
+      }
+
+      return new Response(
+        JSON.stringify({ success: true, message: 'Product cache invalidated' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
+    }
+
+    // Only process order events below this point
     if (webhookTopic !== 'order.created' && webhookTopic !== 'order.updated' && webhookTopic !== 'order.completed') {
       return new Response(
         JSON.stringify({ message: 'Webhook topic not handled' }),
