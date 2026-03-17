@@ -11,6 +11,11 @@ const categoryLabel: Record<string, string> = {
 };
 
 export default function LabReports() {
+  useSEO({
+    title: 'Lab Reports & Certificates of Analysis | My Peptide Co',
+    description: 'Third-party Certificates of Analysis for all SARMs and peptides sold by My Peptide Co. Verify purity and quality of every batch we carry.',
+  });
+
   const { data: products = [] } = useProducts();
 
   const sarms = products.filter(p => p.category === 'sarms');

@@ -3,6 +3,11 @@ import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 
 const TermsOfService = () => {
+  useSEO({
+    title: 'Terms of Service | My Peptide Co',
+    description: 'Terms and conditions for using the My Peptide Co website. Research use only. Read our terms before purchasing SARMs or peptides in Australia.',
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

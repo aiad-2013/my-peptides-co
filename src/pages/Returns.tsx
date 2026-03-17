@@ -3,6 +3,11 @@ import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 
 const Returns = () => {
+  useSEO({
+    title: 'Returns & Refunds Policy | My Peptide Co',
+    description: 'My Peptide Co returns policy. Unopened products accepted within 30 days. Fast refunds on damaged or incorrect orders. Contact us for easy returns.',
+  });
+
   return (
     <div className="min-h-screen bg-background">
       <Header />

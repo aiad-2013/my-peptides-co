@@ -131,6 +131,12 @@ const EditorialBand = () => (
 
 /* ── Index Page ────────────────────────────────────── */
 const Index = () => {
+  useSEO({
+    title: 'My Peptide Co | Buy SARMs & Peptides Australia — Lab Tested',
+    description: "Australia's #1 source for pharmaceutical-grade SARMs and peptides. Shop RAD-140, MK-677, BPC-157, TB-500 & more. 99%+ purity, third-party tested, same-day dispatch.",
+    canonical: 'https://mypeptideco.com.au',
+  });
+
   const productsRef = useRef<HTMLDivElement>(null);
 
   const scrollToProducts = () => {
