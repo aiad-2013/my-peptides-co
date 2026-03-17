@@ -28,15 +28,16 @@ const Products = ({ category }: ProductsProps) => {
   const seo = SEO_MAP[category];
   useSEO(seo);
   return (
-  <div className="min-h-screen bg-background">
-    <Header />
-    <main>
-      <Hero activeCategory={category} compact />
-      <ProductGrid category={category} />
-    </main>
-    <Footer />
-    <SocialProofNotification />
-  </div>
-);
+    <div className="min-h-screen bg-background">
+      <Header />
+      <main>
+        <Hero activeCategory={category} compact />
+        <ProductGrid category={category} />
+      </main>
+      <Footer />
+      <SocialProofNotification />
+    </div>
+  );
+};
 
 export default Products;
