@@ -1,9 +1,11 @@
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Clock } from 'lucide-react';
+import { FlaskConical, Clock, ExternalLink } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 const categoryLabel: Record<string, string> = {
   sarms: 'SARMs',
@@ -65,36 +67,62 @@ export default function LabReports() {
                   {label}
                 </h2>
                 <div className="divide-y divide-border border border-border rounded-sm overflow-hidden">
-                  {items.map(product => (
-                    <div
-                      key={product.id}
-                      className="flex items-center justify-between gap-4 px-6 py-5 bg-card hover:bg-muted/30 transition-colors"
-                    >
-                      <div className="flex items-center gap-4 min-w-0">
-                        <div className="w-9 h-9 rounded-sm bg-primary/8 flex items-center justify-center flex-shrink-0">
-                          <FlaskConical className="w-4 h-4 text-accent" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{product.name}</p>
-                          {product.concentration && (
-                            <p className="text-xs text-muted-foreground mt-0.5">
-                              {product.concentration}{product.volume ? ` · ${product.volume}` : ''}
+                  {items.map(product => {
+                    const labImageRaw = product.images?.[2];
+                    const labImageSrc = labImageRaw ? getProxiedImageUrl(labImageRaw) : null;
+                    return (
+                      <Link
+                        key={product.id}
+                        to={`/product/${product.id}`}
+                        className="flex items-center justify-between gap-4 px-6 py-5 bg-card hover:bg-muted/30 transition-colors group"
+                      >
+                        <div className="flex items-center gap-4 min-w-0">
+                          {/* Thumbnail: 3rd product image (lab report) or fallback icon */}
+                          <div className="w-12 h-12 rounded-sm overflow-hidden bg-primary/8 flex items-center justify-center flex-shrink-0 border border-border/50">
+                            {labImageSrc ? (
+                              <img
+                                src={labImageSrc}
+                                alt={`${product.name} CoA`}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <FlaskConical className="w-4 h-4 text-accent" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-foreground truncate group-hover:text-accent transition-colors">
+                              {product.name}
                             </p>
+                            {product.concentration && (
+                              <p className="text-xs text-muted-foreground mt-0.5">
+                                {product.concentration}{product.volume ? ` · ${product.volume}` : ''}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                          {labImageSrc ? (
+                            <Badge
+                              variant="outline"
+                              className="gap-1.5 text-accent border-accent/40 text-[11px] font-normal px-3 py-1"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              View Report
+                            </Badge>
+                          ) : (
+                            <Badge
+                              variant="outline"
+                              className="gap-1.5 text-muted-foreground border-border text-[11px] font-normal px-3 py-1"
+                            >
+                              <Clock className="w-3 h-3" />
+                              Coming Soon
+                            </Badge>
                           )}
                         </div>
-                      </div>
-
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Badge
-                          variant="outline"
-                          className="gap-1.5 text-muted-foreground border-border text-[11px] font-normal px-3 py-1"
-                        >
-                          <Clock className="w-3 h-3" />
-                          Coming Soon
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )
