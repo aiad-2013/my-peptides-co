@@ -102,7 +102,7 @@ export default function LabReports() {
                         </div>
 
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          {labImageSrc && (
+                          {labImageSrc ? (
                             <Badge
                               variant="outline"
                               className="gap-1.5 text-accent border-accent/40 text-[11px] font-normal px-3 py-1"
@@ -110,6 +110,8 @@ export default function LabReports() {
                               <ExternalLink className="w-3 h-3" />
                               View Report
                             </Badge>
+                          ) : (
+                            <span className="text-[11px] text-muted-foreground/50 italic">Coming Soon</span>
                           )}
                         </div>
                       </Link>
