@@ -106,6 +106,10 @@ const Checkout = () => {
               You'll be redirected to complete billing, shipping & payment
             </p>
           </div>
+
+          <p className="text-xs text-muted-foreground text-center mt-3">
+            Note: Popups must be enabled on your browser to proceed to checkout.
+          </p>
         </div>
       </main>
       <Footer />
