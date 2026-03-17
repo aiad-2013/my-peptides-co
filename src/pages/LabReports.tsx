@@ -3,7 +3,7 @@ import { Header } from '@/components/Header';
 import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Clock, ExternalLink } from 'lucide-react';
+import { FlaskConical, ExternalLink } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 
