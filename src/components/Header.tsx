@@ -79,7 +79,7 @@ export const Header = () => {
             >
               <Search className="w-4 h-4 flex-shrink-0" />
               <span className="flex-1 text-left text-xs">Search products…</span>
-              <kbd className="hidden lg:inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-background border border-border text-muted-foreground">⌘K</kbd>
+              
             </button>
 
             {/* Search icon — mobile only */}
