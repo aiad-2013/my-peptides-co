@@ -79,7 +79,7 @@ serve(async (req) => {
       throw new Error('WooCommerce API credentials not configured');
     }
 
-    const storeUrl = 'https://vicorpus.co';
+    const storeUrl = 'https://checkout.mypeptideco.com';
     const baseApi = `${storeUrl}/wp-json/wc/v3/products`;
 
     // Create Basic Auth header
