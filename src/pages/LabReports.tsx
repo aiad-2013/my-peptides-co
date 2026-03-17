@@ -123,7 +123,7 @@ export default function LabReports() {
           )}
 
           {/* Footnote */}
-          <p className="text-xs text-muted-foreground max-w-xl leading-relaxed">
+          <p className="text-xs text-muted-foreground leading-relaxed whitespace-nowrap">
             Can't find a report? Email us at{' '}
             <a href="mailto:hello@mypeptideco.com.au" className="text-accent hover:underline">
               hello@mypeptideco.com.au
