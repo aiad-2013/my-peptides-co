@@ -48,7 +48,7 @@ const Checkout = () => {
     const products = items
       .map(item => `${item.wooCommerceId}:${item.quantity}`)
       .join(',');
-    const url = `https://vicorpus.co/?lovable_cart=1&products=${encodeURIComponent(products)}`;
+    const url = `https://checkout.mypeptideco.com/checkout/?lovable_cart=1&products=${encodeURIComponent(products)}`;
     setRedirecting(true);
     clearCart();
     window.location.href = url;
