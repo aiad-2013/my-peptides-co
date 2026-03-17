@@ -1,9 +1,11 @@
+import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { useSEO } from '@/hooks/useSEO';
 import { Footer } from '@/components/Footer';
 import { Badge } from '@/components/ui/badge';
-import { FlaskConical, Clock } from 'lucide-react';
+import { FlaskConical, Clock, ExternalLink } from 'lucide-react';
 import { useProducts } from '@/hooks/useProducts';
+import { getProxiedImageUrl } from '@/lib/imageProxy';
 
 const categoryLabel: Record<string, string> = {
   sarms: 'SARMs',
