@@ -66,7 +66,7 @@ const CategorySplit = () => (
         >
           <div
             className="absolute inset-0 scale-100 group-hover:scale-[1.2] transition-transform duration-700 ease-out"
-            style={{ backgroundImage: `url(${peptidesBg})`, backgroundSize: 'cover', backgroundPosition: '80% center' }}
+            style={{ backgroundImage: `url(${sarmsBg})`, backgroundSize: 'cover', backgroundPosition: '60% center' }}
           />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.75) 0%, hsl(var(--primary) / 0.50) 40%, hsl(var(--primary) / 0.08) 65%, transparent 100%)' }} />
           <div className="relative">
