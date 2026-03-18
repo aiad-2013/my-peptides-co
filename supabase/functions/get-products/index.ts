@@ -44,7 +44,7 @@ interface TransformedProduct {
   id: string;
   wooCommerceId: number;
   name: string;
-  category: 'sarms' | 'peptides';
+  category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
   price: number;
   concentration?: string;
   volume?: string;
@@ -143,9 +143,20 @@ serve(async (req) => {
       const isBundle = product.type === 'woosb' || product.type === 'bundle';
 
       // Determine category from WooCommerce categories
-      const categorySlug = product.categories?.[0]?.slug?.toLowerCase() || '';
-      const category: 'sarms' | 'peptides' = 
-        categorySlug.includes('peptide') ? 'peptides' : 'sarms';
+      const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
+      const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
+      const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
+
+      let category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+      if (allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('weightloss')) {
+        category = 'weight-loss';
+      } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle')) {
+        category = 'dilutes';
+      } else if (allCatStrings.includes('peptide')) {
+        category = 'peptides';
+      } else {
+        category = 'sarms';
+      }
 
       // Extract concentration and volume from attributes or meta
       let concentration = '';
@@ -153,10 +164,10 @@ serve(async (req) => {
       
       for (const attr of product.attributes || []) {
         const attrName = attr.name.toLowerCase();
-        if (attrName.includes('concentration') || attrName.includes('strength')) {
+        if (attrName.includes('concentration') || attrName.includes('strength') || attrName === 'dose' || attrName === 'mg/ml' || attrName === 'potency') {
           concentration = attr.options?.[0] || '';
         }
-        if (attrName.includes('volume') || attrName.includes('size')) {
+        if (attrName.includes('volume') || attrName.includes('size') || attrName === 'ml') {
           volume = attr.options?.[0] || '';
         }
       }
@@ -183,7 +194,8 @@ serve(async (req) => {
         if (meta.key === 'ingredients' && meta.value) {
           ingredients = meta.value as string;
         }
-        if (meta.key === 'concentration' && meta.value) {
+        // Check multiple possible meta keys for concentration
+        if ((meta.key === 'concentration' || meta.key === '_concentration' || meta.key === 'potency' || meta.key === 'strength') && meta.value) {
           metaConcentration = meta.value as string;
         }
         if (meta.key === 'people_viewing' && meta.value) {
@@ -217,6 +229,15 @@ serve(async (req) => {
               faqs.push({ question, answer });
             }
           }
+        }
+      }
+
+      // Last-resort: parse concentration directly from the product name
+      // Matches patterns like: 10mg/ml, 25mg/ml, 5mg, 500mg, 12IU, 5000IU, 10ml
+      if (!concentration && !metaConcentration) {
+        const nameConcentrationMatch = product.name.match(/\b(\d+(?:\.\d+)?(?:mg\/ml|mg|iu|ml))\b/i);
+        if (nameConcentrationMatch) {
+          metaConcentration = nameConcentrationMatch[1];
         }
       }
 
