@@ -194,8 +194,8 @@ serve(async (req) => {
         if (meta.key === 'ingredients' && meta.value) {
           ingredients = meta.value as string;
         }
-        // Check multiple possible meta keys for concentration
-        if ((meta.key === 'concentration' || meta.key === '_concentration' || meta.key === 'potency' || meta.key === 'strength') && meta.value) {
+        // Check multiple possible meta keys for concentration (never use _prefixed ACF reference keys)
+        if ((meta.key === 'concentration' || meta.key === 'potency' || meta.key === 'strength') && meta.value && !String(meta.value).startsWith('field_')) {
           metaConcentration = meta.value as string;
         }
         if (meta.key === 'people_viewing' && meta.value) {
