@@ -247,7 +247,7 @@ serve(async (req) => {
         name: product.name,
         category,
         price: parseFloat(product.price) || 0,
-        concentration: concentration || metaConcentration || undefined,
+        concentration: concentration || undefined,
         volume: volume || undefined,
         description,
         image: product.images?.[0]?.src || '/placeholder.svg',
