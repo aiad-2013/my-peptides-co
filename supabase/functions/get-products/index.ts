@@ -65,6 +65,28 @@ interface TransformedProduct {
   discountTiers?: Array<{ qty: number; discount: number }>;
 }
 
+// Decode HTML entities (numeric + common named) left behind after tag-stripping
+function decodeHtmlEntities(str: string): string {
+  return str
+    // Decimal numeric entities: &#8217; → '
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    // Hex numeric entities: &#x2019; → '
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    // Common named entities
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&rsquo;/g, '\u2019')
+    .replace(/&lsquo;/g, '\u2018')
+    .replace(/&rdquo;/g, '\u201D')
+    .replace(/&ldquo;/g, '\u201C')
+    .replace(/&ndash;/g, '\u2013')
+    .replace(/&mdash;/g, '\u2014');
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
