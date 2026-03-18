@@ -20,6 +20,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import LabReports from "./pages/LabReports";
+import InternalDiagrams from "./pages/internal/Diagrams";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ function AppRoutes() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/lab-reports" element={<LabReports />} />
+          <Route path="/internal/diagrams" element={<InternalDiagrams />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
