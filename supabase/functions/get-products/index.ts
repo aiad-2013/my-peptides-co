@@ -158,15 +158,11 @@ serve(async (req) => {
         category = 'sarms';
       }
 
-      // Extract concentration and volume from attributes or meta
-      let concentration = '';
+      // Extract volume from attributes only (we derive concentration from dosage meta, not attributes)
       let volume = '';
       
       for (const attr of product.attributes || []) {
         const attrName = attr.name.toLowerCase();
-        if (attrName.includes('concentration') || attrName.includes('strength') || attrName === 'dose' || attrName === 'mg/ml' || attrName === 'potency') {
-          concentration = attr.options?.[0] || '';
-        }
         if (attrName.includes('volume') || attrName.includes('size') || attrName === 'ml') {
           volume = attr.options?.[0] || '';
         }
@@ -176,7 +172,6 @@ serve(async (req) => {
       let badge = '';
       let dosage = '';
       let ingredients = '';
-      let metaConcentration = '';
       let faqs: ProductFAQ[] = [];
       let peopleViewing = 0;
       let discountTiers: Array<{ qty: number; discount: number }> = [];
@@ -189,14 +184,10 @@ serve(async (req) => {
           badge = meta.value as string;
         }
         if (meta.key === 'dosage' && meta.value) {
-          dosage = meta.value as string;
+          dosage = (meta.value as string).trim();
         }
         if (meta.key === 'ingredients' && meta.value) {
           ingredients = meta.value as string;
-        }
-        // Check multiple possible meta keys for concentration (never use _prefixed ACF reference keys)
-        if ((meta.key === 'concentration' || meta.key === 'potency' || meta.key === 'strength') && meta.value && !String(meta.value).startsWith('field_')) {
-          metaConcentration = meta.value as string;
         }
         if (meta.key === 'people_viewing' && meta.value) {
           peopleViewing = parseInt(meta.value as string, 10) || 0;
@@ -232,13 +223,17 @@ serve(async (req) => {
         }
       }
 
-      // Last-resort: parse concentration directly from the product name
-      // Matches patterns like: 10mg/ml, 25mg/ml, 5mg, 500mg, 12IU, 5000IU, 10ml
-      if (!concentration && !metaConcentration) {
-        const nameConcentrationMatch = product.name.match(/\b(\d+(?:\.\d+)?(?:mg\/ml|mg|iu|ml))\b/i);
-        if (nameConcentrationMatch) {
-          metaConcentration = nameConcentrationMatch[1];
-        }
+      // Derive concentration from the dosage field if it contains a mg/ml-style value (liquid products).
+      // Otherwise fall back to parsing the product name for a dosage pattern.
+      let concentration = '';
+      const dosageLooksLikeConcentration = /\d+\s*mg\s*\/\s*ml/i.test(dosage);
+      if (dosageLooksLikeConcentration) {
+        // Normalise spacing: "15mg / ml" → "15mg/ml"
+        concentration = dosage.replace(/\s*\/\s*/g, '/').replace(/\s+/g, '');
+      } else if (!dosage) {
+        // Last-resort: parse concentration directly from the product name
+        const nameMatch = product.name.match(/\b(\d+(?:\.\d+)?(?:mg\/ml|mg|iu|ml))\b/i);
+        if (nameMatch) concentration = nameMatch[1];
       }
 
       // Strip HTML from description
