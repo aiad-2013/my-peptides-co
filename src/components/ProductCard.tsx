@@ -150,9 +150,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
           {product.name}
         </h3>
 
-        {product.concentration && (
+        {(product.concentration || product.dosage) && (
           <p className="text-xs text-muted-foreground tracking-wide">
-            {product.concentration}{product.volume && ` · ${product.volume}`}
+            {product.concentration || product.dosage}{product.volume && ` · ${product.volume}`}
           </p>
         )}
 
