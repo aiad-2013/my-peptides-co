@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 import { Badge } from '@/components/ui/badge';
