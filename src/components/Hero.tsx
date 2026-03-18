@@ -7,7 +7,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
   onShopClick?: () => void;
-  activeCategory?: 'all' | 'sarms' | 'peptides';
+  activeCategory?: 'all' | 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
   compact?: boolean;
 }
 
@@ -32,6 +32,20 @@ const heroContent = {
     titleLine2: 'Peptides',
     description: 'Premium peptides synthesised to the highest standards for cutting-edge research applications.',
     cta: 'View Peptides',
+  },
+  'weight-loss': {
+    badge: 'Metabolic Research Compounds',
+    titleLine1: 'Research Grade',
+    titleLine2: 'Weight Loss',
+    description: 'Premium peptides studied for metabolic regulation and weight management in laboratory research.',
+    cta: 'View Weight Loss',
+  },
+  dilutes: {
+    badge: 'Post-Cycle Therapy Compounds',
+    titleLine1: 'Research Grade',
+    titleLine2: 'Dilutes (PCT)',
+    description: 'High-purity SERMs for post-cycle therapy research. Each compound independently tested for purity and potency.',
+    cta: 'View Dilutes',
   },
 };
 
