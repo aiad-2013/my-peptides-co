@@ -65,6 +65,28 @@ interface TransformedProduct {
   discountTiers?: Array<{ qty: number; discount: number }>;
 }
 
+// Decode HTML entities (numeric + common named) left behind after tag-stripping
+function decodeHtmlEntities(str: string): string {
+  return str
+    // Decimal numeric entities: &#8217; → '
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(parseInt(code, 10)))
+    // Hex numeric entities: &#x2019; → '
+    .replace(/&#x([0-9a-f]+);/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    // Common named entities
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&rsquo;/g, '\u2019')
+    .replace(/&lsquo;/g, '\u2018')
+    .replace(/&rdquo;/g, '\u201D')
+    .replace(/&ldquo;/g, '\u201C')
+    .replace(/&ndash;/g, '\u2013')
+    .replace(/&mdash;/g, '\u2014');
+}
+
 serve(async (req) => {
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
@@ -253,9 +275,10 @@ serve(async (req) => {
             const closingIdx = part.indexOf('</h3>');
             if (closingIdx === -1) continue;
             const question = part.substring(0, closingIdx).replace(/<[^>]*>/g, '').replace(/^\d+\.\s*/, '').trim();
-            const answer = part.substring(closingIdx + 5).replace(/<[^>]*>/g, '').trim();
-            if (question && answer) {
-              faqs.push({ question, answer });
+            const answer = decodeHtmlEntities(part.substring(closingIdx + 5).replace(/<[^>]*>/g, '').trim());
+            const decodedQuestion = decodeHtmlEntities(question);
+            if (decodedQuestion && answer) {
+              faqs.push({ question: decodedQuestion, answer });
             }
           }
         }
@@ -274,10 +297,10 @@ serve(async (req) => {
         if (nameMatch) concentration = nameMatch[1];
       }
 
-      // Strip HTML from description
-      const description = product.short_description
-        ?.replace(/<[^>]*>/g, '')
-        .trim() || product.description?.replace(/<[^>]*>/g, '').trim() || '';
+      // Strip HTML tags then decode HTML entities from description
+      const rawDesc = product.short_description?.replace(/<[^>]*>/g, '').trim()
+        || product.description?.replace(/<[^>]*>/g, '').trim() || '';
+      const description = decodeHtmlEntities(rawDesc);
 
       return {
         id: product.slug,
