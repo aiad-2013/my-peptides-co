@@ -142,20 +142,58 @@ serve(async (req) => {
       // Detect bundle products (WPC Product Bundles uses type 'woosb')
       const isBundle = product.type === 'woosb' || product.type === 'bundle';
 
-      // Determine category from WooCommerce categories
-      const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
-      const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
-      const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
+      // Slug-based category overrides — source of truth for routing.
+      // Any product slug listed here takes precedence over WooCommerce category assignment.
+      const SLUG_CATEGORY_MAP: Record<string, 'sarms' | 'peptides' | 'weight-loss' | 'dilutes'> = {
+        // SARMs
+        'testolone-rad140': 'sarms',
+        'lgd-4033': 'sarms',
+        'growth-mk677': 'sarms',
+        'shred-sr9009': 'sarms',
+        'mk-2866': 'sarms',
+        // Weight Loss
+        'retatrutide': 'weight-loss',
+        'tirzepatide': 'weight-loss',
+        'tesamorelin': 'weight-loss',
+        '5-amino-1mq': 'weight-loss',
+        // Peptides
+        'bpc-157': 'peptides',
+        'tb-500': 'peptides',
+        'ghk-cu': 'peptides',
+        'pt-141': 'peptides',
+        'melanotan-ii': 'peptides',
+        'cjc-1295-dac': 'peptides',
+        'ipamorelin': 'peptides',
+        'nad-500-mg-nicotinamide-adenine-dinucleotide': 'peptides',
+        'hgh': 'peptides',
+        'hcg': 'peptides',
+        'glow-blend': 'peptides',
+        'klow-blend': 'peptides',
+        'bacteriostatic-water-bac-water': 'peptides',
+        'dsip': 'peptides',
+        'mots-c': 'peptides',
+        // Dilutes / PCT
+        'clomid-clomiphene-citrate': 'dilutes',
+        'nolvadex-tamoxifen': 'dilutes',
+      };
 
+      // Determine category: slug override first, then fall back to WooCommerce category strings
       let category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
-      if (allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('weightloss')) {
-        category = 'weight-loss';
-      } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle')) {
-        category = 'dilutes';
-      } else if (allCatStrings.includes('peptide')) {
-        category = 'peptides';
+      if (SLUG_CATEGORY_MAP[product.slug]) {
+        category = SLUG_CATEGORY_MAP[product.slug];
       } else {
-        category = 'sarms';
+        const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
+        const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
+        const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
+        if (allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('weightloss')) {
+          category = 'weight-loss';
+        } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle')) {
+          category = 'dilutes';
+        } else if (allCatStrings.includes('peptide')) {
+          category = 'peptides';
+        } else {
+          category = 'sarms';
+        }
       }
 
       // Extract volume from attributes only (we derive concentration from dosage meta, not attributes)
