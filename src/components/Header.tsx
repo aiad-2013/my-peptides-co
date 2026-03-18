@@ -30,9 +30,10 @@ export const Header = () => {
 
   const navItems = [
     { label: 'Home', to: '/' },
-    { label: 'All Products', to: '/products' },
     { label: 'SARMs', to: '/sarms' },
     { label: 'Peptides', to: '/peptides' },
+    { label: 'Weight Loss', to: '/weight-loss' },
+    { label: 'Dilutes', to: '/dilutes' },
   ];
 
   const linkItems = [
