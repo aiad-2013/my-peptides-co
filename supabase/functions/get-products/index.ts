@@ -194,7 +194,8 @@ serve(async (req) => {
         if (meta.key === 'ingredients' && meta.value) {
           ingredients = meta.value as string;
         }
-        if (meta.key === 'concentration' && meta.value) {
+        // Check multiple possible meta keys for concentration
+        if ((meta.key === 'concentration' || meta.key === '_concentration' || meta.key === 'potency' || meta.key === 'strength') && meta.value) {
           metaConcentration = meta.value as string;
         }
         if (meta.key === 'people_viewing' && meta.value) {
@@ -228,6 +229,15 @@ serve(async (req) => {
               faqs.push({ question, answer });
             }
           }
+        }
+      }
+
+      // Last-resort: parse concentration directly from the product name
+      // Matches patterns like: 10mg/ml, 25mg/ml, 5mg, 500mg, 12IU, 5000IU, 10ml
+      if (!concentration && !metaConcentration) {
+        const nameConcentrationMatch = product.name.match(/\b(\d+(?:\.\d+)?(?:mg\/ml|mg|iu|ml))\b/i);
+        if (nameConcentrationMatch) {
+          metaConcentration = nameConcentrationMatch[1];
         }
       }
 
