@@ -143,9 +143,20 @@ serve(async (req) => {
       const isBundle = product.type === 'woosb' || product.type === 'bundle';
 
       // Determine category from WooCommerce categories
-      const categorySlug = product.categories?.[0]?.slug?.toLowerCase() || '';
-      const category: 'sarms' | 'peptides' = 
-        categorySlug.includes('peptide') ? 'peptides' : 'sarms';
+      const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
+      const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
+      const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
+
+      let category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+      if (allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('weightloss')) {
+        category = 'weight-loss';
+      } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle')) {
+        category = 'dilutes';
+      } else if (allCatStrings.includes('peptide')) {
+        category = 'peptides';
+      } else {
+        category = 'sarms';
+      }
 
       // Extract concentration and volume from attributes or meta
       let concentration = '';
@@ -153,10 +164,10 @@ serve(async (req) => {
       
       for (const attr of product.attributes || []) {
         const attrName = attr.name.toLowerCase();
-        if (attrName.includes('concentration') || attrName.includes('strength')) {
+        if (attrName.includes('concentration') || attrName.includes('strength') || attrName === 'dose' || attrName === 'mg/ml' || attrName === 'potency') {
           concentration = attr.options?.[0] || '';
         }
-        if (attrName.includes('volume') || attrName.includes('size')) {
+        if (attrName.includes('volume') || attrName.includes('size') || attrName === 'ml') {
           volume = attr.options?.[0] || '';
         }
       }
