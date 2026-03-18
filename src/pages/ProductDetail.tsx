@@ -510,7 +510,7 @@ const ProductDetailContent = () => {
               <div className="flex items-center gap-3 mb-5 p-3 rounded-lg bg-accent/10 border border-accent/20">
                 <Pill className="w-5 h-5 text-accent flex-shrink-0" />
                 <div>
-                  <span className="text-xs font-medium text-accent uppercase tracking-wider">Dosage</span>
+                  <span className="text-xs font-medium text-accent uppercase tracking-wider">Measurement</span>
                   <p className="text-sm font-semibold text-foreground">{product.dosage}</p>
                 </div>
               </div>
