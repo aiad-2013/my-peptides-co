@@ -107,9 +107,6 @@ const Checkout = () => {
             </p>
           </div>
 
-          <p className="text-xs text-muted-foreground text-center mt-3">
-            Note: Popups must be enabled on your browser to proceed to checkout.
-          </p>
         </div>
       </main>
       <Footer />
