@@ -277,8 +277,8 @@ serve(async (req) => {
             const question = part.substring(0, closingIdx).replace(/<[^>]*>/g, '').replace(/^\d+\.\s*/, '').trim();
             const answer = decodeHtmlEntities(part.substring(closingIdx + 5).replace(/<[^>]*>/g, '').trim());
             const decodedQuestion = decodeHtmlEntities(question);
-            if (question && answer) {
-              faqs.push({ question, answer });
+            if (decodedQuestion && answer) {
+              faqs.push({ question: decodedQuestion, answer });
             }
           }
         }
