@@ -20,6 +20,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import NotFound from "./pages/NotFound";
 import LabReports from "./pages/LabReports";
+import InternalDiagrams from "./pages/internal/Diagrams";
 
 const queryClient = new QueryClient();
 
