@@ -93,9 +93,12 @@ export default function InternalDiagrams() {
 
                         {/* Info */}
                         <div className="p-2.5 flex flex-col gap-1 border-t border-border/60">
-                          <p className="text-xs font-medium text-foreground leading-snug line-clamp-2">
-                            {product.name}
-                          </p>
+                           <Link
+                              to={`/product/${product.id}`}
+                              className="text-xs font-medium text-foreground leading-snug line-clamp-2 hover:text-accent transition-colors"
+                            >
+                              {product.name}
+                            </Link>
                           {(product.concentration || product.dosage) && (
                             <p className="text-[10px] text-muted-foreground">
                               {product.concentration || product.dosage}
