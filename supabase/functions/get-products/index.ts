@@ -297,10 +297,10 @@ serve(async (req) => {
         if (nameMatch) concentration = nameMatch[1];
       }
 
-      // Strip HTML from description
-      const description = product.short_description
-        ?.replace(/<[^>]*>/g, '')
-        .trim() || product.description?.replace(/<[^>]*>/g, '').trim() || '';
+      // Strip HTML tags then decode HTML entities from description
+      const rawDesc = product.short_description?.replace(/<[^>]*>/g, '').trim()
+        || product.description?.replace(/<[^>]*>/g, '').trim() || '';
+      const description = decodeHtmlEntities(rawDesc);
 
       return {
         id: product.slug,
