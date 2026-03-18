@@ -4,8 +4,10 @@ import { useProductsByCategory } from '@/hooks/useProducts';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+
 interface ProductGridProps {
-  category: 'all' | 'sarms' | 'peptides';
+  category: CategoryFilter;
   limit?: number;
 }
 
@@ -19,22 +21,28 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
         .slice(0, limit)
     : allProducts;
 
-  const categoryTitles = {
+  const categoryTitles: Record<CategoryFilter, string> = {
     all: 'All Products',
     sarms: 'SARMs Collection',
     peptides: 'Peptides Collection',
+    'weight-loss': 'Weight Loss',
+    dilutes: 'Dilutes (PCT)',
   };
 
-  const categoryDescriptions = {
+  const categoryDescriptions: Record<CategoryFilter, string> = {
     all: 'Browse our complete range of premium research compounds',
     sarms: 'Selective Androgen Receptor Modulators for advanced research',
-    peptides: 'High-purity peptides for laboratory applications',
+    peptides: 'High-purity lyophilised peptides for laboratory applications',
+    'weight-loss': 'Research peptides studied for metabolic and weight management applications',
+    dilutes: 'Post-cycle therapy compounds for hormonal research applications',
   };
 
-  const categoryHref = {
+  const categoryHref: Record<CategoryFilter, string> = {
     all: '/products',
     sarms: '/sarms',
     peptides: '/peptides',
+    'weight-loss': '/weight-loss',
+    dilutes: '/dilutes',
   };
 
   return (

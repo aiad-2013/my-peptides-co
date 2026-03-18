@@ -46,24 +46,29 @@ export function useProducts() {
   return useQuery({
     queryKey: ['products'],
     queryFn: fetchProducts,
-    staleTime: 0, // Always fetch fresh from WooCommerce
-    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+    staleTime: 0,
+    gcTime: 10 * 60 * 1000,
     retry: 2,
-    // Fall back to local products if fetch fails
     placeholderData: fallbackProducts,
   });
 }
 
-export function useProductsByCategory(category: 'all' | 'sarms' | 'peptides') {
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+
+export function useProductsByCategory(category: CategoryFilter) {
   const { data: products, ...rest } = useProducts();
   
   const filteredProducts = category === 'all' 
     ? products 
     : products?.filter(p => p.category === category);
 
+  const fallback = category === 'all'
+    ? fallbackProducts
+    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'weight-loss' | 'dilutes');
+
   return {
     ...rest,
-    data: filteredProducts || getFallbackByCategory(category as 'sarms' | 'peptides'),
+    data: filteredProducts || fallback,
   };
 }
 
