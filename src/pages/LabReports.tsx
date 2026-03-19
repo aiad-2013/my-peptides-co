@@ -140,16 +140,13 @@ export default function LabReports() {
                                 {product.volume ? ` · ${product.volume}` : ''}
                               </p>
                             )}
-                            <div className="flex items-center justify-between mt-1">
+                            <div className="flex items-center mt-1">
                               <Badge
                                 variant="outline"
                                 className="text-[9px] px-1.5 py-0.5 border-border/60 text-muted-foreground font-normal rounded-sm"
                               >
                                 {categoryLabel[product.category]}
                               </Badge>
-                              <span className="text-[9px] text-muted-foreground/50">
-                                {imgs.length} img{imgs.length !== 1 ? 's' : ''}
-                              </span>
                             </div>
                           </div>
 
