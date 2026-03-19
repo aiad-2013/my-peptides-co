@@ -68,7 +68,9 @@ export default function LabReports() {
                 </h2>
                 <div className="divide-y divide-border border border-border rounded-sm overflow-hidden">
                   {items.map(product => {
-                    const labImageRaw = product.images?.[2];
+                    const slug = product.id?.toLowerCase() ?? '';
+                    const labImageIndex = slug.includes('glow') ? 4 : slug.includes('klow') ? 5 : 2;
+                    const labImageRaw = product.images?.[labImageIndex];
                     const labImageSrc = labImageRaw ? getProxiedImageUrl(labImageRaw) : null;
                     return (
                       <Link
