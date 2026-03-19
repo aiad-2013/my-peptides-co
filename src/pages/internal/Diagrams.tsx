@@ -32,18 +32,13 @@ export default function InternalDiagrams() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header bar */}
-      <div className="border-b border-border bg-card px-6 py-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground border border-border rounded-sm px-2 py-0.5">
-            Internal
-          </span>
-          <h1 className="text-sm font-medium text-foreground">
-            Product Diagrams
-          </h1>
-        </div>
-        <span className="text-xs text-muted-foreground">
-          {withDiagram.length} product{withDiagram.length !== 1 ? 's' : ''} with diagram
+      <div className="border-b border-border bg-card px-6 py-4 flex items-center sticky top-0 z-40 backdrop-blur-sm gap-3">
+        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground border border-border rounded-sm px-2 py-0.5">
+          Internal
         </span>
+        <h1 className="text-sm font-medium text-foreground">
+          Product Diagrams
+        </h1>
       </div>
 
       <main className="container mx-auto px-4 py-10 max-w-7xl">
@@ -60,8 +55,6 @@ export default function InternalDiagrams() {
                 <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-5 flex items-center gap-3">
                   <span className="w-5 h-px bg-border" />
                   {label}
-                  <span className="text-border">·</span>
-                  <span>{items.length}</span>
                 </h2>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -104,19 +97,13 @@ export default function InternalDiagrams() {
                               {product.concentration || product.dosage}
                             </p>
                           )}
-                          <div className="flex items-center justify-between mt-1">
+                          <div className="flex items-center mt-1">
                             <Badge
                               variant="outline"
                               className="text-[9px] px-1.5 py-0.5 border-border/60 text-muted-foreground font-normal rounded-sm"
                             >
                               {categoryLabel[product.category]}
                             </Badge>
-                            <div className="flex items-center gap-1">
-                              {/* All image count */}
-                              <span className="text-[9px] text-muted-foreground/50">
-                                {imgs.length} img{imgs.length !== 1 ? 's' : ''}
-                              </span>
-                            </div>
                           </div>
                         </div>
 
