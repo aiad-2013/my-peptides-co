@@ -168,6 +168,7 @@ export default function InternalDiagrams() {
           </div>
         )}
       </main>
+      <Footer />
 
       {/* Lightbox */}
       {selected && (
