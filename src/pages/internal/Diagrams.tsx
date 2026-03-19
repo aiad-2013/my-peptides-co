@@ -4,6 +4,9 @@ import { useProducts } from '@/hooks/useProducts';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
+import { useSEO } from '@/hooks/useSEO';
 
 const categoryOrder = ['sarms', 'peptides', 'weight-loss', 'dilutes'] as const;
 const categoryLabel: Record<string, string> = {
@@ -14,6 +17,11 @@ const categoryLabel: Record<string, string> = {
 };
 
 export default function InternalDiagrams() {
+  useSEO({
+    title: 'Product Diagrams | My Peptide Co',
+    description: 'Chemical structure diagrams for all SARMs and peptides carried by My Peptide Co.',
+  });
+
   const { data: products = [], isLoading } = useProducts();
   const [selected, setSelected] = useState<{ name: string; src: string } | null>(null);
 
@@ -31,15 +39,31 @@ export default function InternalDiagrams() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header bar */}
-      <div className="border-b border-border bg-card px-6 py-4 flex items-center sticky top-0 z-40 backdrop-blur-sm gap-3">
-        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground border border-border rounded-sm px-2 py-0.5">
-          Internal
-        </span>
-        <h1 className="text-sm font-medium text-foreground">
-          Product Diagrams
-        </h1>
-      </div>
+      <Header />
+
+      {/* Page Hero */}
+      <section className="bg-primary text-primary-foreground py-16 md:py-24 relative overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-[0.035]"
+          style={{
+            backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
+            backgroundSize: '64px 64px',
+          }}
+        />
+        <div className="absolute -left-24 top-1/2 -translate-y-1/2 w-72 h-72 bg-accent/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="container mx-auto px-4 relative">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-accent/70 mb-4 flex items-center gap-2">
+            <span className="w-6 h-px bg-accent/50" />
+            Reference
+          </p>
+          <h1 className="text-3xl md:text-5xl font-serif font-normal leading-tight mb-4 text-white">
+            Product Diagrams
+          </h1>
+          <p className="text-base text-primary-foreground/50 max-w-xl font-light leading-relaxed">
+            Chemical structure diagrams for every compound we carry.
+          </p>
+        </div>
+      </section>
 
       <main className="container mx-auto px-4 py-10 max-w-7xl">
         {isLoading ? (
@@ -144,6 +168,7 @@ export default function InternalDiagrams() {
           </div>
         )}
       </main>
+      <Footer />
 
       {/* Lightbox */}
       {selected && (
