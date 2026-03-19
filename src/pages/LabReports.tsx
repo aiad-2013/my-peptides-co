@@ -81,8 +81,6 @@ export default function LabReports() {
                   <h2 className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground mb-6 flex items-center gap-3">
                     <span className="w-5 h-px bg-border" />
                     {label}
-                    <span className="text-border">·</span>
-                    <span>{items.length}</span>
                   </h2>
 
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
