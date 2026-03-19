@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import heroBanner from '@/assets/hero-banner-desktop-v2.jpg';
+import heroBanner from '@/assets/hero-banner-desktop-v2.webp';
 import heroBannerMobile from '@/assets/hero-banner-mobile.jpg';
 import { MolecularCanvas } from '@/components/MolecularCanvas';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -52,6 +53,19 @@ const heroContent = {
 export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: HeroProps) => {
   const content = heroContent[activeCategory];
   const isMobile = useIsMobile();
+
+  // Preload the correct banner as early as possible to eliminate LCP delay
+  useEffect(() => {
+    const src = isMobile ? heroBannerMobile : heroBanner;
+    const existing = document.querySelector(`link[rel="preload"][href="${src}"]`);
+    if (existing) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = src;
+    link.setAttribute('fetchpriority', 'high');
+    document.head.appendChild(link);
+  }, [isMobile]);
 
   return (
     <section
