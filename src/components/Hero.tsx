@@ -60,7 +60,8 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
         background: 'hsl(var(--primary))',
         height: '370px',
       } : {
-    backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
+        backgroundColor: 'hsl(var(--accent))',
+        backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
         backgroundPosition: isMobile ? 'center bottom' : 'center',
         minHeight: isMobile ? '102vh' : '70vh',
