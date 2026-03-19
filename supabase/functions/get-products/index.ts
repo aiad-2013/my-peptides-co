@@ -176,7 +176,7 @@ serve(async (req) => {
         // Weight Loss
         'retatrutide': 'weight-loss',
         'tirzepatide': 'weight-loss',
-        'tesamorelin': 'weight-loss',
+        'tesamorelin': 'peptides',
         '5-amino-1mq': 'weight-loss',
         // Peptides
         'bpc-157': 'peptides',
