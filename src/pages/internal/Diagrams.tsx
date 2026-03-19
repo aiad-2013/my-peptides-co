@@ -32,18 +32,13 @@ export default function InternalDiagrams() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header bar */}
-      <div className="border-b border-border bg-card px-6 py-4 flex items-center justify-between sticky top-0 z-40 backdrop-blur-sm">
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground border border-border rounded-sm px-2 py-0.5">
-            Internal
-          </span>
-          <h1 className="text-sm font-medium text-foreground">
-            Product Diagrams
-          </h1>
-        </div>
-        <span className="text-xs text-muted-foreground">
-          {withDiagram.length} product{withDiagram.length !== 1 ? 's' : ''} with diagram
+      <div className="border-b border-border bg-card px-6 py-4 flex items-center sticky top-0 z-40 backdrop-blur-sm gap-3">
+        <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-muted-foreground border border-border rounded-sm px-2 py-0.5">
+          Internal
         </span>
+        <h1 className="text-sm font-medium text-foreground">
+          Product Diagrams
+        </h1>
       </div>
 
       <main className="container mx-auto px-4 py-10 max-w-7xl">
