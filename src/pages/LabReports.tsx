@@ -22,10 +22,14 @@ export default function LabReports() {
 
   const sarms = products.filter(p => p.category === 'sarms');
   const peptides = products.filter(p => p.category === 'peptides');
+  const weightLoss = products.filter(p => p.category === 'weight-loss');
+  const dilutes = products.filter(p => p.category === 'dilutes');
 
   const sections = [
     { label: 'SARMs', items: sarms },
     { label: 'Peptides', items: peptides },
+    { label: 'Weight Loss', items: weightLoss },
+    { label: 'Dilutes / PCT', items: dilutes },
   ];
 
   return (
