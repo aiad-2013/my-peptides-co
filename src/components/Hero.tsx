@@ -54,6 +54,19 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
   const content = heroContent[activeCategory];
   const isMobile = useIsMobile();
 
+  // Preload the correct banner as early as possible to eliminate LCP delay
+  useEffect(() => {
+    const src = isMobile ? heroBannerMobile : heroBanner;
+    const existing = document.querySelector(`link[rel="preload"][href="${src}"]`);
+    if (existing) return;
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = 'image';
+    link.href = src;
+    link.setAttribute('fetchpriority', 'high');
+    document.head.appendChild(link);
+  }, [isMobile]);
+
   return (
     <section
       className="relative overflow-hidden text-primary-foreground flex flex-col"
