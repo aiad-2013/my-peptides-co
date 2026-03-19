@@ -59,7 +59,7 @@ export const MolecularCanvas = ({ pivotXFactor = 0.73 }: MolecularCanvasProps) =
       const delta = ts - lastTs.current;
       lastTs.current = ts;
 
-      const speed = isMobile ? 0 : DRIFT_PX_PER_MS;
+      const speed = isMobile ? DRIFT_PX_PER_MS * 0.7 : DRIFT_PX_PER_MS;
 
       // Geometry — recalculated each frame so resize is always respected
       const diag = Math.sqrt(canvas.width ** 2 + canvas.height ** 2);
