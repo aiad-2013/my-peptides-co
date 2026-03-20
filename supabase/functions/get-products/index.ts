@@ -311,8 +311,15 @@ serve(async (req) => {
         concentration: concentration || undefined,
         volume: volume || undefined,
         description,
-        image: product.images?.[0]?.src || '/placeholder.svg',
-        images: product.images?.map(img => img.src).filter(Boolean) || [],
+        ...(() => {
+          const imgs = (product.images || []).filter(img => img.src);
+          // Push molecular/structure/diagram images to the end so the product photo is always first
+          const structureKeywords = /structure|molecule|molecular|chemical|diagram|formula/i;
+          const primary = imgs.filter(img => !structureKeywords.test(img.alt || ''));
+          const secondary = imgs.filter(img => structureKeywords.test(img.alt || ''));
+          const ordered = [...primary, ...secondary].map(img => img.src);
+          return { image: ordered[0] || '/placeholder.svg', images: ordered };
+        })(),
         badge: badge || (isBundle ? 'Bundle' : undefined),
         inStock: product.stock_status === 'instock',
         wooCommerceUrl: product.permalink,
