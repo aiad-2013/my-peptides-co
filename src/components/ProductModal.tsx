@@ -1,4 +1,4 @@
-import { useState, useRef, type MouseEvent as ReactMouseEvent } from 'react';
+import { useState, useRef, useCallback, type MouseEvent as ReactMouseEvent, type TouchEvent as ReactTouchEvent } from 'react';
 import { X, Minus, Plus, ShoppingCart, Shield } from 'lucide-react';
 import { Product } from '@/types/product';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,16 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
   const [quantity, setQuantity] = useState(1);
   const [imgError, setImgError] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
+  // Desktop hover zoom
   const [isZooming, setIsZooming] = useState(false);
   const [zoomOrigin, setZoomOrigin] = useState('50% 50%');
+  // Touch / pinch zoom
+  const [touchScale, setTouchScale] = useState(1);
+  const [touchOrigin, setTouchOrigin] = useState('50% 50%');
+  const [isTapZoomed, setIsTapZoomed] = useState(false);
+  const lastTapRef = useRef<number>(0);
+  const pinchStartDistRef = useRef<number | null>(null);
+  const pinchStartScaleRef = useRef<number>(1);
   const imgWrapRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
 
