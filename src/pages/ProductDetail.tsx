@@ -284,18 +284,21 @@ const ProductDetailContent = () => {
   // ── Pinch-to-zoom (touch) ──────────────────────────────────────────────────
   const [touchScale, setTouchScale] = useState(1);
   const [touchOrigin, setTouchOrigin] = useState('50% 50%');
-  const touchRef = useRef<{ dist: number; scale: number; midX: number; midY: number } | null>(null);
+  const touchRef = useRef<{ dist: number; scale: number } | null>(null);
+  // Track touch so onClick never opens lightbox on mobile (touch fires click too)
+  const wasTouchRef = useRef(false);
 
   const getTouchDist = (t: React.TouchList) =>
     Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
 
   const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    wasTouchRef.current = true;
     if (e.touches.length === 2 && imgContainerRef.current) {
       e.preventDefault();
       const rect = imgContainerRef.current.getBoundingClientRect();
       const midX = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left) / rect.width * 100;
       const midY = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top) / rect.height * 100;
-      touchRef.current = { dist: getTouchDist(e.touches), scale: touchScale, midX, midY };
+      touchRef.current = { dist: getTouchDist(e.touches), scale: touchScale };
       setTouchOrigin(`${midX}% ${midY}%`);
     }
   };
@@ -313,7 +316,6 @@ const ProductDetailContent = () => {
   const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (e.touches.length < 2) {
       touchRef.current = null;
-      // Snap back to 1 if barely zoomed
       setTouchScale(s => s < 1.15 ? 1 : s);
     }
   };
