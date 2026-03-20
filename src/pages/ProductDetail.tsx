@@ -103,12 +103,21 @@ interface ZoomLightboxProps {
 const ZoomLightbox = ({ images, initialIndex, onClose }: ZoomLightboxProps) => {
   const [index, setIndex] = useState(initialIndex);
   const [scale, setScale] = useState(1);
+  const [origin, setOrigin] = useState('50% 50%');
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const dragStart = useRef({ x: 0, y: 0, ox: 0, oy: 0 });
+  // Touch pinch + double-tap
+  const pinchStartDist = useRef<number | null>(null);
+  const pinchStartScale = useRef(1);
+  const isPinching = useRef(false);
+  const lastTap = useRef(0);
+  const [tapZoomed, setTapZoomed] = useState(false);
+  const imgAreaRef = useRef<HTMLDivElement>(null);
 
-  const prev = useCallback(() => { setIndex(i => (i - 1 + images.length) % images.length); setScale(1); setOffset({ x: 0, y: 0 }); }, [images.length]);
-  const next = useCallback(() => { setIndex(i => (i + 1) % images.length); setScale(1); setOffset({ x: 0, y: 0 }); }, [images.length]);
+  const resetView = useCallback(() => { setScale(1); setOffset({ x: 0, y: 0 }); setOrigin('50% 50%'); setTapZoomed(false); }, []);
+  const prev = useCallback(() => { setIndex(i => (i - 1 + images.length) % images.length); resetView(); }, [images.length, resetView]);
+  const next = useCallback(() => { setIndex(i => (i + 1) % images.length); resetView(); }, [images.length, resetView]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -120,26 +129,66 @@ const ZoomLightbox = ({ images, initialIndex, onClose }: ZoomLightboxProps) => {
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose, prev, next]);
 
+  // Desktop: scroll to zoom
   const onWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     setScale(s => Math.min(4, Math.max(1, s - e.deltaY * 0.001)));
   };
 
+  // Desktop: drag to pan when zoomed
   const onMouseDown = (e: React.MouseEvent) => {
     if (scale <= 1) return;
     setIsDragging(true);
     dragStart.current = { x: e.clientX, y: e.clientY, ox: offset.x, oy: offset.y };
   };
-
   const onMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
-    setOffset({
-      x: dragStart.current.ox + e.clientX - dragStart.current.x,
-      y: dragStart.current.oy + e.clientY - dragStart.current.y,
-    });
+    setOffset({ x: dragStart.current.ox + e.clientX - dragStart.current.x, y: dragStart.current.oy + e.clientY - dragStart.current.y });
+  };
+  const onMouseUp = () => setIsDragging(false);
+
+  // Touch: pinch to zoom + double-tap to toggle
+  const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      isPinching.current = true;
+      pinchStartDist.current = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      pinchStartScale.current = scale;
+      if (imgAreaRef.current) {
+        const rect = imgAreaRef.current.getBoundingClientRect();
+        const mx = (((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left) / rect.width * 100;
+        const my = (((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top) / rect.height * 100;
+        setOrigin(`${mx}% ${my}%`);
+      }
+    } else if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTap.current < 300 && !isPinching.current && imgAreaRef.current) {
+        const rect = imgAreaRef.current.getBoundingClientRect();
+        const x = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+        const y = ((e.touches[0].clientY - rect.top) / rect.height) * 100;
+        if (tapZoomed) { resetView(); } else { setScale(2.5); setOrigin(`${x}% ${y}%`); setTapZoomed(true); }
+      }
+      lastTap.current = now;
+    }
   };
 
-  const onMouseUp = () => setIsDragging(false);
+  const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && pinchStartDist.current !== null && imgAreaRef.current) {
+      e.preventDefault();
+      const dist = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+      const newScale = Math.min(5, Math.max(1, pinchStartScale.current * (dist / pinchStartDist.current)));
+      const rect = imgAreaRef.current.getBoundingClientRect();
+      const mx = (((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left) / rect.width * 100;
+      const my = (((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top) / rect.height * 100;
+      setOrigin(`${mx}% ${my}%`);
+      setScale(newScale);
+    }
+  };
+
+  const onTouchEnd = () => {
+    pinchStartDist.current = null;
+    setTimeout(() => { isPinching.current = false; }, 50);
+    setScale(s => { if (s < 1.15) { setTapZoomed(false); setOrigin('50% 50%'); return 1; } return s; });
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 animate-fade-in">
@@ -152,46 +201,50 @@ const ZoomLightbox = ({ images, initialIndex, onClose }: ZoomLightboxProps) => {
       </button>
 
       {/* Zoom hint */}
-      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs tracking-widest uppercase">
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs tracking-widest uppercase hidden md:block">
         Scroll to zoom · Drag to pan
+      </p>
+      <p className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/40 text-xs tracking-widest uppercase md:hidden whitespace-nowrap">
+        {scale > 1 ? 'Double-tap to reset' : 'Pinch or double-tap to zoom'}
       </p>
 
       {/* Prev / Next */}
       {images.length > 1 && (
         <>
-          <button
-            onClick={prev}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-          >
+          <button onClick={prev} className="absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </button>
-          <button
-            onClick={next}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
-          >
+          <button onClick={next} className="absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
             <ChevronRight className="w-6 h-6" />
           </button>
         </>
       )}
 
-      {/* Image */}
+      {/* Image area */}
       <div
-        className="relative w-full h-full flex items-center justify-center overflow-hidden"
+        ref={imgAreaRef}
+        className="relative w-full h-full flex items-center justify-center overflow-hidden select-none"
         onWheel={onWheel}
         onMouseDown={onMouseDown}
         onMouseMove={onMouseMove}
         onMouseUp={onMouseUp}
         onMouseLeave={onMouseUp}
-        style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in' }}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        style={{ cursor: scale > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in', touchAction: scale > 1 ? 'none' : 'pan-y' }}
         onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
       >
         <img
           src={images[index]}
           alt=""
           draggable={false}
-          className="max-w-[90vw] max-h-[90vh] object-contain select-none transition-transform duration-100"
-          style={{ transform: `scale(${scale}) translate(${offset.x / scale}px, ${offset.y / scale}px)` }}
-          onClick={() => scale === 1 && setScale(2)}
+          className="max-w-[90vw] max-h-[90vh] object-contain pointer-events-none"
+          style={{
+            transform: `scale(${scale}) translate(${offset.x / scale}px, ${offset.y / scale}px)`,
+            transformOrigin: origin,
+            transition: isPinching.current ? 'none' : 'transform 0.15s ease-out',
+          }}
         />
       </div>
 
@@ -201,7 +254,7 @@ const ZoomLightbox = ({ images, initialIndex, onClose }: ZoomLightboxProps) => {
           {images.map((src, i) => (
             <button
               key={i}
-              onClick={() => { setIndex(i); setScale(1); setOffset({ x: 0, y: 0 }); }}
+              onClick={() => { setIndex(i); resetView(); }}
               className={`w-12 h-12 rounded overflow-hidden border-2 transition-all ${i === index ? 'border-accent scale-110' : 'border-white/20 opacity-50 hover:opacity-80'}`}
             >
               <img src={src} alt="" className="w-full h-full object-cover" />
