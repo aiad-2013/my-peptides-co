@@ -279,7 +279,7 @@ function LightboxViewer({ name, src, onClose }: { name: string; src: string; onC
   return (
     <div
       className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center p-6"
-      onClick={() => setSelected(null)}
+      onClick={onClose}
     >
       <div
         className="relative max-w-2xl w-full bg-card border border-border rounded-sm overflow-hidden shadow-2xl"
