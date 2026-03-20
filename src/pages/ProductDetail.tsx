@@ -497,15 +497,29 @@ const ProductDetailContent = () => {
               )}
               {/* Zoom hint overlay */}
               {!imgError && imageSrc && (
-                <div
-                  className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white transition-opacity duration-200 backdrop-blur-sm pointer-events-none"
-                  style={{ opacity: (isZooming || touchScale > 1) ? 0 : 1 }}
-                >
-                  {/* Desktop hint */}
-                  <ZoomIn className="w-4 h-4 hidden md:block" />
-                  {/* Mobile hint */}
-                  <span className="text-[10px] uppercase tracking-widest block md:hidden">Pinch to zoom</span>
-                </div>
+                <>
+                  {/* Desktop: click-to-open lightbox hint */}
+                  <div
+                    className="absolute bottom-3 right-3 p-1.5 rounded-md bg-black/40 text-white transition-opacity duration-200 backdrop-blur-sm pointer-events-none hidden md:block"
+                    style={{ opacity: (isZooming || touchScale > 1) ? 0 : 1 }}
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </div>
+                  {/* Mobile: pinch hint + tap-to-open lightbox button */}
+                  <div
+                    className="absolute bottom-3 left-0 right-0 flex items-center justify-between px-3 md:hidden"
+                    style={{ opacity: touchScale > 1 ? 0 : 1, transition: 'opacity 0.2s' }}
+                  >
+                    <span className="text-[10px] uppercase tracking-widest text-white/50 pointer-events-none">Pinch to zoom</span>
+                    <button
+                      className="p-1.5 rounded-md bg-black/40 text-white backdrop-blur-sm"
+                      onClick={(e) => { e.stopPropagation(); if (!imgError && imageSrc) setZoomOpen(true); }}
+                      aria-label="Open full screen"
+                    >
+                      <ZoomIn className="w-4 h-4" />
+                    </button>
+                  </div>
+                </>
               )}
               {product.isBundle && (
                 <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground text-sm px-3 py-1">
