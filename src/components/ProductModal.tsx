@@ -26,10 +26,15 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
   const lastTapRef = useRef<number>(0);
   const pinchStartDistRef = useRef<number | null>(null);
   const pinchStartScaleRef = useRef<number>(1);
+  const isPinchingRef = useRef(false);
   const imgWrapRef = useRef<HTMLDivElement>(null);
   const { addItem } = useCart();
 
   if (!isOpen || !product) return null;
+
+  const imageSrc = product.image && product.image !== '/placeholder.svg'
+    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+    : null;
 
   const handleImgError = () => {
     if (retryCount < 2) {
@@ -39,6 +44,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
     }
   };
 
+  // Desktop: track cursor for zoom origin
   const handleMouseMove = (e: ReactMouseEvent<HTMLDivElement>) => {
     if (!imgWrapRef.current) return;
     const rect = imgWrapRef.current.getBoundingClientRect();
@@ -47,9 +53,73 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
     setZoomOrigin(`${x}% ${y}%`);
   };
 
-  const imageSrc = product.image && product.image !== '/placeholder.svg'
-    ? `${getProxiedImageUrl(product.image)}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
-    : null;
+  // Touch: double-tap to toggle zoom, pinch to zoom
+  const handleTouchStart = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!imgWrapRef.current || imgError || !imageSrc) return;
+
+    if (e.touches.length === 2) {
+      // Pinch start
+      isPinchingRef.current = true;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDistRef.current = Math.hypot(dx, dy);
+      pinchStartScaleRef.current = touchScale;
+    } else if (e.touches.length === 1) {
+      // Double-tap detection
+      const now = Date.now();
+      if (now - lastTapRef.current < 300 && !isPinchingRef.current) {
+        const rect = imgWrapRef.current.getBoundingClientRect();
+        const x = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+        const y = ((e.touches[0].clientY - rect.top) / rect.height) * 100;
+        if (isTapZoomed) {
+          setIsTapZoomed(false);
+          setTouchScale(1);
+          setTouchOrigin('50% 50%');
+        } else {
+          setIsTapZoomed(true);
+          setTouchScale(2.5);
+          setTouchOrigin(`${x}% ${y}%`);
+        }
+      }
+      lastTapRef.current = now;
+    }
+  };
+
+  const handleTouchMove = (e: ReactTouchEvent<HTMLDivElement>) => {
+    if (!imgWrapRef.current || imgError || !imageSrc) return;
+    if (e.touches.length === 2 && pinchStartDistRef.current !== null) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const ratio = dist / pinchStartDistRef.current;
+      const newScale = Math.min(4, Math.max(1, pinchStartScaleRef.current * ratio));
+      // Origin at midpoint of two fingers
+      const rect = imgWrapRef.current.getBoundingClientRect();
+      const mx = (((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left) / rect.width * 100;
+      const my = (((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top) / rect.height * 100;
+      setTouchOrigin(`${mx}% ${my}%`);
+      setTouchScale(newScale);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    pinchStartDistRef.current = null;
+    setTimeout(() => { isPinchingRef.current = false; }, 50);
+    setTouchScale(prev => {
+      if (prev < 1.15) {
+        setIsTapZoomed(false);
+        setTouchOrigin('50% 50%');
+        return 1;
+      }
+      return prev;
+    });
+  };
+
+  // Combined: desktop hover wins over touch
+  const activeScale = isZooming ? 2.5 : touchScale;
+  const activeOrigin = isZooming ? zoomOrigin : touchOrigin;
+  const isActivelyZoomed = isZooming || touchScale > 1;
 
   const handleAddToCart = () => {
     addItem(product, quantity);
@@ -79,22 +149,31 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
           {/* Image */}
           <div
             ref={imgWrapRef}
-            className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden cursor-crosshair"
+            className="relative aspect-square bg-gradient-to-b from-muted to-secondary overflow-hidden cursor-crosshair select-none"
             onMouseMove={handleMouseMove}
             onMouseEnter={() => { if (!imgError && imageSrc) setIsZooming(true); }}
             onMouseLeave={() => setIsZooming(false)}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            style={{ touchAction: touchScale > 1 ? 'none' : 'pan-y' }}
           >
             {!imgError && imageSrc ? (
               <img
                 src={imageSrc}
                 alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover"
+                className="absolute inset-0 w-full h-full object-cover pointer-events-none"
                 style={{
-                  transform: isZooming ? 'scale(2.5)' : 'scale(1)',
-                  transformOrigin: zoomOrigin,
-                  transition: isZooming ? 'transform 0.15s ease-out' : 'transform 0.3s ease-out',
+                  transform: `scale(${activeScale})`,
+                  transformOrigin: activeOrigin,
+                  transition: isPinchingRef.current
+                    ? 'none'
+                    : isZooming
+                      ? 'transform 0.15s ease-out'
+                      : 'transform 0.3s ease-out',
                 }}
                 onError={handleImgError}
+                draggable={false}
               />
             ) : (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -112,10 +191,20 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
                 {product.badge}
               </Badge>
             )}
-            {/* Zoom hint */}
-            {!imgError && imageSrc && !isZooming && (
-              <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/50 uppercase tracking-widest pointer-events-none">
-                Hover to zoom
+            {/* Zoom hints */}
+            {!imgError && imageSrc && !isActivelyZoomed && (
+              <>
+                <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/50 uppercase tracking-widest pointer-events-none hidden md:block">
+                  Hover to zoom
+                </p>
+                <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/50 uppercase tracking-widest pointer-events-none md:hidden whitespace-nowrap">
+                  Pinch or double-tap to zoom
+                </p>
+              </>
+            )}
+            {isActivelyZoomed && (
+              <p className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] text-white/60 uppercase tracking-widest pointer-events-none md:hidden whitespace-nowrap">
+                Double-tap to reset
               </p>
             )}
           </div>
