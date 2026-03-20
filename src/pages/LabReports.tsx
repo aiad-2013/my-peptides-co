@@ -201,33 +201,125 @@ export default function LabReports() {
 
       {/* Lightbox */}
       {selected && (
-        <div
-          className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center p-6"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="relative max-w-2xl w-full bg-card border border-border rounded-sm overflow-hidden shadow-2xl"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-              <p className="text-sm font-medium text-foreground truncate">{selected.name}</p>
-              <button
-                onClick={() => setSelected(null)}
-                className="text-muted-foreground hover:text-foreground text-xs uppercase tracking-widest transition-colors"
-              >
-                Close
-              </button>
-            </div>
-            <div className="p-4 bg-secondary/30">
-              <img
-                src={selected.src}
-                alt={selected.name}
-                className="w-full h-auto max-h-[70vh] object-contain"
-              />
-            </div>
-          </div>
-        </div>
+        <LightboxViewer
+          name={selected.name}
+          src={selected.src}
+          onClose={() => setSelected(null)}
+        />
       )}
+    </div>
+  );
+}
+
+// Extracted lightbox with pinch-to-zoom + double-tap support
+function LightboxViewer({ name, src, onClose }: { name: string; src: string; onClose: () => void }) {
+  const [scale, setScale] = useState(1);
+  const [origin, setOrigin] = useState('50% 50%');
+  const [isTapZoomed, setIsTapZoomed] = useState(false);
+  const lastTapRef = useRef<number>(0);
+  const pinchStartDistRef = useRef<number | null>(null);
+  const pinchStartScaleRef = useRef<number>(1);
+  const isPinchingRef = useRef(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2) {
+      isPinchingRef.current = true;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDistRef.current = Math.hypot(dx, dy);
+      pinchStartScaleRef.current = scale;
+    } else if (e.touches.length === 1) {
+      const now = Date.now();
+      if (now - lastTapRef.current < 300 && !isPinchingRef.current) {
+        if (imgRef.current) {
+          const rect = imgRef.current.getBoundingClientRect();
+          const x = ((e.touches[0].clientX - rect.left) / rect.width) * 100;
+          const y = ((e.touches[0].clientY - rect.top) / rect.height) * 100;
+          if (isTapZoomed) {
+            setIsTapZoomed(false);
+            setScale(1);
+            setOrigin('50% 50%');
+          } else {
+            setIsTapZoomed(true);
+            setScale(2.5);
+            setOrigin(`${x}% ${y}%`);
+          }
+        }
+      }
+      lastTapRef.current = now;
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length === 2 && pinchStartDistRef.current !== null && imgRef.current) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const ratio = dist / pinchStartDistRef.current;
+      const newScale = Math.min(5, Math.max(1, pinchStartScaleRef.current * ratio));
+      const rect = imgRef.current.getBoundingClientRect();
+      const mx = (((e.touches[0].clientX + e.touches[1].clientX) / 2) - rect.left) / rect.width * 100;
+      const my = (((e.touches[0].clientY + e.touches[1].clientY) / 2) - rect.top) / rect.height * 100;
+      setOrigin(`${mx}% ${my}%`);
+      setScale(newScale);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    pinchStartDistRef.current = null;
+    setTimeout(() => { isPinchingRef.current = false; }, 50);
+    setScale(prev => {
+      if (prev < 1.15) { setIsTapZoomed(false); setOrigin('50% 50%'); return 1; }
+      return prev;
+    });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-background/90 backdrop-blur-sm flex items-center justify-center p-6"
+      onClick={() => setSelected(null)}
+    >
+      <div
+        className="relative max-w-2xl w-full bg-card border border-border rounded-sm overflow-hidden shadow-2xl"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+          <p className="text-sm font-medium text-foreground truncate">{name}</p>
+          <button
+            onClick={onClose}
+            className="text-muted-foreground hover:text-foreground text-xs uppercase tracking-widest transition-colors"
+          >
+            Close
+          </button>
+        </div>
+        <div
+          ref={imgRef}
+          className="p-4 bg-secondary/30 overflow-hidden select-none"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+          style={{ touchAction: scale > 1 ? 'none' : 'pan-y' }}
+        >
+          <img
+            src={src}
+            alt={name}
+            className="w-full h-auto max-h-[70vh] object-contain pointer-events-none"
+            style={{
+              transform: `scale(${scale})`,
+              transformOrigin: origin,
+              transition: isPinchingRef.current ? 'none' : 'transform 0.3s ease-out',
+            }}
+            draggable={false}
+          />
+          {scale === 1 && (
+            <p className="absolute bottom-3 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground/50 uppercase tracking-widest pointer-events-none md:hidden whitespace-nowrap">
+              Pinch or double-tap to zoom
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
