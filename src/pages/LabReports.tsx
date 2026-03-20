@@ -296,7 +296,7 @@ function LightboxViewer({ name, src, onClose }: { name: string; src: string; onC
         </div>
         <div
           ref={imgRef}
-          className="p-4 bg-secondary/30 overflow-hidden select-none"
+          className="relative p-4 bg-secondary/30 overflow-hidden select-none"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
