@@ -453,14 +453,18 @@ const ProductDetailContent = () => {
           <div className="flex flex-col gap-3">
             <div
               ref={imgContainerRef}
-              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden cursor-crosshair"
-              onClick={() => !imgError && imageSrc && touchScale === 1 && setZoomOpen(true)}
+              className="relative aspect-square bg-gradient-to-b from-muted to-secondary rounded-xl overflow-hidden cursor-crosshair select-none"
+              onClick={() => {
+                if (wasTouchRef.current) { wasTouchRef.current = false; return; }
+                if (!imgError && imageSrc && touchScale === 1) setZoomOpen(true);
+              }}
               onMouseMove={handleMouseMove}
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
               onTouchStart={handleTouchStart}
               onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
+              style={{ touchAction: touchScale > 1 ? 'none' : 'pan-y' }}
             >
               {!imgError && imageSrc ? (
                 <img
