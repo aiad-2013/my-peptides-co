@@ -78,7 +78,7 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
         backgroundImage: `url(${isMobile ? heroBannerMobile : heroBanner})`,
         backgroundSize: 'cover',
         backgroundPosition: isMobile ? 'center bottom' : 'center',
-        minHeight: isMobile ? '102vh' : '70vh',
+        minHeight: isMobile ? '80vh' : '70vh',
       }}
     >
       {/* Gradient overlay — left-heavy on desktop, full-coverage fade on mobile */}
