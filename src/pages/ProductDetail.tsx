@@ -278,6 +278,8 @@ const ProductDetailContent = () => {
   const [retryCount, setRetryCount] = useState(0);
   const [isZooming, setIsZooming] = useState(false);
   const [zoomStyle, setZoomStyle] = useState<React.CSSProperties>({});
+  const [stickyCtaVisible, setStickyCtaVisible] = useState(false);
+  const mobileCartSentinelRef = useRef<HTMLDivElement>(null);
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const orderDeadline = useOrderDeadline();
 
