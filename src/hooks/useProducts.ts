@@ -53,7 +53,7 @@ export function useProducts() {
   });
 }
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
 
 export function useProductsByCategory(category: CategoryFilter) {
   const { data: products, ...rest } = useProducts();
