@@ -62,6 +62,7 @@ export const Header = () => {
   const isShopActive = shopPaths.includes(location.pathname);
 
   const linkItems = [
+    { label: 'Home', to: '/' },
     { label: 'Blog', to: '/blog' },
     { label: 'Track My Order', to: '/track-order' },
   ];
