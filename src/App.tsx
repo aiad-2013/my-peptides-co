@@ -35,7 +35,9 @@ function AppRoutes() {
           <Route path="/products" element={<Products category="all" />} />
           <Route path="/sarms" element={<Products category="sarms" />} />
           <Route path="/peptides" element={<Products category="peptides" />} />
-          <Route path="/weight-loss" element={<Products category="weight-loss" />} />
+          <Route path="/glp-1" element={<Products category="glp-1" />} />
+          <Route path="/weight-loss" element={<Products category="glp-1" />} />
+          <Route path="/performance-enhancements" element={<Products category="performance-enhancements" />} />
           <Route path="/dilutes" element={<Products category="dilutes" />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
