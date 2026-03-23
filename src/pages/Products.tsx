@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { useSEO } from '@/hooks/useSEO';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
 
 interface ProductsProps {
   category: CategoryFilter;
