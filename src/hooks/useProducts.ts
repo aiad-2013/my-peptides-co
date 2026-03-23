@@ -67,7 +67,7 @@ export function useProductsByCategory(category: CategoryFilter) {
 
   const fallback = category === 'all'
     ? fallbackProducts
-    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes');
+    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes');
 
   return {
     ...rest,
