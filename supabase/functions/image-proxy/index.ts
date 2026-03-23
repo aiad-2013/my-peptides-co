@@ -27,7 +27,9 @@ serve(async (req) => {
 
     const referer = parsedUrl.hostname.endsWith('vicorpus.com')
       ? 'https://vicorpus.com/'
-      : 'https://vicorpus.co/';
+      : parsedUrl.hostname.endsWith('vicorpus.co')
+      ? 'https://vicorpus.co/'
+      : 'https://checkout.mypeptideco.com/';
 
     const response = await fetch(imageUrl, {
       headers: {
