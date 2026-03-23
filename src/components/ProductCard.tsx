@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, Package, Eye, Images } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
-import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { getProxiedImageUrl, isProxiedUrl } from '@/lib/imageProxy';
 import moleculePlaceholder from '@/assets/molecule-placeholder.jpg';
 
 interface ProductCardProps {
