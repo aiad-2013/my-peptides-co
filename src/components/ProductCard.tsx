@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ShoppingCart, Package, Eye, Images } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
-import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { getProxiedImageUrl, isProxiedUrl } from '@/lib/imageProxy';
 import moleculePlaceholder from '@/assets/molecule-placeholder.jpg';
 
 interface ProductCardProps {
@@ -54,8 +54,9 @@ export const ProductCard = ({ product }: ProductCardProps) => {
   const hasMultipleImages = allImages.length > 1;
 
   // On hover, show the 2nd image (chemical structure) if available
-  const primarySrc = hasRealImage
-    ? `${getProxiedImageUrl(allImages[0])}${retryCount > 0 ? `&retry=${retryCount}` : ''}`
+  const proxiedPrimary = hasRealImage ? getProxiedImageUrl(allImages[0]) : null;
+  const primarySrc = proxiedPrimary
+    ? (retryCount > 0 && isProxiedUrl(proxiedPrimary) ? `${proxiedPrimary}&retry=${retryCount}` : proxiedPrimary)
     : null;
   const secondarySrc = hasMultipleImages ? getProxiedImageUrl(allImages[1]) : null;
 
