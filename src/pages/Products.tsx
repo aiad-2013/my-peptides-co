@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { useSEO } from '@/hooks/useSEO';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
 
 interface ProductsProps {
   category: CategoryFilter;
@@ -24,9 +24,13 @@ const SEO_MAP: Record<CategoryFilter, { title: string; description: string }> = 
     title: 'Buy Peptides Australia — BPC-157, TB-500, CJC-1295 | My Peptide Co',
     description: 'Premium research peptides for sale in Australia. BPC-157, TB-500, CJC-1295, Ipamorelin and more. Pharmaceutical-grade purity, lab-verified, fast shipping.',
   },
-  'weight-loss': {
-    title: 'Buy Weight Loss Peptides Australia — Retatrutide, Tirzepatide | My Peptide Co',
-    description: 'Shop research-grade weight loss peptides in Australia. Retatrutide, Tirzepatide, 5-Amino-1MQ and more. Lab-tested, fast dispatch.',
+  'glp-1': {
+    title: 'Buy GLP-1 Peptides Australia — Retatrutide, Tirzepatide | My Peptide Co',
+    description: 'Shop research-grade GLP-1 peptides in Australia. Retatrutide, Tirzepatide, 5-Amino-1MQ and more. Lab-tested, fast dispatch.',
+  },
+  'performance-enhancements': {
+    title: 'Buy Performance Enhancement Compounds Australia | My Peptide Co',
+    description: 'Research-grade performance enhancement compounds in Australia. Lab-tested, same-day dispatch.',
   },
   dilutes: {
     title: 'Buy PCT Compounds Australia — Clomid, Nolvadex | My Peptide Co',
