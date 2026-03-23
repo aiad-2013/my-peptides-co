@@ -309,8 +309,8 @@ export const products: Product[] = [
   },
 ];
 
-export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes') => {
-  return products.filter(p => p.category === category);
+export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes') => {
+  return products.filter(p => p.category === category || (p.categories && p.categories.includes(category)));
 };
 
 export const getProductById = (id: string) => {
