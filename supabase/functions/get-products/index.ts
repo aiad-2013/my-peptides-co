@@ -204,6 +204,8 @@ serve(async (req) => {
       const MULTI_CATEGORY_MAP: Record<string, Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'>> = {
         'hcg': ['peptides', 'dilutes'],
         'pt-141': ['peptides', 'erectile-performance'],
+        'melanotan-ii': ['peptides', 'erectile-performance'],
+        'bpc-157': ['peptides', 'erectile-performance'],
       };
 
       // Determine category: slug override first, then fall back to WooCommerce category strings
