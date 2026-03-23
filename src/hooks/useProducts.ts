@@ -58,9 +58,12 @@ type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enha
 export function useProductsByCategory(category: CategoryFilter) {
   const { data: products, ...rest } = useProducts();
   
-  const filteredProducts = category === 'all' 
-    ? products 
-    : products?.filter(p => p.category === category);
+  const filteredProducts = category === 'all'
+    ? products
+    : products?.filter(p =>
+        p.category === category ||
+        (p.categories && p.categories.includes(category))
+      );
 
   const fallback = category === 'all'
     ? fallbackProducts
