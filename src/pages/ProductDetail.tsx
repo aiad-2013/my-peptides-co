@@ -1051,8 +1051,12 @@ const ProductDetailContent = () => {
 
       <Footer />
 
-      {/* ── Sticky CTA bar — mobile only ── */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border px-4 py-3 flex items-center gap-3 safe-area-inset-bottom">
+      {/* ── Sticky CTA bar — mobile only, activates after scrolling past inline cart ── */}
+      <div
+        className={`md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border px-4 py-3 flex items-center gap-3 transition-transform duration-300 ease-out ${
+          stickyCtaVisible ? 'translate-y-0' : 'translate-y-full'
+        }`}
+      >
         <div className="flex items-center border border-border rounded-md flex-shrink-0">
           <button
             onClick={() => setQuantity(Math.max(1, quantity - 1))}
