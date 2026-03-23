@@ -127,13 +127,13 @@ export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: H
           {/* CTA Buttons — hidden on collection pages */}
           {!compact && (
             <div
-              className="flex flex-col sm:flex-row items-start gap-3 mt-8 mb-16 animate-slide-up"
+              className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3 mt-8 mb-16 animate-slide-up w-full sm:w-auto"
               style={{ animationDelay: '0.16s' }}
             >
-              <Button variant="hero" onClick={onShopClick}>
+              <Button variant="hero" className="w-full sm:w-auto" onClick={onShopClick}>
                 {content.cta}
               </Button>
-              <Button variant="hero-outline" asChild>
+              <Button variant="hero-outline" className="w-full sm:w-auto" asChild>
                 <Link to="/lab-reports">Lab Reports</Link>
               </Button>
             </div>

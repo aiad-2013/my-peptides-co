@@ -116,11 +116,11 @@ const EditorialBand = () => (
           Every compound we carry is independently tested by an accredited third-party laboratory.
           Certificates of Analysis are available on request — because transparency is the baseline, not a selling point.
         </p>
-        <div className="flex flex-wrap gap-3">
-          <Button variant="hero" asChild>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-start gap-3 w-full sm:w-auto">
+          <Button variant="hero" className="w-full sm:w-auto" asChild>
             <Link to="/products">Shop Compounds</Link>
           </Button>
-          <Button variant="hero-outline" asChild>
+          <Button variant="hero-outline" className="w-full sm:w-auto" asChild>
             <Link to="/faq">Learn More</Link>
           </Button>
         </div>
