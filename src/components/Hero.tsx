@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
   onShopClick?: () => void;
-  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
+  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
   compact?: boolean;
 }
 

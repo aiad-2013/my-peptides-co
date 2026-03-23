@@ -4,7 +4,7 @@ import { useProductsByCategory } from '@/hooks/useProducts';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
 
 interface ProductGridProps {
   category: CategoryFilter;

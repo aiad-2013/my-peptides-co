@@ -23,8 +23,8 @@ export interface Product {
   id: string;
   wooCommerceId?: number;
   name: string;
-  category: 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
-  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes'>;
+  category: 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
+  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes'>;
   price: number;
   concentration?: string;
   volume?: string;
