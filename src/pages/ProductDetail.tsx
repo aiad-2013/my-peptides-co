@@ -328,7 +328,24 @@ const ProductDetailContent = () => {
     setImgError(false);
     setRetryCount(0);
     setTouchScale(1);
+    setStickyCtaVisible(false);
   }, [slug]);
+
+  // Show sticky CTA only after user scrolls past the mobile cart sentinel
+  useEffect(() => {
+    const sentinel = mobileCartSentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // Only activate on mobile (md breakpoint = 768px)
+        if (window.innerWidth >= 768) return;
+        setStickyCtaVisible(!entry.isIntersecting);
+      },
+      { threshold: 0 }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, []);
 
   const product = products?.find(p => p.id === slug);
   const { data: reviews, isLoading: reviewsLoading } = useProductReviews(product?.wooCommerceId);
