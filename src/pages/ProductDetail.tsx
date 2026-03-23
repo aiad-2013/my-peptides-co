@@ -729,44 +729,46 @@ const ProductDetailContent = () => {
               </div>
             )}
 
-            {/* Quantity & Add to Cart */}
-            <div className="flex items-center gap-4 mb-4">
-              <span className="text-sm font-medium text-foreground">Quantity:</span>
-              <div className="flex items-center border border-border rounded-md">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="p-2 hover:bg-muted transition-colors"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="px-4 py-2 font-medium min-w-[3rem] text-center">
-                  {quantity}
-                </span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="p-2 hover:bg-muted transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+            {/* Quantity & Add to Cart — hidden on mobile (shown in sticky bar) */}
+            <div className="hidden md:block">
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-sm font-medium text-foreground">Quantity:</span>
+                <div className="flex items-center border border-border rounded-md">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="p-2 hover:bg-muted transition-colors"
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="px-4 py-2 font-medium min-w-[3rem] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="p-2 hover:bg-muted transition-colors"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
+
+              <Button
+                variant="gold"
+                size="xl"
+                className="w-full"
+                onClick={handleAddToCart}
+                disabled={!product.inStock}
+              >
+                <ShoppingCart className="w-5 h-5 mr-2" />
+                Add to Cart — ${(product.price * quantity).toFixed(2)}
+              </Button>
+
+              {!product.inStock && (
+                <p className="text-destructive text-sm text-center mt-3 font-medium">
+                  Currently out of stock
+                </p>
+              )}
             </div>
-
-            <Button
-              variant="gold"
-              size="xl"
-              className="w-full"
-              onClick={handleAddToCart}
-              disabled={!product.inStock}
-            >
-              <ShoppingCart className="w-5 h-5 mr-2" />
-              Add to Cart — ${(product.price * quantity).toFixed(2)}
-            </Button>
-
-            {!product.inStock && (
-              <p className="text-destructive text-sm text-center mt-3 font-medium">
-                Currently out of stock
-              </p>
-            )}
           </div>
         </div>
 
@@ -985,6 +987,40 @@ const ProductDetailContent = () => {
       </main>
 
       <Footer />
+
+      {/* ── Sticky CTA bar — mobile only ── */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border px-4 py-3 flex items-center gap-3 safe-area-inset-bottom">
+        <div className="flex items-center border border-border rounded-md flex-shrink-0">
+          <button
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            className="p-2.5 hover:bg-muted transition-colors"
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+          <span className="px-3 py-2 font-medium min-w-[2.5rem] text-center text-sm">
+            {quantity}
+          </span>
+          <button
+            onClick={() => setQuantity(quantity + 1)}
+            className="p-2.5 hover:bg-muted transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+        <Button
+          variant="gold"
+          size="lg"
+          className="flex-1"
+          onClick={handleAddToCart}
+          disabled={!product.inStock}
+        >
+          <ShoppingCart className="w-4 h-4 mr-2" />
+          {product.inStock ? `Add to Cart — $${(product.price * quantity).toFixed(2)}` : 'Out of Stock'}
+        </Button>
+      </div>
+
+      {/* Bottom padding so sticky bar doesn't overlap content on mobile */}
+      <div className="md:hidden h-20" />
     </div>
 
     {/* Zoom Lightbox */}
