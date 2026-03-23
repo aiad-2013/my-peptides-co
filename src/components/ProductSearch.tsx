@@ -81,10 +81,10 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
     <div className="fixed inset-0 z-[60] flex items-start justify-center pt-[10vh] px-4 bg-foreground/20 backdrop-blur-sm">
 
       {/* Modal */}
-      <div ref={modalRef} className="relative w-full max-w-xl bg-card border border-border rounded-sm shadow-2xl overflow-hidden animate-slide-up">
+      <div ref={modalRef} className="relative w-full max-w-xl bg-card border border-accent rounded-sm shadow-2xl overflow-hidden animate-slide-up">
 
         {/* Search input */}
-        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-border">
+        <div className="flex items-center gap-3 px-4 py-3.5 border-b border-accent/40">
           <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
           <input
             ref={inputRef}
