@@ -22,7 +22,7 @@ export default function InternalDiagrams() {
     description: 'Chemical structure diagrams for all SARMs and peptides carried by My Peptide Co.',
   });
 
-  const { data: products = [], isLoading } = useProducts();
+  const { data: products = [], isLoading, isFetching } = useProducts();
   const [selected, setSelected] = useState<{ name: string; src: string } | null>(null);
 
   // Only products that have a 2nd image (index 1 = chemical structure diagram)
