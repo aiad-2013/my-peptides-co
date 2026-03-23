@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import heroBanner from '@/assets/hero-banner-desktop-v2.webp';
-import heroBannerMobile from '@/assets/hero-banner-mobile-v2.webp';
+import heroBanner from '@/assets/hero-banner-desktop-v3.jpg';
+import heroBannerMobile from '@/assets/hero-banner-desktop-v3.jpg';
 import { MolecularCanvas } from '@/components/MolecularCanvas';
 import { useIsMobile } from '@/hooks/use-mobile';
 
