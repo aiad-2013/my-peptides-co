@@ -20,7 +20,7 @@ const buttonVariants = cva(
         "gold-outline": "border border-accent/60 text-accent hover:bg-accent hover:text-accent-foreground font-medium tracking-wide",
         navy: "bg-primary text-primary-foreground font-medium tracking-wide hover:bg-primary/90",
         /* Hero CTA — same restrained teal */
-        hero: "bg-accent text-accent-foreground font-medium tracking-wide text-base px-8 py-5 hover:bg-accent/90 hover:shadow-[0_6px_28px_-6px_hsl(var(--accent)/0.4)] active:scale-[0.99]",
+        hero: "bg-accent/80 backdrop-blur-sm text-accent-foreground font-medium tracking-wide text-base px-8 py-5 hover:bg-accent/95 hover:shadow-[0_6px_28px_-6px_hsl(var(--accent)/0.4)] active:scale-[0.99]",
         "hero-outline": "border border-primary-foreground/25 text-primary-foreground/80 hover:border-primary-foreground/60 hover:text-primary-foreground font-light text-base px-8 py-5 tracking-wide",
       },
       size: {
