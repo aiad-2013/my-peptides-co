@@ -85,7 +85,7 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
 
         {/* Search input */}
         <div className="flex items-center gap-3 px-4 py-3.5 border-b border-accent/40">
-          <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+          <Search className="w-4 h-4 text-accent flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
