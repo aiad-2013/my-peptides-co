@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { useSEO } from '@/hooks/useSEO';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
 
 interface ProductsProps {
   category: CategoryFilter;
@@ -28,13 +28,9 @@ const SEO_MAP: Record<CategoryFilter, { title: string; description: string }> = 
     title: 'Buy GLP-1 Peptides Australia — Retatrutide, Tirzepatide | My Peptide Co',
     description: 'Shop research-grade GLP-1 peptides in Australia. Retatrutide, Tirzepatide, 5-Amino-1MQ and more. Lab-tested, fast dispatch.',
   },
-  'performance-enhancements': {
-    title: 'Buy Performance Enhancement Compounds Australia | My Peptide Co',
-    description: 'Research-grade performance enhancement compounds in Australia. Lab-tested, same-day dispatch.',
-  },
   'erectile-performance': {
-    title: 'Buy Erectile Performance Peptides Australia — PT-141 | My Peptide Co',
-    description: 'Research-grade erectile performance peptides in Australia. PT-141, HCG and more. Lab-tested, same-day dispatch.',
+    title: 'Buy Erectile Performance Peptides Australia — PT-141, Melanotan II | My Peptide Co',
+    description: 'Research-grade sexual health peptides in Australia. PT-141, Melanotan II, BPC-157 and more. Lab-tested, same-day dispatch.',
   },
   dilutes: {
     title: 'Buy PCT Compounds Australia — Clomid, Nolvadex | My Peptide Co',
