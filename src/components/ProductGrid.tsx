@@ -25,7 +25,8 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     all: 'All Products',
     sarms: 'SARMs Collection',
     peptides: 'Peptides Collection',
-    'weight-loss': 'Weight Loss',
+    'glp-1': 'GLP-1',
+    'performance-enhancements': 'Performance Enhancements',
     dilutes: 'Dilutes (PCT)',
   };
 
@@ -33,7 +34,8 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     all: 'Browse our complete range of premium research compounds',
     sarms: 'Selective Androgen Receptor Modulators for advanced research',
     peptides: 'High-purity lyophilised peptides for laboratory applications',
-    'weight-loss': 'Research peptides studied for metabolic and weight management applications',
+    'glp-1': 'GLP-1 receptor agonist peptides for metabolic and weight management research',
+    'performance-enhancements': 'Research compounds studied for performance and recovery applications',
     dilutes: 'Post-cycle therapy compounds for hormonal research applications',
   };
 
@@ -41,7 +43,8 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     all: '/products',
     sarms: '/sarms',
     peptides: '/peptides',
-    'weight-loss': '/weight-loss',
+    'glp-1': '/glp-1',
+    'performance-enhancements': '/performance-enhancements',
     dilutes: '/dilutes',
   };
 
