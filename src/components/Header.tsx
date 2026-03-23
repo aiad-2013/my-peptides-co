@@ -127,7 +127,7 @@ export const Header = () => {
             </div>
 
             
-            {linkItems.map((item) => (
+            {afterShopItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
