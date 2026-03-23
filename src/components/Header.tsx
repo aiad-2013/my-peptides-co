@@ -61,8 +61,11 @@ export const Header = () => {
   const shopPaths = shopCategories.map(c => c.to);
   const isShopActive = shopPaths.includes(location.pathname);
 
-  const linkItems = [
+  const beforeShopItems = [
     { label: 'Home', to: '/' },
+  ];
+
+  const afterShopItems = [
     { label: 'Blog', to: '/blog' },
     { label: 'Track My Order', to: '/track-order' },
   ];
@@ -76,6 +79,17 @@ export const Header = () => {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
+            {/* Home */}
+            {beforeShopItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+              >
+                {item.label}
+              </Link>
+            ))}
+
             {/* Shop dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
@@ -113,7 +127,7 @@ export const Header = () => {
             </div>
 
             
-            {linkItems.map((item) => (
+            {afterShopItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -174,6 +188,17 @@ export const Header = () => {
 
         {mobileMenuOpen && (
           <nav className="lg:hidden py-4 border-t border-border animate-fade-in">
+            {/* Home */}
+            {beforeShopItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-left px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+              >
+                {item.label}
+              </Link>
+            ))}
             {/* Shop expandable group */}
             <button
               onClick={() => setMobileShopOpen(prev => !prev)}
@@ -197,7 +222,7 @@ export const Header = () => {
               </div>
             )}
             <div className="h-px bg-border my-2 mx-4" />
-            {linkItems.map((item) => (
+            {afterShopItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
