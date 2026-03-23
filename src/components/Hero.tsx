@@ -48,6 +48,13 @@ const heroContent = {
     description: 'Research compounds studied for performance, recovery, and optimisation applications.',
     cta: 'View Performance',
   },
+  'erectile-performance': {
+    badge: 'Sexual Health Research Compounds',
+    titleLine1: 'Research Grade',
+    titleLine2: 'Erectile Performance',
+    description: 'Premium peptides studied for sexual health and erectile function in laboratory research applications.',
+    cta: 'View Products',
+  },
   dilutes: {
     badge: 'Post-Cycle Therapy Compounds',
     titleLine1: 'Research Grade',
