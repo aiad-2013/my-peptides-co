@@ -167,19 +167,19 @@ serve(async (req) => {
 
       // Slug-based category overrides — source of truth for routing.
       // Any product slug listed here takes precedence over WooCommerce category assignment.
-      const SLUG_CATEGORY_MAP: Record<string, 'sarms' | 'peptides' | 'weight-loss' | 'dilutes'> = {
+      const SLUG_CATEGORY_MAP: Record<string, 'sarms' | 'peptides' | 'glp-1' | 'dilutes'> = {
         // SARMs
         'testolone-rad140': 'sarms',
         'lgd-4033': 'sarms',
         'growth-mk677': 'sarms',
         'shred-sr9009': 'sarms',
         'mk-2866': 'sarms',
-        // Weight Loss
-        'retatrutide': 'weight-loss',
-        'tirzepatide': 'weight-loss',
-        'tesamorelin': 'peptides',
-        '5-amino-1mq': 'weight-loss',
+        // GLP-1
+        'retatrutide': 'glp-1',
+        'tirzepatide': 'glp-1',
+        '5-amino-1mq': 'glp-1',
         // Peptides
+        'tesamorelin': 'peptides',
         'bpc-157': 'peptides',
         'tb-500': 'peptides',
         'ghk-cu': 'peptides',
@@ -200,16 +200,21 @@ serve(async (req) => {
         'nolvadex-tamoxifen': 'dilutes',
       };
 
+      // Products that appear in multiple categories
+      const MULTI_CATEGORY_MAP: Record<string, Array<'sarms' | 'peptides' | 'glp-1' | 'dilutes'>> = {
+        'hcg': ['peptides', 'dilutes'],
+      };
+
       // Determine category: slug override first, then fall back to WooCommerce category strings
-      let category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+      let category: 'sarms' | 'peptides' | 'glp-1' | 'dilutes';
       if (SLUG_CATEGORY_MAP[product.slug]) {
         category = SLUG_CATEGORY_MAP[product.slug];
       } else {
         const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
         const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
         const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
-        if (allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('weightloss')) {
-          category = 'weight-loss';
+        if (allCatStrings.includes('glp-1') || allCatStrings.includes('glp1') || allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss')) {
+          category = 'glp-1';
         } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle')) {
           category = 'dilutes';
         } else if (allCatStrings.includes('peptide')) {
@@ -218,6 +223,8 @@ serve(async (req) => {
           category = 'sarms';
         }
       }
+
+      const categories = MULTI_CATEGORY_MAP[product.slug] || undefined;
 
       // Extract volume from attributes only (we derive concentration from dosage meta, not attributes)
       let volume = '';
