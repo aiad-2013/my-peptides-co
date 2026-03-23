@@ -188,6 +188,17 @@ export const Header = () => {
 
         {mobileMenuOpen && (
           <nav className="lg:hidden py-4 border-t border-border animate-fade-in">
+            {/* Home */}
+            {beforeShopItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className="block w-full text-left px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+              >
+                {item.label}
+              </Link>
+            ))}
             {/* Shop expandable group */}
             <button
               onClick={() => setMobileShopOpen(prev => !prev)}
@@ -211,7 +222,7 @@ export const Header = () => {
               </div>
             )}
             <div className="h-px bg-border my-2 mx-4" />
-            {linkItems.map((item) => (
+            {afterShopItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
