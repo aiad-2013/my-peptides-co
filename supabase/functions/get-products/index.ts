@@ -322,12 +322,31 @@ serve(async (req) => {
         volume: volume || undefined,
         description,
         ...(() => {
-          const imgs = (product.images || []).filter(img => img.src);
+        const imgs = (product.images || []).filter(img => img.src);
           // Push molecular/structure/diagram images to the end so the product photo is always first
           const structureKeywords = /structure|molecule|molecular|chemical|diagram|formula/i;
-          const primary = imgs.filter(img => !structureKeywords.test(img.alt || ''));
-          const secondary = imgs.filter(img => structureKeywords.test(img.alt || ''));
+          // Filter out images that belong to other products (cross-contamination from WooCommerce)
+          // An image "belongs" to this product if its alt text is empty, matches the product name,
+          // or doesn't contain another product's name as the primary identifier.
+          const productNameNorm = product.name.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const filtered = imgs.filter(img => {
+            const alt = (img.alt || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            // Always keep images with no alt text — can't determine ownership
+            if (!alt) return true;
+            // Keep if alt contains this product's slug or normalised name
+            const slugNorm = product.slug.replace(/-/g, '');
+            if (alt.includes(slugNorm) || slugNorm.includes(alt.substring(0, 6))) return true;
+            // Keep structure/diagram images that WooCommerce associates with this product
+            if (structureKeywords.test(img.alt || '')) return true;
+            // Keep general/non-specific alt texts
+            return true;
+          });
+          const primary = filtered.filter(img => !structureKeywords.test(img.alt || ''));
+          const secondary = filtered.filter(img => structureKeywords.test(img.alt || ''));
           const ordered = [...primary, ...secondary].map(img => img.src);
+          if (imgs.length !== ordered.length || (imgs[0]?.src !== ordered[0])) {
+            console.log(`[${product.slug}] images reordered: [${imgs.map(i => i.alt || 'no-alt').join(', ')}] → primary first`);
+          }
           return { image: ordered[0] || '/placeholder.svg', images: ordered };
         })(),
         badge: badge || (isBundle ? 'Bundle' : undefined),
