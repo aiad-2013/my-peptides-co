@@ -61,8 +61,11 @@ export const Header = () => {
   const shopPaths = shopCategories.map(c => c.to);
   const isShopActive = shopPaths.includes(location.pathname);
 
-  const linkItems = [
+  const beforeShopItems = [
     { label: 'Home', to: '/' },
+  ];
+
+  const afterShopItems = [
     { label: 'Blog', to: '/blog' },
     { label: 'Track My Order', to: '/track-order' },
   ];
@@ -76,6 +79,17 @@ export const Header = () => {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
+            {/* Home */}
+            {beforeShopItems.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+              >
+                {item.label}
+              </Link>
+            ))}
+
             {/* Shop dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
