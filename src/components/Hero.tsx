@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
   onShopClick?: () => void;
-  activeCategory?: 'all' | 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
   compact?: boolean;
 }
 
@@ -34,12 +34,19 @@ const heroContent = {
     description: 'Premium peptides synthesised to the highest standards for cutting-edge research applications.',
     cta: 'View Peptides',
   },
-  'weight-loss': {
-    badge: 'Metabolic Research Compounds',
+  'glp-1': {
+    badge: 'GLP-1 Receptor Agonist Compounds',
     titleLine1: 'Research Grade',
-    titleLine2: 'Weight Loss',
-    description: 'Premium peptides studied for metabolic regulation and weight management in laboratory research.',
-    cta: 'View Weight Loss',
+    titleLine2: 'GLP-1',
+    description: 'Premium GLP-1 receptor agonist peptides studied for metabolic regulation and weight management in laboratory research.',
+    cta: 'View GLP-1',
+  },
+  'performance-enhancements': {
+    badge: 'Performance Research Compounds',
+    titleLine1: 'Research Grade',
+    titleLine2: 'Performance Enhancements',
+    description: 'Research compounds studied for performance, recovery, and optimisation applications.',
+    cta: 'View Performance',
   },
   dilutes: {
     badge: 'Post-Cycle Therapy Compounds',
@@ -49,6 +56,7 @@ const heroContent = {
     cta: 'View Dilutes',
   },
 };
+
 
 export const Hero = ({ onShopClick, activeCategory = 'all', compact = false }: HeroProps) => {
   const content = heroContent[activeCategory];

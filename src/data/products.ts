@@ -64,11 +64,11 @@ export const products: Product[] = [
     inStock: true,
     wooCommerceUrl: 'https://vicorpus.com/product/ostarine-mk2866/',
   },
-  // Weight Loss
+  // GLP-1
   {
     id: 'retatrutide',
     name: 'Retatrutide',
-    category: 'weight-loss',
+    category: 'glp-1',
     price: 149.00,
     concentration: '10mg',
     description: 'Retatrutide is a triple agonist peptide (GLP-1/GIP/glucagon) researched for metabolic and weight management applications.',
@@ -79,7 +79,7 @@ export const products: Product[] = [
   {
     id: 'tirzepatide',
     name: 'Tirzepatide',
-    category: 'weight-loss',
+    category: 'glp-1',
     price: 139.00,
     concentration: '5mg',
     description: 'Tirzepatide is a dual GLP-1/GIP receptor agonist peptide used in metabolic and obesity research.',
@@ -91,7 +91,7 @@ export const products: Product[] = [
   {
     id: '5-amino-1mq',
     name: '5-Amino-1MQ',
-    category: 'weight-loss',
+    category: 'glp-1',
     price: 99.00,
     concentration: '10mg',
     description: '5-Amino-1MQ is a small molecule NNMT inhibitor researched for its potential role in fat cell metabolism.',
@@ -279,6 +279,8 @@ export const products: Product[] = [
     inStock: true,
     wooCommerceUrl: 'https://vicorpus.com/product/bacteriostatic-water/',
   },
+  // Performance Enhancements
+  // (products to be added)
   // Dilutes (PCT)
   {
     id: 'clomiphene-clomid',
@@ -306,7 +308,7 @@ export const products: Product[] = [
   },
 ];
 
-export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes') => {
+export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes') => {
   return products.filter(p => p.category === category);
 };
 

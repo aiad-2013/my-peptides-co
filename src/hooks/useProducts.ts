@@ -53,7 +53,7 @@ export function useProducts() {
   });
 }
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
 
 export function useProductsByCategory(category: CategoryFilter) {
   const { data: products, ...rest } = useProducts();
@@ -64,7 +64,7 @@ export function useProductsByCategory(category: CategoryFilter) {
 
   const fallback = category === 'all'
     ? fallbackProducts
-    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'weight-loss' | 'dilutes');
+    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes');
 
   return {
     ...rest,
