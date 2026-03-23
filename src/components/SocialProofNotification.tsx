@@ -122,7 +122,8 @@ export const SocialProofNotification = () => {
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-6 z-50 pointer-events-none transition-all duration-500 ease-out",
+        "fixed z-50 pointer-events-none transition-all duration-500 ease-out",
+        "bottom-24 left-4 right-4 md:bottom-6 md:left-6 md:right-auto",
         visible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
       )}
     >
