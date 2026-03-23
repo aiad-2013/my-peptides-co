@@ -112,7 +112,7 @@ export const Header = () => {
               )}
             </div>
 
-            <span className="w-px h-5 bg-border mx-1" />
+            
             {linkItems.map((item) => (
               <Link
                 key={item.to}
