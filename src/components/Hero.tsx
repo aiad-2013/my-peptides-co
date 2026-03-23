@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
   onShopClick?: () => void;
-  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
+  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
   compact?: boolean;
 }
 
@@ -40,13 +40,6 @@ const heroContent = {
     titleLine2: 'GLP-1',
     description: 'Premium GLP-1 receptor agonist peptides studied for metabolic regulation and weight management in laboratory research.',
     cta: 'View GLP-1',
-  },
-  'performance-enhancements': {
-    badge: 'Performance Research Compounds',
-    titleLine1: 'Research Grade',
-    titleLine2: 'Performance Enhancements',
-    description: 'Research compounds studied for performance, recovery, and optimisation applications.',
-    cta: 'View Performance',
   },
   'erectile-performance': {
     badge: 'Sexual Health Research Compounds',

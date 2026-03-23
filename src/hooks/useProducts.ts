@@ -53,7 +53,7 @@ export function useProducts() {
   });
 }
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
 
 export function useProductsByCategory(category: CategoryFilter) {
   const { data: products, ...rest } = useProducts();
@@ -67,7 +67,7 @@ export function useProductsByCategory(category: CategoryFilter) {
 
   const fallback = category === 'all'
     ? fallbackProducts
-    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes');
+    : getFallbackByCategory(category as 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes');
 
   return {
     ...rest,
