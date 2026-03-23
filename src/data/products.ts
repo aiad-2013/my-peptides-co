@@ -138,6 +138,7 @@ export const products: Product[] = [
     id: 'pt-141',
     name: 'PT-141',
     category: 'peptides',
+    categories: ['peptides', 'erectile-performance'],
     price: 79.00,
     concentration: '10mg',
     description: 'PT-141 (Bremelanotide) is a synthetic peptide used in melanocortin receptor research applications.',
