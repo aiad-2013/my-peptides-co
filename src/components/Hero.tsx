@@ -18,7 +18,7 @@ const heroContent = {
     titleLine1: 'Premium Research',
     titleLine2: 'Compounds',
     description: 'Highest purity SARMs and Peptides for laboratory research. Every batch independently verified.',
-    cta: 'View Products',
+    cta: 'Shop Products',
   },
   sarms: {
     badge: 'Selective Androgen Receptor Modulators',
