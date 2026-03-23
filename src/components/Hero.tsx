@@ -41,13 +41,6 @@ const heroContent = {
     description: 'Premium GLP-1 receptor agonist peptides studied for metabolic regulation and weight management in laboratory research.',
     cta: 'View GLP-1',
   },
-  'performance-enhancements': {
-    badge: 'Performance Research Compounds',
-    titleLine1: 'Research Grade',
-    titleLine2: 'Performance Enhancements',
-    description: 'Research compounds studied for performance, recovery, and optimisation applications.',
-    cta: 'View Performance',
-  },
   'erectile-performance': {
     badge: 'Sexual Health Research Compounds',
     titleLine1: 'Research Grade',
