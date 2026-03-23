@@ -44,7 +44,8 @@ interface TransformedProduct {
   id: string;
   wooCommerceId: number;
   name: string;
-  category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+  category: 'sarms' | 'peptides' | 'glp-1' | 'dilutes';
+  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'dilutes'>;
   price: number;
   concentration?: string;
   volume?: string;

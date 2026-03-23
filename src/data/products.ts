@@ -237,6 +237,7 @@ export const products: Product[] = [
     id: 'hcg',
     name: 'HCG',
     category: 'peptides',
+    categories: ['peptides', 'dilutes'],
     price: 99.00,
     concentration: '5000IU',
     description: 'Human Chorionic Gonadotropin (HCG) is a glycoprotein hormone studied for its role in gonadal function research.',
