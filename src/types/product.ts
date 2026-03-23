@@ -23,7 +23,7 @@ export interface Product {
   id: string;
   wooCommerceId?: number;
   name: string;
-  category: 'sarms' | 'peptides' | 'weight-loss' | 'dilutes';
+  category: 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
   price: number;
   concentration?: string;
   volume?: string;
