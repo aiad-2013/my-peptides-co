@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ShoppingCart, Menu, X, Search, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
 import { cn } from '@/lib/utils';
@@ -8,10 +8,23 @@ import { CartDrawer } from '@/components/CartDrawer';
 import { ProductSearch } from '@/components/ProductSearch';
 import logo from '@/assets/logo.png';
 
+const shopCategories = [
+  { label: 'All Products', to: '/products' },
+  { label: 'SARMs', to: '/sarms' },
+  { label: 'Peptides', to: '/peptides' },
+  { label: 'GLP-1', to: '/glp-1' },
+  { label: 'Performance Enhancements', to: '/performance-enhancements' },
+  { label: 'Dilutes', to: '/dilutes' },
+];
+
 export const Header = () => {
   const { totalItems, isOpen, setIsOpen } = useCart();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [shopDropdownOpen, setShopDropdownOpen] = useState(false);
+  const [mobileShopOpen, setMobileShopOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
 
   const handleCartClick = () => {
     setIsOpen(true);
@@ -28,13 +41,25 @@ export const Header = () => {
     return () => window.removeEventListener('keydown', handler);
   }, []);
 
-  const navItems = [
-    { label: 'Home', to: '/' },
-    { label: 'SARMs', to: '/sarms' },
-    { label: 'Peptides', to: '/peptides' },
-    { label: 'Weight Loss', to: '/weight-loss' },
-    { label: 'Dilutes', to: '/dilutes' },
-  ];
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setShopDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setShopDropdownOpen(false);
+  }, [location.pathname]);
+
+  const shopPaths = shopCategories.map(c => c.to);
+  const isShopActive = shopPaths.includes(location.pathname);
 
   const linkItems = [
     { label: 'Blog', to: '/blog' },
@@ -50,15 +75,42 @@ export const Header = () => {
           </Link>
 
           <nav className="hidden lg:flex items-center gap-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="px-4 py-2 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+            {/* Shop dropdown */}
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShopDropdownOpen(prev => !prev)}
+                className={cn(
+                  'flex items-center gap-1 px-4 py-2 text-sm font-medium rounded-md transition-all duration-200',
+                  isShopActive
+                    ? 'text-foreground bg-muted'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
               >
-                {item.label}
-              </Link>
-            ))}
+                Shop
+                <ChevronDown className={cn('w-3.5 h-3.5 transition-transform duration-200', shopDropdownOpen && 'rotate-180')} />
+              </button>
+
+              {shopDropdownOpen && (
+                <div className="absolute top-full left-0 mt-1.5 w-52 bg-background border border-border rounded-md shadow-lg py-1 animate-fade-in">
+                  {shopCategories.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={() => setShopDropdownOpen(false)}
+                      className={cn(
+                        'block px-4 py-2.5 text-sm transition-colors duration-150',
+                        location.pathname === item.to
+                          ? 'text-foreground bg-muted font-medium'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                      )}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <span className="w-px h-5 bg-border mx-1" />
             {linkItems.map((item) => (
               <Link
@@ -80,7 +132,6 @@ export const Header = () => {
             >
               <Search className="w-4 h-4 flex-shrink-0" />
               <span className="flex-1 text-left text-xs">Search products…</span>
-              
             </button>
 
             {/* Search icon — mobile only */}
@@ -122,16 +173,28 @@ export const Header = () => {
 
         {mobileMenuOpen && (
           <nav className="lg:hidden py-4 border-t border-border animate-fade-in">
-            {navItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block w-full text-left px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {/* Shop expandable group */}
+            <button
+              onClick={() => setMobileShopOpen(prev => !prev)}
+              className="flex items-center justify-between w-full px-4 py-3 text-sm font-medium rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+            >
+              <span>Shop</span>
+              <ChevronDown className={cn('w-4 h-4 transition-transform duration-200', mobileShopOpen && 'rotate-180')} />
+            </button>
+            {mobileShopOpen && (
+              <div className="pl-4 mb-1">
+                {shopCategories.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block w-full text-left px-4 py-2.5 text-sm rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-all duration-200"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
             <div className="h-px bg-border my-2 mx-4" />
             {linkItems.map((item) => (
               <Link
