@@ -315,6 +315,7 @@ serve(async (req) => {
         wooCommerceId: product.id,
         name: product.name,
         category,
+        categories,
         price: parseFloat(product.price) || 0,
         concentration: concentration || undefined,
         volume: volume || undefined,
