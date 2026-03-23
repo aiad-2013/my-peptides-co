@@ -62,6 +62,7 @@ export const Header = () => {
   const isShopActive = shopPaths.includes(location.pathname);
 
   const linkItems = [
+    { label: 'Home', to: '/' },
     { label: 'Blog', to: '/blog' },
     { label: 'Track My Order', to: '/track-order' },
   ];
@@ -111,7 +112,7 @@ export const Header = () => {
               )}
             </div>
 
-            <span className="w-px h-5 bg-border mx-1" />
+            
             {linkItems.map((item) => (
               <Link
                 key={item.to}
