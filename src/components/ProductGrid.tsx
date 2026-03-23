@@ -4,7 +4,7 @@ import { useProductsByCategory } from '@/hooks/useProducts';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
 
 interface ProductGridProps {
   category: CategoryFilter;
@@ -27,6 +27,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     peptides: 'Peptides Collection',
     'glp-1': 'GLP-1',
     'performance-enhancements': 'Performance Enhancements',
+    'erectile-performance': 'Erectile Performance',
     dilutes: 'Dilutes (PCT)',
   };
 
@@ -36,6 +37,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     peptides: 'High-purity lyophilised peptides for laboratory applications',
     'glp-1': 'GLP-1 receptor agonist peptides for metabolic and weight management research',
     'performance-enhancements': 'Research compounds studied for performance and recovery applications',
+    'erectile-performance': 'Research peptides studied for sexual health and erectile function applications',
     dilutes: 'Post-cycle therapy compounds for hormonal research applications',
   };
 
@@ -45,6 +47,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     peptides: '/peptides',
     'glp-1': '/glp-1',
     'performance-enhancements': '/performance-enhancements',
+    'erectile-performance': '/erectile-performance',
     dilutes: '/dilutes',
   };
 

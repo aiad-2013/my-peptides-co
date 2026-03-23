@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { useSEO } from '@/hooks/useSEO';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'performance-enhancements' | 'erectile-performance' | 'dilutes';
 
 interface ProductsProps {
   category: CategoryFilter;
@@ -31,6 +31,10 @@ const SEO_MAP: Record<CategoryFilter, { title: string; description: string }> = 
   'performance-enhancements': {
     title: 'Buy Performance Enhancement Compounds Australia | My Peptide Co',
     description: 'Research-grade performance enhancement compounds in Australia. Lab-tested, same-day dispatch.',
+  },
+  'erectile-performance': {
+    title: 'Buy Erectile Performance Peptides Australia — PT-141 | My Peptide Co',
+    description: 'Research-grade erectile performance peptides in Australia. PT-141, HCG and more. Lab-tested, same-day dispatch.',
   },
   dilutes: {
     title: 'Buy PCT Compounds Australia — Clomid, Nolvadex | My Peptide Co',

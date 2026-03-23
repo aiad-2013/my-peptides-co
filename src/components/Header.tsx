@@ -14,6 +14,7 @@ const shopCategories = [
   { label: 'Peptides', to: '/peptides' },
   { label: 'GLP-1', to: '/glp-1' },
   { label: 'Performance Enhancements', to: '/performance-enhancements' },
+  { label: 'Erectile Performance', to: '/erectile-performance' },
   { label: 'Dilutes', to: '/dilutes' },
 ];
 

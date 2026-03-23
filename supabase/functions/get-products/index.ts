@@ -44,8 +44,8 @@ interface TransformedProduct {
   id: string;
   wooCommerceId: number;
   name: string;
-  category: 'sarms' | 'peptides' | 'glp-1' | 'dilutes';
-  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'dilutes'>;
+  category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
+  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'>;
   price: number;
   concentration?: string;
   volume?: string;
@@ -167,7 +167,7 @@ serve(async (req) => {
 
       // Slug-based category overrides — source of truth for routing.
       // Any product slug listed here takes precedence over WooCommerce category assignment.
-      const SLUG_CATEGORY_MAP: Record<string, 'sarms' | 'peptides' | 'glp-1' | 'dilutes'> = {
+      const SLUG_CATEGORY_MAP: Record<string, 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'> = {
         // SARMs
         'testolone-rad140': 'sarms',
         'lgd-4033': 'sarms',
@@ -201,12 +201,13 @@ serve(async (req) => {
       };
 
       // Products that appear in multiple categories
-      const MULTI_CATEGORY_MAP: Record<string, Array<'sarms' | 'peptides' | 'glp-1' | 'dilutes'>> = {
+      const MULTI_CATEGORY_MAP: Record<string, Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'>> = {
         'hcg': ['peptides', 'dilutes'],
+        'pt-141': ['peptides', 'erectile-performance'],
       };
 
       // Determine category: slug override first, then fall back to WooCommerce category strings
-      let category: 'sarms' | 'peptides' | 'glp-1' | 'dilutes';
+      let category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
       if (SLUG_CATEGORY_MAP[product.slug]) {
         category = SLUG_CATEGORY_MAP[product.slug];
       } else {
