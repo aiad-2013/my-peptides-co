@@ -171,12 +171,15 @@ serve(async (req) => {
         // SARMs
         'testolone-rad140': 'sarms',
         'lgd-4033': 'sarms',
+        'extreme-physique-lgd4033': 'sarms',
         'growth-mk677': 'sarms',
         'shred-sr9009': 'sarms',
+        'shred-sr9009-2': 'sarms',
         'mk-2866': 'sarms',
         // GLP-1
         'retatrutide': 'glp-1',
         'tirzepatide': 'glp-1',
+        'mounjaro-tirzepatide-5mg': 'glp-1',
         '5-amino-1mq': 'glp-1',
         // Peptides
         'tesamorelin': 'peptides',
@@ -198,6 +201,8 @@ serve(async (req) => {
         // Dilutes / PCT
         'clomid-clomiphene-citrate': 'dilutes',
         'nolvadex-tamoxifen': 'dilutes',
+        // Erectile Performance
+        'liquid-cialis': 'erectile-performance',
       };
 
       // Products that appear in multiple categories
