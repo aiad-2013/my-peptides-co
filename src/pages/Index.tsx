@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
 import peptidesBg from '@/assets/peptides-card-bg.webp';
 import sarmsBg from '@/assets/sarms-card-bg.webp';
-import editorialBg from '@/assets/editorial-band-bg-v2.jpg';
+import editorialBg from '@/assets/editorial-band-bg-v3.jpg';
 
 /* ── Trust Strip ───────────────────────────────────── */
 const TrustStrip = () => (
