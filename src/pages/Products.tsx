@@ -33,8 +33,8 @@ const SEO_MAP: Record<CategoryFilter, { title: string; description: string }> = 
     description: 'Research-grade sexual health peptides in Australia. PT-141, Melanotan II, BPC-157 and more. Lab-tested, same-day dispatch.',
   },
   dilutes: {
-    title: 'Buy PCT Compounds Australia — Clomid, Nolvadex | My Peptide Co',
-    description: 'Research-grade post-cycle therapy compounds in Australia. Clomiphene (Clomid), Tamoxifen (Nolvadex). Lab-tested, same-day dispatch.',
+    title: 'Buy PCT (Post Cycle Therapy) Australia — Clomid, Nolvadex | My Peptide Co',
+    description: 'Research-grade post-cycle therapy (PCT) compounds in Australia. Clomiphene (Clomid), Tamoxifen (Nolvadex). Lab-tested, same-day dispatch.',
   },
 };
 

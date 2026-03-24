@@ -27,7 +27,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     peptides: 'Peptides Collection',
     'glp-1': 'GLP-1',
     'erectile-performance': 'Erectile Performance',
-    dilutes: 'Dilutes (PCT)',
+    dilutes: 'PCT',
   };
 
   const categoryDescriptions: Record<CategoryFilter, string> = {
