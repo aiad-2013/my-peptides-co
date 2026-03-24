@@ -50,10 +50,10 @@ const heroContent = {
   },
   dilutes: {
     badge: 'Post-Cycle Therapy Compounds',
-    titleLine1: 'Research Grade',
-    titleLine2: 'Dilutes (PCT)',
-    description: 'High-purity SERMs for post-cycle therapy research. Each compound independently tested for purity and potency.',
-    cta: 'View Dilutes',
+    titleLine1: 'Post Cycle',
+    titleLine2: 'Therapy',
+    description: 'High-purity products for post-cycle therapy research. Each compound independently tested for purity and potency.',
+    cta: 'View PCT',
   },
 };
 
