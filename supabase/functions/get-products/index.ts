@@ -165,74 +165,60 @@ serve(async (req) => {
       // Detect bundle products (WPC Product Bundles uses type 'woosb')
       const isBundle = product.type === 'woosb' || product.type === 'bundle';
 
-      // Slug-based category overrides — source of truth for routing.
-      // Any product slug listed here takes precedence over WooCommerce category assignment.
-      const SLUG_CATEGORY_MAP: Record<string, 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'> = {
-        // SARMs
-        'testolone-rad140': 'sarms',
-        'lgd-4033': 'sarms',
-        'extreme-physique-lgd4033': 'sarms',
-        'growth-mk677': 'sarms',
-        'shred-sr9009': 'sarms',
-        'shred-sr9009-2': 'sarms',
-        'mk-2866': 'sarms',
-        // GLP-1
-        'retatrutide': 'glp-1',
-        'tirzepatide': 'glp-1',
-        'mounjaro-tirzepatide-5mg': 'glp-1',
-        '5-amino-1mq': 'glp-1',
-        // Peptides
-        'tesamorelin': 'peptides',
-        'bpc-157': 'peptides',
-        'tb-500': 'peptides',
-        'ghk-cu': 'peptides',
-        'pt-141': 'peptides',
-        'melanotan-ii': 'peptides',
-        'cjc-1295-dac': 'peptides',
-        'ipamorelin': 'peptides',
-        'nad-500-mg-nicotinamide-adenine-dinucleotide': 'peptides',
-        'hgh': 'peptides',
-        'hcg': 'peptides',
-        'glow-blend': 'peptides',
-        'klow-blend': 'peptides',
-        'bacteriostatic-water-bac-water': 'peptides',
-        'dsip': 'peptides',
-        'mots-c': 'peptides',
-        // Dilutes / PCT
-        'clomid-clomiphene-citrate': 'dilutes',
-        'nolvadex-tamoxifen': 'dilutes',
-        // Erectile Performance
-        'liquid-cialis': 'erectile-performance',
-      };
+      // Determine category purely from WooCommerce category data
+      const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
+      const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
+      const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
 
-      // Products that appear in multiple categories
-      const MULTI_CATEGORY_MAP: Record<string, Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'>> = {
-        'hcg': ['peptides', 'dilutes'],
-        'pt-141': ['peptides', 'erectile-performance'],
-        'melanotan-ii': ['peptides', 'erectile-performance'],
-        'bpc-157': ['peptides', 'erectile-performance'],
-      };
+      console.log(`[${product.slug}] WC categories: ${JSON.stringify(product.categories?.map(c => c.slug))}`);
 
-      // Determine category: slug override first, then fall back to WooCommerce category strings
       let category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
-      if (SLUG_CATEGORY_MAP[product.slug]) {
-        category = SLUG_CATEGORY_MAP[product.slug];
+      if (allCatStrings.includes('erectile') || allCatStrings.includes('sexual') || allCatStrings.includes('performance')) {
+        category = 'erectile-performance';
+      } else if (allCatStrings.includes('glp-1') || allCatStrings.includes('glp1') || allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('tirzepatide') || allCatStrings.includes('retatrutide') || allCatStrings.includes('semaglutide')) {
+        category = 'glp-1';
+      } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle') || allCatStrings.includes('post-cycle')) {
+        category = 'dilutes';
+      } else if (allCatStrings.includes('peptide') || allCatStrings.includes('amino') || allCatStrings.includes('nad') || allCatStrings.includes('hgh') || allCatStrings.includes('hcg') || allCatStrings.includes('bac') || allCatStrings.includes('bacteriostatic')) {
+        category = 'peptides';
+      } else if (allCatStrings.includes('sarm')) {
+        category = 'sarms';
       } else {
-        const categorySlugs = (product.categories || []).map(c => c.slug?.toLowerCase() || '');
-        const categoryNames = (product.categories || []).map(c => c.name?.toLowerCase() || '');
-        const allCatStrings = [...categorySlugs, ...categoryNames].join(' ');
-        if (allCatStrings.includes('glp-1') || allCatStrings.includes('glp1') || allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss')) {
-          category = 'glp-1';
-        } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle')) {
-          category = 'dilutes';
-        } else if (allCatStrings.includes('peptide')) {
-          category = 'peptides';
-        } else {
-          category = 'sarms';
-        }
+        // Last resort fallback
+        category = 'sarms';
+        console.warn(`[${product.slug}] Could not determine category from WC data, defaulting to sarms`);
       }
 
-      const categories = MULTI_CATEGORY_MAP[product.slug] || undefined;
+      // Multi-category: derive from WooCommerce category slugs directly
+      const wcCatSlugs = categorySlugs;
+      const multiCats: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'> = [];
+      for (const slug of wcCatSlugs) {
+        if (slug.includes('sarm')) multiCats.push('sarms');
+        else if (slug.includes('peptide') || slug.includes('nad') || slug.includes('hgh') || slug.includes('hcg') || slug.includes('bac')) multiCats.push('peptides');
+        else if (slug.includes('glp') || slug.includes('weight')) multiCats.push('glp-1');
+        else if (slug.includes('dilute') || slug.includes('pct')) multiCats.push('dilutes');
+        else if (slug.includes('erectile') || slug.includes('sexual') || slug.includes('performance')) multiCats.push('erectile-performance');
+      }
+      // Also check category names
+      for (const name of categoryNames) {
+        if (name.includes('erectile') || name.includes('sexual') || name.includes('performance')) {
+          if (!multiCats.includes('erectile-performance')) multiCats.push('erectile-performance');
+        }
+        if (name.includes('peptide')) {
+          if (!multiCats.includes('peptides')) multiCats.push('peptides');
+        }
+        if (name.includes('dilute') || name.includes('pct') || name.includes('post cycle')) {
+          if (!multiCats.includes('dilutes')) multiCats.push('dilutes');
+        }
+        if (name.includes('glp') || name.includes('weight loss')) {
+          if (!multiCats.includes('glp-1')) multiCats.push('glp-1');
+        }
+        if (name.includes('sarm')) {
+          if (!multiCats.includes('sarms')) multiCats.push('sarms');
+        }
+      }
+      // Only set categories if product genuinely spans multiple categories
+      const categories = multiCats.length > 1 ? multiCats : undefined;
 
       // Extract volume from attributes only (we derive concentration from dosage meta, not attributes)
       let volume = '';
