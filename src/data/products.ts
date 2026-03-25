@@ -309,7 +309,7 @@ export const products: Product[] = [
   },
 ];
 
-export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes') => {
+export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct') => {
   return products.filter(p => p.category === category || (p.categories && p.categories.includes(category)));
 };
 
