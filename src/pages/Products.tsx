@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer';
 import { SocialProofNotification } from '@/components/SocialProofNotification';
 import { useSEO } from '@/hooks/useSEO';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
 
 interface ProductsProps {
   category: CategoryFilter;
@@ -33,6 +33,10 @@ const SEO_MAP: Record<CategoryFilter, { title: string; description: string }> = 
     description: 'Research-grade sexual health peptides in Australia. PT-141, Melanotan II, BPC-157 and more. Lab-tested, same-day dispatch.',
   },
   dilutes: {
+    title: 'Buy Bacteriostatic Water Australia — BAC Water | My Peptide Co',
+    description: 'Research-grade bacteriostatic water for reconstituting peptides in Australia. Lab-tested, same-day dispatch.',
+  },
+  pct: {
     title: 'Buy PCT (Post Cycle Therapy) Australia — Clomid, Nolvadex | My Peptide Co',
     description: 'Research-grade post-cycle therapy (PCT) compounds in Australia. Clomiphene (Clomid), Tamoxifen (Nolvadex). Lab-tested, same-day dispatch.',
   },

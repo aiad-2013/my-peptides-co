@@ -4,7 +4,7 @@ import { useProductsByCategory } from '@/hooks/useProducts';
 import { Loader2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
+type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
 
 interface ProductGridProps {
   category: CategoryFilter;
@@ -27,7 +27,8 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     peptides: 'Peptides Collection',
     'glp-1': 'GLP-1',
     'erectile-performance': 'Erectile Performance',
-    dilutes: 'PCT',
+    dilutes: 'Dilutes',
+    pct: 'PCT (Post Cycle Therapy)',
   };
 
   const categoryDescriptions: Record<CategoryFilter, string> = {
@@ -36,7 +37,8 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     peptides: 'High-purity lyophilised peptides for laboratory applications',
     'glp-1': 'GLP-1 receptor agonist peptides for metabolic and weight management research',
     'erectile-performance': 'Research peptides studied for sexual health and erectile function applications',
-    dilutes: 'Post-cycle therapy compounds for hormonal research applications',
+    dilutes: 'Bacteriostatic water for reconstituting lyophilised peptides',
+    pct: 'Post-cycle therapy compounds for hormonal research applications',
   };
 
   const categoryHref: Record<CategoryFilter, string> = {
@@ -46,6 +48,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
     'glp-1': '/glp-1',
     'erectile-performance': '/erectile-performance',
     dilutes: '/dilutes',
+    pct: '/pct',
   };
 
   return (

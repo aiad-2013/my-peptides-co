@@ -40,6 +40,7 @@ function AppRoutes() {
           
           <Route path="/erectile-performance" element={<Products category="erectile-performance" />} />
           <Route path="/dilutes" element={<Products category="dilutes" />} />
+          <Route path="/pct" element={<Products category="pct" />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-confirmation" element={<OrderConfirmation />} />
           <Route path="/track-order" element={<TrackOrder />} />
