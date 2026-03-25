@@ -14,7 +14,8 @@ const shopCategories = [
   { label: 'Peptides', to: '/peptides' },
   { label: 'GLP-1', to: '/glp-1' },
   { label: 'Erectile Performance', to: '/erectile-performance' },
-  { label: 'PCT', to: '/dilutes' },
+  { label: 'PCT', to: '/pct' },
+  { label: 'Dilutes', to: '/dilutes' },
 ];
 
 export const Header = () => {

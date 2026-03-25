@@ -44,8 +44,8 @@ interface TransformedProduct {
   id: string;
   wooCommerceId: number;
   name: string;
-  category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
-  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'>;
+  category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
+  categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct'>;
   price: number;
   concentration?: string;
   volume?: string;
@@ -172,7 +172,7 @@ serve(async (req) => {
 
       console.log(`[${product.slug}] WC categories: ${JSON.stringify(product.categories?.map(c => c.slug))}`);
 
-      let category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
+      let category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
 
       // Explicit slug overrides take precedence over WooCommerce category detection
       const slugOverrides: Record<string, typeof category> = {
@@ -184,7 +184,9 @@ serve(async (req) => {
         category = 'erectile-performance';
       } else if (allCatStrings.includes('glp-1') || allCatStrings.includes('glp1') || allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('tirzepatide') || allCatStrings.includes('retatrutide') || allCatStrings.includes('semaglutide')) {
         category = 'glp-1';
-      } else if (allCatStrings.includes('dilute') || allCatStrings.includes('pct') || allCatStrings.includes('post cycle') || allCatStrings.includes('post-cycle')) {
+      } else if (allCatStrings.includes('pct') || allCatStrings.includes('post cycle') || allCatStrings.includes('post-cycle')) {
+        category = 'pct';
+      } else if (allCatStrings.includes('dilute') || allCatStrings.includes('bacteriostatic') || allCatStrings.includes('bac water')) {
         category = 'dilutes';
       } else if (allCatStrings.includes('peptide') || allCatStrings.includes('amino') || allCatStrings.includes('nad') || allCatStrings.includes('hgh') || allCatStrings.includes('hcg') || allCatStrings.includes('bac') || allCatStrings.includes('bacteriostatic')) {
         category = 'peptides';
@@ -198,12 +200,13 @@ serve(async (req) => {
 
       // Multi-category: derive from WooCommerce category slugs directly
       const wcCatSlugs = categorySlugs;
-      const multiCats: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes'> = [];
+      const multiCats: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct'> = [];
       for (const slug of wcCatSlugs) {
         if (slug.includes('sarm')) multiCats.push('sarms');
         else if (slug.includes('peptide') || slug.includes('nad') || slug.includes('hgh') || slug.includes('hcg') || slug.includes('bac')) multiCats.push('peptides');
         else if (slug.includes('glp') || slug.includes('weight')) multiCats.push('glp-1');
-        else if (slug.includes('dilute') || slug.includes('pct')) multiCats.push('dilutes');
+        else if (slug.includes('pct') || slug.includes('post-cycle')) multiCats.push('pct');
+        else if (slug.includes('dilute')) multiCats.push('dilutes');
         else if (slug.includes('erectile') || slug.includes('sexual') || slug.includes('performance')) multiCats.push('erectile-performance');
       }
       // Also check category names
@@ -214,7 +217,10 @@ serve(async (req) => {
         if (name.includes('peptide')) {
           if (!multiCats.includes('peptides')) multiCats.push('peptides');
         }
-        if (name.includes('dilute') || name.includes('pct') || name.includes('post cycle')) {
+        if (name.includes('pct') || name.includes('post cycle')) {
+          if (!multiCats.includes('pct')) multiCats.push('pct');
+        }
+        if (name.includes('dilute')) {
           if (!multiCats.includes('dilutes')) multiCats.push('dilutes');
         }
         if (name.includes('glp') || name.includes('weight loss')) {

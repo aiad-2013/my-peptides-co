@@ -8,7 +8,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeroProps {
   onShopClick?: () => void;
-  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
+  activeCategory?: 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
   compact?: boolean;
 }
 
@@ -49,6 +49,13 @@ const heroContent = {
     cta: 'View Products',
   },
   dilutes: {
+    badge: 'Research Diluents & Reconstitution Solutions',
+    titleLine1: 'Research Grade',
+    titleLine2: 'Dilutes',
+    description: 'High-purity bacteriostatic water for safe and sterile reconstitution of lyophilised research peptides.',
+    cta: 'View Dilutes',
+  },
+  pct: {
     badge: 'Post-Cycle Therapy Compounds',
     titleLine1: 'Post Cycle',
     titleLine2: 'Therapy',

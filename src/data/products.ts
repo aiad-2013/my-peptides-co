@@ -273,7 +273,7 @@ export const products: Product[] = [
   {
     id: 'bacteriostatic-water',
     name: 'Bacteriostatic Water',
-    category: 'peptides',
+    category: 'dilutes',
     price: 19.00,
     concentration: '10ml',
     description: 'Bacteriostatic Water is a sterile water solution preserved with benzyl alcohol, used for reconstituting lyophilised peptides.',
@@ -281,13 +281,12 @@ export const products: Product[] = [
     inStock: true,
     wooCommerceUrl: 'https://vicorpus.com/product/bacteriostatic-water/',
   },
-  // Performance Enhancements
-  // (products to be added)
-  // Dilutes (PCT)
+  // Dilutes (BAC Water)
+  // PCT (Post Cycle Therapy)
   {
     id: 'clomiphene-clomid',
     name: 'Clomiphene (Clomid)',
-    category: 'dilutes',
+    category: 'pct',
     price: 89.00,
     concentration: '25mg/ml',
     volume: '30ml',
@@ -299,7 +298,7 @@ export const products: Product[] = [
   {
     id: 'tamoxifen-nolvadex',
     name: 'Tamoxifen (Nolvadex)',
-    category: 'dilutes',
+    category: 'pct',
     price: 89.00,
     concentration: '20mg/ml',
     volume: '30ml',
@@ -310,7 +309,7 @@ export const products: Product[] = [
   },
 ];
 
-export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes') => {
+export const getProductsByCategory = (category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct') => {
   return products.filter(p => p.category === category || (p.categories && p.categories.includes(category)));
 };
 
