@@ -106,7 +106,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
         )}
 
         {/* Empty */}
-        {!isLoading && filteredProducts?.length === 0 && (
+        {!isLoadingAny && filteredProducts?.length === 0 && (
           <div className="text-center py-16">
             <p className="text-sm text-muted-foreground">No products found.</p>
           </div>
