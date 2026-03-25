@@ -173,7 +173,14 @@ serve(async (req) => {
       console.log(`[${product.slug}] WC categories: ${JSON.stringify(product.categories?.map(c => c.slug))}`);
 
       let category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes';
-      if (allCatStrings.includes('erectile') || allCatStrings.includes('sexual') || allCatStrings.includes('performance')) {
+
+      // Explicit slug overrides take precedence over WooCommerce category detection
+      const slugOverrides: Record<string, typeof category> = {
+        'bacteriostatic-water-bac-water': 'dilutes',
+      };
+      if (slugOverrides[product.slug]) {
+        category = slugOverrides[product.slug];
+      } else if (allCatStrings.includes('erectile') || allCatStrings.includes('sexual') || allCatStrings.includes('performance')) {
         category = 'erectile-performance';
       } else if (allCatStrings.includes('glp-1') || allCatStrings.includes('glp1') || allCatStrings.includes('weight-loss') || allCatStrings.includes('weight loss') || allCatStrings.includes('tirzepatide') || allCatStrings.includes('retatrutide') || allCatStrings.includes('semaglutide')) {
         category = 'glp-1';
