@@ -281,13 +281,12 @@ export const products: Product[] = [
     inStock: true,
     wooCommerceUrl: 'https://vicorpus.com/product/bacteriostatic-water/',
   },
-  // Performance Enhancements
-  // (products to be added)
-  // Dilutes (PCT)
+  // Dilutes (BAC Water)
+  // PCT (Post Cycle Therapy)
   {
     id: 'clomiphene-clomid',
     name: 'Clomiphene (Clomid)',
-    category: 'dilutes',
+    category: 'pct',
     price: 89.00,
     concentration: '25mg/ml',
     volume: '30ml',
@@ -299,7 +298,7 @@ export const products: Product[] = [
   {
     id: 'tamoxifen-nolvadex',
     name: 'Tamoxifen (Nolvadex)',
-    category: 'dilutes',
+    category: 'pct',
     price: 89.00,
     concentration: '20mg/ml',
     volume: '30ml',
