@@ -12,7 +12,8 @@ interface ProductGridProps {
 }
 
 export const ProductGrid = ({ category, limit }: ProductGridProps) => {
-  const { data: allProducts, isLoading, isError } = useProductsByCategory(category);
+  const { data: allProducts, isLoading, isFetching, isError } = useProductsByCategory(category);
+  const isLoadingAny = isLoading || (isFetching && !allProducts?.length);
 
   const filteredProducts = limit
     ? allProducts
