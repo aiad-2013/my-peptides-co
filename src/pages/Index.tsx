@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ShieldCheck, Beaker, Truck, ArrowRight } from 'lucide-react';
 import peptidesBg from '@/assets/peptides-card-bg.webp';
 import sarmsBg from '@/assets/sarms-card-bg.webp';
+import sarmsRad140Bg from '@/assets/sarms-rad140-card.jpg';
 import editorialBg from '@/assets/editorial-band-bg-v3.jpg';
 
 /* ── Trust Strip ───────────────────────────────────── */
@@ -49,7 +50,7 @@ const CategorySplit = () => (
         >
           <div
             className="absolute inset-0 scale-100 group-hover:scale-[1.2] transition-transform duration-700 ease-out"
-            style={{ backgroundImage: `url(${peptidesBg})`, backgroundSize: 'cover', backgroundPosition: '80% center' }}
+            style={{ backgroundImage: `url(${sarmsRad140Bg})`, backgroundSize: 'cover', backgroundPosition: '60% center' }}
           />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(30deg, hsl(var(--primary) / 0.75) 0%, hsl(var(--primary) / 0.50) 40%, hsl(var(--primary) / 0.08) 65%, transparent 100%)' }} />
           <div className="relative">
