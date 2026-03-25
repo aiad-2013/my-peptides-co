@@ -273,7 +273,7 @@ export const products: Product[] = [
   {
     id: 'bacteriostatic-water',
     name: 'Bacteriostatic Water',
-    category: 'peptides',
+    category: 'dilutes',
     price: 19.00,
     concentration: '10ml',
     description: 'Bacteriostatic Water is a sterile water solution preserved with benzyl alcohol, used for reconstituting lyophilised peptides.',
