@@ -9,12 +9,14 @@ import { useProducts } from '@/hooks/useProducts';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
 import { cn } from '@/lib/utils';
 
-const categoryOrder = ['sarms', 'peptides', 'weight-loss', 'dilutes'] as const;
+const categoryOrder = ['sarms', 'peptides', 'glp-1', 'erectile-performance', 'pct', 'dilutes'] as const;
 const categoryLabel: Record<string, string> = {
   sarms: 'SARMs',
   peptides: 'Peptides',
-  'weight-loss': 'Weight Loss',
-  dilutes: 'Dilutes / PCT',
+  'glp-1': 'GLP-1 / Weight Loss',
+  'erectile-performance': 'Erectile Performance',
+  pct: 'PCT — Post Cycle Therapy',
+  dilutes: 'Dilutes',
 };
 
 function getLabImageIndex(productId: string): number {
