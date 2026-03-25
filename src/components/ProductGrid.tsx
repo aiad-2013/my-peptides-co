@@ -77,7 +77,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
         </div>
 
         {/* Loading */}
-        {isLoading && (
+        {isLoadingAny && (
           <div className="flex justify-center py-16">
             <Loader2 className="w-6 h-6 animate-spin text-accent/50" />
           </div>
@@ -91,7 +91,7 @@ export const ProductGrid = ({ category, limit }: ProductGridProps) => {
         )}
 
         {/* Grid */}
-        {!isLoading && filteredProducts && (
+        {!isLoadingAny && filteredProducts && (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5 items-stretch">
             {filteredProducts.map((product, index) => (
               <div
