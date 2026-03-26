@@ -57,7 +57,7 @@ type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-perform
 
 // Explicit sort order for categories. Products not listed appear at the end.
 const CATEGORY_ORDER: Partial<Record<CategoryFilter, string[]>> = {
-  sarms: ['growth-mk677', 'rad140-testolone', 'lgd4033-ligandrol', 'ostarine-mk2866', 'sr9009-stenabolic'],
+  sarms: ['growth-mk677', 'testolone-rad140', 'extreme-physique-lgd4033', 'vascular-mk2866', 'shred-sr9009-2'],
   peptides: ['bpc-157', 'tb-500', 'mots-c', 'hcg', 'ghk-cu', 'cjc-1295-dac', 'tesamorelin', 'ipamorelin', 'pt-141', 'glow-blend', 'klow-blend', 'nad-plus', 'dsip'],
 };
 
