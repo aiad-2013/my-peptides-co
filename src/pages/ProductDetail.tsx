@@ -643,14 +643,24 @@ const ProductDetailContent = () => {
                   </div>
 
                   {/* Dispatch window — subtle */}
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
-                    <p className="text-[11px] text-muted-foreground">
-                      Order within{' '}
-                      <span className="font-mono text-foreground tabular-nums">{orderDeadline}</span>
-                      {' '}for same-day dispatch
-                    </p>
-                  </div>
+                  {!orderDeadline.isPastCutoff && orderDeadline.timeLeft && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+                      <p className="text-[11px] text-muted-foreground">
+                        Order within{' '}
+                        <span className="font-mono text-foreground tabular-nums">{orderDeadline.timeLeft}</span>
+                        {' '}for same-day dispatch
+                      </p>
+                    </div>
+                  )}
+                  {orderDeadline.isPastCutoff && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+                      <p className="text-[11px] text-muted-foreground">
+                        Order now for next business day dispatch
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })()}
