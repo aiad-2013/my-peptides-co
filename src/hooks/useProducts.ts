@@ -58,7 +58,7 @@ type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-perform
 // Explicit sort order for categories. Products not listed appear at the end.
 const CATEGORY_ORDER: Partial<Record<CategoryFilter, string[]>> = {
   sarms: ['growth-mk677', 'testolone-rad140', 'extreme-physique-lgd4033', 'vascular-mk2866', 'shred-sr9009-2'],
-  peptides: ['bpc-157', 'tb-500', 'mots-c', 'hcg', 'ghk-cu', 'cjc-1295-dac', 'tesamorelin', 'ipamorelin', 'pt-141', 'glow-blend', 'klow-blend', 'nad-plus', 'dsip'],
+  peptides: ['bpc-157', 'tb-500', 'mots-c', 'hcg', 'ghk-cu', 'cjc-1295-dac', 'tesamorelin', 'ipamorelin', 'pt-141', 'glow-70mg', 'klow', 'nad-500-mg-nicotinamide-adenine-dinucleotide-2', 'dsip-10mg'],
 };
 
 function sortByOrder(products: Product[], order: string[]): Product[] {
