@@ -66,20 +66,21 @@ function getStockLeft(id: string) { return Math.floor(seededRandom(id, 7) * 8) +
 function getSoldThisWeek(id: string) { return Math.floor(seededRandom(id, 13) * 40) + 12; } // 12–51
 
 function useOrderDeadline() {
-  const endOfDayRef = useRef<Date | null>(null);
-  if (!endOfDayRef.current) {
-    const d = new Date();
-    d.setHours(23, 59, 59, 0);
-    endOfDayRef.current = d;
-  }
-
   const [timeLeft, setTimeLeft] = useState('');
+  const [isPastCutoff, setIsPastCutoff] = useState(false);
 
   useEffect(() => {
     const tick = () => {
       const now = new Date();
-      const diff = (endOfDayRef.current?.getTime() ?? 0) - now.getTime();
-      if (diff <= 0) { setTimeLeft('00:00:00'); return; }
+      const cutoff = new Date();
+      cutoff.setHours(12, 0, 0, 0); // 12pm same day
+      const diff = cutoff.getTime() - now.getTime();
+      if (diff <= 0) {
+        setTimeLeft('');
+        setIsPastCutoff(true);
+        return;
+      }
+      setIsPastCutoff(false);
       const h = Math.floor(diff / 3600000);
       const m = Math.floor((diff % 3600000) / 60000);
       const s = Math.floor((diff % 60000) / 1000);
@@ -90,7 +91,7 @@ function useOrderDeadline() {
     return () => clearInterval(id);
   }, []);
 
-  return timeLeft;
+  return { timeLeft, isPastCutoff };
 }
 
 // ── Image Zoom Lightbox ──────────────────────────────────────────────────────
@@ -642,14 +643,24 @@ const ProductDetailContent = () => {
                   </div>
 
                   {/* Dispatch window — subtle */}
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
-                    <p className="text-[11px] text-muted-foreground">
-                      Order within{' '}
-                      <span className="font-mono text-foreground tabular-nums">{orderDeadline}</span>
-                      {' '}for same-day dispatch
-                    </p>
-                  </div>
+                  {!orderDeadline.isPastCutoff && orderDeadline.timeLeft && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+                      <p className="text-[11px] text-muted-foreground">
+                        Order within{' '}
+                        <span className="font-mono text-foreground tabular-nums">{orderDeadline.timeLeft}</span>
+                        {' '}for same-day dispatch
+                      </p>
+                    </div>
+                  )}
+                  {orderDeadline.isPastCutoff && (
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-3.5 h-3.5 text-muted-foreground/50 flex-shrink-0" />
+                      <p className="text-[11px] text-muted-foreground">
+                        Order now for next business day dispatch
+                      </p>
+                    </div>
+                  )}
                 </div>
               );
             })()}
