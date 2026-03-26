@@ -55,15 +55,37 @@ export function useProducts() {
 
 type CategoryFilter = 'all' | 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
 
+// Explicit sort order for categories. Products not listed appear at the end.
+const CATEGORY_ORDER: Partial<Record<CategoryFilter, string[]>> = {
+  sarms: ['growth-mk677', 'rad140-testolone', 'lgd4033-ligandrol', 'ostarine-mk2866', 'sr9009-stenabolic'],
+  peptides: ['bpc-157', 'tb-500', 'mots-c', 'hcg', 'ghk-cu', 'cjc-1295-dac', 'tesamorelin', 'ipamorelin', 'pt-141', 'glow-blend', 'klow-blend', 'nad-plus', 'dsip'],
+};
+
+function sortByOrder(products: Product[], order: string[]): Product[] {
+  return [...products].sort((a, b) => {
+    const ai = order.indexOf(a.id);
+    const bi = order.indexOf(b.id);
+    if (ai === -1 && bi === -1) return 0;
+    if (ai === -1) return 1;
+    if (bi === -1) return -1;
+    return ai - bi;
+  });
+}
+
 export function useProductsByCategory(category: CategoryFilter) {
   const { data: products, ...rest } = useProducts();
   
-  const filteredProducts = category === 'all'
+  let filteredProducts = category === 'all'
     ? products
     : products?.filter(p =>
         p.category === category ||
         (p.categories && p.categories.includes(category))
       );
+
+  const order = CATEGORY_ORDER[category];
+  if (filteredProducts && order) {
+    filteredProducts = sortByOrder(filteredProducts, order);
+  }
 
   const fallback = category === 'all'
     ? fallbackProducts
