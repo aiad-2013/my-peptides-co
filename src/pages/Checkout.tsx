@@ -50,7 +50,6 @@ const Checkout = () => {
       .join(',');
     const url = `https://checkout.mypeptideco.com/checkout/?lovable_cart=1&products=${encodeURIComponent(products)}`;
     setRedirecting(true);
-    clearCart();
     window.location.href = url;
   };
 
