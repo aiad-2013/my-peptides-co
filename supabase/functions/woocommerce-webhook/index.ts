@@ -275,6 +275,16 @@ Deno.serve(async (req) => {
       sku: sanitizeString(item.sku, 100),
     }));
 
+    // Extract cart_token from WooCommerce order meta_data if present
+    const rawJson = JSON.parse(rawBody);
+    let cartToken: string | null = null;
+    if (Array.isArray(rawJson.meta_data)) {
+      const meta = rawJson.meta_data.find((m: { key: string; value: string }) => m.key === '_lovable_cart_token');
+      if (meta && typeof meta.value === 'string' && meta.value.length <= 64) {
+        cartToken = meta.value;
+      }
+    }
+
     const orderRecord = {
       woocommerce_order_id: orderData.id.toString(),
       order_number: sanitizeString(orderData.number, 50),
@@ -292,6 +302,7 @@ Deno.serve(async (req) => {
       payment_method: sanitizeString(orderData.payment_method_title || orderData.payment_method, 200),
       order_notes: sanitizeString(orderData.customer_note, 2000),
       order_token: orderToken,
+      ...(cartToken ? { cart_token: cartToken } : {}),
     };
 
     // Upsert the order (insert or update if exists)
