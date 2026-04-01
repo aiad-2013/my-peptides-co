@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { CartItem, Product } from '@/types/product';
 
 interface CartContextType {
@@ -14,10 +14,40 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
+const CART_STORAGE_KEY = 'cart-items';
+
+const loadStoredCartItems = (): CartItem[] => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const storedCart = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!storedCart) return [];
+
+    const parsedCart = JSON.parse(storedCart);
+    return Array.isArray(parsedCart) ? parsedCart as CartItem[] : [];
+  } catch {
+    return [];
+  }
+};
 
 export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => loadStoredCartItems());
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    try {
+      if (items.length === 0) {
+        window.localStorage.removeItem(CART_STORAGE_KEY);
+        return;
+      }
+
+      window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+    } catch {
+      // Ignore storage write failures so cart interactions still work in-memory.
+    }
+  }, [items]);
 
   const addItem = useCallback((product: Product, quantity = 1) => {
     setItems(prev => {
