@@ -62,6 +62,7 @@ export const Footer = () => {
           <div className="flex items-center gap-6 text-sm text-primary-foreground/50">
             <a href="/privacy-policy" className="hover:text-primary-foreground transition-colors">Privacy Policy</a>
             <a href="/terms-of-service" className="hover:text-primary-foreground transition-colors">Terms of Service</a>
+            <a href="/returns" className="hover:text-primary-foreground transition-colors">Returns Policy</a>
           </div>
         </div>
       </div>
