@@ -48,7 +48,10 @@ const Checkout = () => {
     const products = items
       .map(item => `${item.wooCommerceId}:${item.quantity}`)
       .join(',');
-    const url = `https://checkout.mypeptideco.com/checkout/?lovable_cart=1&products=${encodeURIComponent(products)}`;
+    // Generate a unique cart token to track this checkout session
+    const cartToken = crypto.randomUUID();
+    localStorage.setItem('pending_cart_token', cartToken);
+    const url = `https://checkout.mypeptideco.com/checkout/?lovable_cart=1&products=${encodeURIComponent(products)}&cart_token=${encodeURIComponent(cartToken)}`;
     setRedirecting(true);
     window.location.href = url;
   };
