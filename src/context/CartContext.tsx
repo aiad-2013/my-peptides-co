@@ -50,24 +50,6 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check if a pending checkout has been completed via webhook
   useEffect(() => {
-    const checkPendingOrder = async () => {
-      const pendingToken = localStorage.getItem(PENDING_TOKEN_KEY);
-      if (!pendingToken) return;
-
-      try {
-        const { data, error } = await supabase.functions.invoke('check-cart-status', {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-          body: null,
-        });
-
-        // supabase.functions.invoke doesn't support query params easily,
-        // so we'll use a direct fetch instead
-      } catch {
-        // Ignore errors silently
-      }
-    };
-
     const checkViaFetch = async () => {
       const pendingToken = localStorage.getItem(PENDING_TOKEN_KEY);
       if (!pendingToken) return;
