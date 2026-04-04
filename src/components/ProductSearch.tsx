@@ -135,9 +135,16 @@ export const ProductSearch = ({ isOpen, onClose }: ProductSearchProps) => {
                     </div>
 
                     {/* Price */}
-                    <div className="text-sm font-medium text-foreground tabular-nums flex-shrink-0">
-                      ${product.price.toFixed(2)}
-                      <span className="text-xs text-muted-foreground ml-1">AUD</span>
+                    <div className="text-sm font-medium tabular-nums flex-shrink-0 flex items-center gap-1.5">
+                      {product.regularPrice && product.salePrice ? (
+                        <>
+                          <span className="text-muted-foreground line-through">${product.regularPrice.toFixed(2)}</span>
+                          <span className="text-accent">${product.salePrice.toFixed(2)}</span>
+                        </>
+                      ) : (
+                        <span className="text-foreground">${product.price.toFixed(2)}</span>
+                      )}
+                      <span className="text-xs text-muted-foreground">AUD</span>
                     </div>
 
                     {/* Actions */}
