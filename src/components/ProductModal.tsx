@@ -237,10 +237,18 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
 
             {/* Price */}
             <div className="mb-6">
-              <span className="text-3xl font-semibold text-foreground">
-                ${product.price.toFixed(2)}
-              </span>
-              <span className="text-muted-foreground ml-2">AUD</span>
+              {product.regularPrice && product.salePrice ? (
+                <div className="flex items-baseline gap-3">
+                  <span className="text-xl text-muted-foreground line-through">${product.regularPrice.toFixed(2)}</span>
+                  <span className="text-3xl font-semibold text-accent">${product.salePrice.toFixed(2)}</span>
+                  <span className="text-muted-foreground">AUD</span>
+                </div>
+              ) : (
+                <>
+                  <span className="text-3xl font-semibold text-foreground">${product.price.toFixed(2)}</span>
+                  <span className="text-muted-foreground ml-2">AUD</span>
+                </>
+              )}
             </div>
 
             {/* Quantity Selector */}

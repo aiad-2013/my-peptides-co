@@ -611,10 +611,24 @@ const ProductDetailContent = () => {
 
             {/* Price */}
             <div className="mb-5 pb-5 border-b border-border/60">
-              <span className="text-3xl font-serif font-normal text-foreground tabular-nums">
-                ${product.price.toFixed(2)}
-              </span>
-              <span className="text-muted-foreground ml-2 text-sm">AUD</span>
+              {product.regularPrice && product.salePrice ? (
+                <div className="flex items-baseline gap-3">
+                  <span className="text-xl font-serif text-muted-foreground line-through tabular-nums">
+                    ${product.regularPrice.toFixed(2)}
+                  </span>
+                  <span className="text-3xl font-serif font-normal text-accent tabular-nums">
+                    ${product.salePrice.toFixed(2)}
+                  </span>
+                  <span className="text-muted-foreground text-sm">AUD</span>
+                </div>
+              ) : (
+                <>
+                  <span className="text-3xl font-serif font-normal text-foreground tabular-nums">
+                    ${product.price.toFixed(2)}
+                  </span>
+                  <span className="text-muted-foreground ml-2 text-sm">AUD</span>
+                </>
+              )}
             </div>
 
             {/* ── Inventory & Dispatch ── */}
@@ -790,7 +804,7 @@ const ProductDetailContent = () => {
                 disabled={!product.inStock}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart — ${(product.price * quantity).toFixed(2)}
+                Add to Cart — ${((product.salePrice || product.price) * quantity).toFixed(2)}
               </Button>
 
               {!product.inStock && (
@@ -831,7 +845,7 @@ const ProductDetailContent = () => {
                 disabled={!product.inStock}
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
-                Add to Cart — ${(product.price * quantity).toFixed(2)}
+                Add to Cart — ${((product.salePrice || product.price) * quantity).toFixed(2)}
               </Button>
 
               {!product.inStock && (
@@ -1093,7 +1107,7 @@ const ProductDetailContent = () => {
           disabled={!product.inStock}
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
-          {product.inStock ? `Add to Cart — $${(product.price * quantity).toFixed(2)}` : 'Out of Stock'}
+          {product.inStock ? `Add to Cart — $${((product.salePrice || product.price) * quantity).toFixed(2)}` : 'Out of Stock'}
         </Button>
       </div>
 

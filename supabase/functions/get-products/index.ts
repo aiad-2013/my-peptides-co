@@ -47,6 +47,8 @@ interface TransformedProduct {
   category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
   categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct'>;
   price: number;
+  regularPrice?: number;
+  salePrice?: number;
   concentration?: string;
   volume?: string;
   description: string;
@@ -324,6 +326,8 @@ serve(async (req) => {
         category,
         categories,
         price: parseFloat(product.price) || 0,
+        regularPrice: product.sale_price && parseFloat(product.sale_price) > 0 ? parseFloat(product.regular_price) || undefined : undefined,
+        salePrice: product.sale_price && parseFloat(product.sale_price) > 0 ? parseFloat(product.sale_price) || undefined : undefined,
         concentration: concentration || undefined,
         volume: volume || undefined,
         description,
