@@ -110,9 +110,14 @@ export const ProductCard = ({ product }: ProductCardProps) => {
               Bundle &amp; Save
             </span>
           )}
-          {product.badge && product.badge !== 'Bundle' && (
+        {product.badge && product.badge !== 'Bundle' && (
             <span className="inline-flex items-center text-[10px] font-medium uppercase tracking-widest px-2 py-1 bg-accent/90 text-accent-foreground rounded-sm backdrop-blur-sm">
               {product.badge}
+            </span>
+          )}
+          {product.salePrice && (
+            <span className="inline-flex items-center text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-red-500 text-white rounded-sm backdrop-blur-sm">
+              Sale
             </span>
           )}
         </div>
