@@ -26,6 +26,8 @@ export interface Product {
   category: 'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct';
   categories?: Array<'sarms' | 'peptides' | 'glp-1' | 'erectile-performance' | 'dilutes' | 'pct'>;
   price: number;
+  regularPrice?: number;
+  salePrice?: number;
   concentration?: string;
   volume?: string;
   description: string;

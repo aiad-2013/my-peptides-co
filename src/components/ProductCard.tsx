@@ -163,11 +163,22 @@ export const ProductCard = ({ product }: ProductCardProps) => {
         )}
 
         <div className="flex items-center justify-between pt-3 mt-auto border-t border-border/60">
-          <div>
-            <span className="text-sm sm:text-base font-medium text-foreground tabular-nums">
-              ${product.price.toFixed(2)}
-            </span>
-            <span className="text-xs text-muted-foreground ml-1">AUD</span>
+          <div className="flex items-center gap-1.5">
+            {product.regularPrice && product.salePrice ? (
+              <>
+                <span className="text-xs sm:text-sm text-muted-foreground line-through tabular-nums">
+                  ${product.regularPrice.toFixed(2)}
+                </span>
+                <span className="text-sm sm:text-base font-medium text-accent tabular-nums">
+                  ${product.salePrice.toFixed(2)}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm sm:text-base font-medium text-foreground tabular-nums">
+                ${product.price.toFixed(2)}
+              </span>
+            )}
+            <span className="text-xs text-muted-foreground">AUD</span>
           </div>
 
           <div className="flex items-center gap-1.5 sm:gap-2">
