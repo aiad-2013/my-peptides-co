@@ -43,7 +43,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const storeUrl = 'https://vicorpus.co';
+    const storeUrl = 'https://checkout.mypeptideco.com';
     const sanitizedOrderNumber = order_number.trim();
     const sanitizedEmail = email.trim().toLowerCase();
 
