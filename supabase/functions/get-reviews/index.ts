@@ -28,7 +28,7 @@ serve(async (req) => {
       throw new Error('WooCommerce API credentials not configured');
     }
 
-    const storeUrl = 'https://vicorpus.co';
+    const storeUrl = 'https://checkout.mypeptideco.com';
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
     const authHeaders = { 'Authorization': `Basic ${auth}`, 'Content-Type': 'application/json' };
 

@@ -5,7 +5,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const WP_API = 'https://vicorpus.com/wp-json/wp/v2';
+const WP_API = 'https://checkout.mypeptideco.com/wp-json/wp/v2';
 
 async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
   try {

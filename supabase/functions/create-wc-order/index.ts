@@ -31,7 +31,7 @@ serve(async (req) => {
       throw new Error('No items in cart');
     }
 
-    const storeUrl = 'https://vicorpus.co';
+    const storeUrl = 'https://checkout.mypeptideco.com';
     const auth = btoa(`${consumerKey}:${consumerSecret}`);
 
     // Create a pending order with line items and optional customer details
