@@ -1107,7 +1107,7 @@ const ProductDetailContent = () => {
           disabled={!product.inStock}
         >
           <ShoppingCart className="w-4 h-4 mr-2" />
-          {product.inStock ? `Add to Cart — $${(product.price * quantity).toFixed(2)}` : 'Out of Stock'}
+          {product.inStock ? `Add to Cart — $${((product.salePrice || product.price) * quantity).toFixed(2)}` : 'Out of Stock'}
         </Button>
       </div>
 
