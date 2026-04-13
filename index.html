@@ -30,6 +30,20 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Chat Widget -->
+    <script src="https://cdn.jsdelivr.net/gh/kristianBM/chat-widget@master/dist/chat-widget.umd.js"></script>
+    <script>
+      ChatWidget.create({
+        webhookUrl: 'https://akabadger.app.n8n.cloud/webhook/95c3d4af-dfd2-4e5b-8aa2-83e9ffe5790b/chat',
+        title: 'Support',
+        subtitle: "We're here 24/7.",
+        initialMessages: ['Hey! 👋', 'How can we help you today?'],
+        theme: {
+          primaryColor: '#0dbdb7',
+          position: 'bottom-right',
+        },
+      });
+    </script>
     <!-- Facebook Pixel Code -->
     <script>
       !function(f,b,e,v,n,t,s)
