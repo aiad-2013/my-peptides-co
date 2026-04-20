@@ -21,7 +21,7 @@ const buttonVariants = cva(
         navy: "bg-primary text-primary-foreground font-medium tracking-wide hover:bg-primary/90",
         /* Hero CTA — same restrained teal */
         hero: "bg-accent/80 backdrop-blur-sm text-accent-foreground font-medium tracking-wide text-base px-8 py-5 hover:bg-accent/95 hover:shadow-[0_6px_28px_-6px_hsl(var(--accent)/0.4)] active:scale-[0.99]",
-        "hero-outline": "bg-white/20 backdrop-blur-sm border border-white/40 text-primary-foreground hover:bg-white/30 hover:border-white/60 font-light text-base px-8 py-5 tracking-wide",
+        "hero-outline": "bg-white/80 backdrop-blur-sm border border-white/60 text-primary hover:bg-white/95 hover:text-primary font-medium text-base px-8 py-5 tracking-wide",
       },
       size: {
         default: "h-10 px-5 py-2",
