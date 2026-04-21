@@ -54,6 +54,7 @@ export const SafeHtml = ({ html, className }: SafeHtmlProps) => {
         '[&_table]:w-full [&_table]:my-4 [&_table]:border [&_table]:border-border [&_table]:border-collapse [&_table]:text-sm',
         '[&_th]:border [&_th]:border-border [&_th]:bg-muted/40 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-semibold [&_th]:text-foreground',
         '[&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:align-top',
+        '[&_tr>td:first-child]:whitespace-nowrap [&_tr>th:first-child]:whitespace-nowrap [&_tr>td:first-child]:font-semibold [&_tr>td:first-child]:text-foreground',
         className
       )}
       dangerouslySetInnerHTML={{ __html: clean }}
