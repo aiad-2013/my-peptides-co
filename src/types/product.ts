@@ -31,6 +31,8 @@ export interface Product {
   concentration?: string;
   volume?: string;
   description: string;
+  shortDescription?: string;
+  longDescription?: string;
   image: string;
   images?: string[];
   badge?: string;
