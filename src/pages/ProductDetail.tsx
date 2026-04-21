@@ -892,9 +892,7 @@ const ProductDetailContent = () => {
             <div className="grid md:grid-cols-2 gap-10">
               <div>
                 <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
-                <p className="text-foreground/80 leading-relaxed">
-                  {product.description}
-                </p>
+                <SafeHtml html={product.description} />
               </div>
 
               {/* Key Features */}
