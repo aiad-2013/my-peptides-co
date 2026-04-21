@@ -316,8 +316,12 @@ serve(async (req) => {
 
       // Preserve HTML formatting (headings, lists, bold, paragraphs) from WooCommerce.
       // Sanitisation happens client-side via DOMPurify before rendering.
-      const rawDesc = (product.short_description?.trim() || product.description?.trim() || '');
-      const description = decodeHtmlEntities(rawDesc);
+      const rawShort = product.short_description?.trim() || '';
+      const rawLong = product.description?.trim() || '';
+      // `description` retains the existing fallback behaviour so other surfaces (cards, modals, SEO) keep working.
+      const description = decodeHtmlEntities(rawShort || rawLong);
+      const shortDescription = rawShort ? decodeHtmlEntities(rawShort) : undefined;
+      const longDescription = rawLong ? decodeHtmlEntities(rawLong) : undefined;
 
       return {
         id: product.slug,
@@ -331,6 +335,8 @@ serve(async (req) => {
         concentration: concentration || undefined,
         volume: volume || undefined,
         description,
+        shortDescription,
+        longDescription,
         ...(() => {
         const imgs = (product.images || []).filter(img => img.src);
           // Push molecular/structure/diagram images to the end so the product photo is always first

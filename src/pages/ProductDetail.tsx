@@ -891,9 +891,24 @@ const ProductDetailContent = () => {
           {/* Description Tab */}
           <TabsContent value="description" className="mt-0">
             <div className="grid md:grid-cols-4 gap-10">
-              <div className="md:col-span-3">
-                <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
-                <SafeHtml html={product.description} />
+              <div className="md:col-span-3 space-y-6">
+                {product.shortDescription && product.longDescription && product.shortDescription !== product.longDescription ? (
+                  <>
+                    <div>
+                      <h2 className="text-lg font-semibold text-foreground mb-3">Overview</h2>
+                      <SafeHtml html={product.shortDescription} />
+                    </div>
+                    <div className="pt-4 border-t border-border">
+                      <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
+                      <SafeHtml html={product.longDescription} />
+                    </div>
+                  </>
+                ) : (
+                  <div>
+                    <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
+                    <SafeHtml html={product.longDescription || product.shortDescription || product.description} />
+                  </div>
+                )}
               </div>
 
               {/* Key Features */}
