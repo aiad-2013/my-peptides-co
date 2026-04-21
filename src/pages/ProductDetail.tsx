@@ -890,16 +890,16 @@ const ProductDetailContent = () => {
 
           {/* Description Tab */}
           <TabsContent value="description" className="mt-0">
-            <div className="grid md:grid-cols-2 gap-10">
-              <div>
+            <div className="grid md:grid-cols-4 gap-10">
+              <div className="md:col-span-3">
                 <h2 className="text-lg font-semibold text-foreground mb-3">About this product</h2>
                 <SafeHtml html={product.description} />
               </div>
 
               {/* Key Features */}
-              <div>
+              <div className="md:col-span-1">
                 <h2 className="text-lg font-semibold text-foreground mb-3">Key Features</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
                     <Shield className="w-5 h-5 text-accent flex-shrink-0" />
                     <span className="text-sm text-foreground">Third-party tested</span>
