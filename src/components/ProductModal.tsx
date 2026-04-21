@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/context/CartContext';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { SafeHtml } from '@/components/SafeHtml';
 
 interface ProductModalProps {
   product: Product | null;
