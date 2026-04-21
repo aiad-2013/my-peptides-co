@@ -314,9 +314,9 @@ serve(async (req) => {
         if (nameMatch) concentration = nameMatch[1];
       }
 
-      // Strip HTML tags then decode HTML entities from description
-      const rawDesc = product.short_description?.replace(/<[^>]*>/g, '').trim()
-        || product.description?.replace(/<[^>]*>/g, '').trim() || '';
+      // Preserve HTML formatting (headings, lists, bold, paragraphs) from WooCommerce.
+      // Sanitisation happens client-side via DOMPurify before rendering.
+      const rawDesc = (product.short_description?.trim() || product.description?.trim() || '');
       const description = decodeHtmlEntities(rawDesc);
 
       return {

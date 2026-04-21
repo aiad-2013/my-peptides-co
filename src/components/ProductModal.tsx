@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/context/CartContext';
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { SafeHtml } from '@/components/SafeHtml';
 
 interface ProductModalProps {
   product: Product | null;
@@ -225,9 +226,7 @@ export const ProductModal = ({ product, isOpen, onClose }: ProductModalProps) =>
               </p>
             )}
 
-            <p className="text-foreground/80 text-sm leading-relaxed mb-6">
-              {product.description}
-            </p>
+            <SafeHtml html={product.description} className="text-sm mb-6" />
 
             {/* Trust Badge */}
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-6 pb-6 border-b border-border">

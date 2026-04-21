@@ -1,0 +1,59 @@
+import DOMPurify from 'dompurify';
+import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
+
+interface SafeHtmlProps {
+  html: string;
+  className?: string;
+}
+
+const ALLOWED_TAGS = [
+  'p', 'br', 'strong', 'b', 'em', 'i', 'u', 's',
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'ul', 'ol', 'li',
+  'blockquote', 'a', 'span', 'div',
+  'table', 'thead', 'tbody', 'tr', 'th', 'td',
+  'hr', 'sup', 'sub', 'code', 'pre',
+];
+
+const ALLOWED_ATTR = ['href', 'target', 'rel', 'title'];
+
+/**
+ * Renders WooCommerce HTML descriptions safely after sanitisation.
+ * Styled with Tailwind typography utilities for headings, lists, paragraphs, etc.
+ */
+export const SafeHtml = ({ html, className }: SafeHtmlProps) => {
+  const clean = useMemo(
+    () =>
+      DOMPurify.sanitize(html || '', {
+        ALLOWED_TAGS,
+        ALLOWED_ATTR,
+        ALLOW_DATA_ATTR: false,
+      }),
+    [html]
+  );
+
+  return (
+    <div
+      className={cn(
+        'text-foreground/80 leading-relaxed space-y-3',
+        '[&_h1]:text-xl [&_h1]:font-semibold [&_h1]:text-foreground [&_h1]:mt-4 [&_h1]:mb-2',
+        '[&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-foreground [&_h2]:mt-4 [&_h2]:mb-2',
+        '[&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-foreground [&_h3]:mt-3 [&_h3]:mb-1',
+        '[&_h4]:text-base [&_h4]:font-semibold [&_h4]:text-foreground [&_h4]:mt-3 [&_h4]:mb-1',
+        '[&_p]:leading-relaxed',
+        '[&_strong]:font-semibold [&_strong]:text-foreground',
+        '[&_b]:font-semibold [&_b]:text-foreground',
+        '[&_em]:italic [&_i]:italic',
+        '[&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1',
+        '[&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-1',
+        '[&_li]:leading-relaxed',
+        '[&_a]:text-accent [&_a]:underline hover:[&_a]:opacity-80',
+        '[&_blockquote]:border-l-4 [&_blockquote]:border-accent [&_blockquote]:pl-4 [&_blockquote]:italic',
+        '[&_hr]:my-4 [&_hr]:border-border',
+        className
+      )}
+      dangerouslySetInnerHTML={{ __html: clean }}
+    />
+  );
+};
