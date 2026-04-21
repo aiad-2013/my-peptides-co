@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ShoppingCart, Minus, Plus, Shield, FlaskConical, CheckCircle2, Eye, Pill, Package, Tag, Layers, Sparkles, Clock, ZoomIn, X, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { SafeHtml } from '@/components/SafeHtml';
 
 // ── Reviews hook ─────────────────────────────────────────────────────────────
 interface WooReview {
