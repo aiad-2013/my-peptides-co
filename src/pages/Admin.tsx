@@ -133,6 +133,41 @@ export default function Admin() {
         </Card>
 
         <Card className="p-6 space-y-3">
+          <div className="flex items-center gap-2">
+            <Mail className="h-5 w-5 text-primary" />
+            <h2 className="text-xl font-semibold">Admin Email Notifications</h2>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Automated diagnostic emails delivered via Resend (connected through Lovable Cloud).
+          </p>
+          <div className="grid sm:grid-cols-2 gap-3 text-sm">
+            <div className="p-3 rounded-md border">
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Provider</div>
+              <div className="font-medium">Resend</div>
+              <div className="text-xs text-muted-foreground mt-1">Account: Nadia (aiad.com.au)</div>
+            </div>
+            <div className="p-3 rounded-md border">
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Recipient</div>
+              <div className="font-medium break-all">nadia+resend@aiad.com.au</div>
+              <div className="text-xs text-muted-foreground mt-1">From: onboarding@resend.dev</div>
+            </div>
+            <div className="p-3 rounded-md border">
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Daily Cron</div>
+              <div className="font-medium">Every day · 18:00 UTC (04:00 AEST)</div>
+              <div className="text-xs text-muted-foreground mt-1">Always sends — green when healthy, red on failures</div>
+            </div>
+            <div className="p-3 rounded-md border">
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Manual Run</div>
+              <div className="font-medium">Confirmation email sent</div>
+              <div className="text-xs text-muted-foreground mt-1">Triggered each time "Run checks" is used above</div>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            To send to additional recipients, verify <code className="bg-muted px-1 rounded">mypeptideco.com</code> at resend.com/domains.
+          </p>
+        </Card>
+
+        <Card className="p-6 space-y-3">
           <h2 className="text-xl font-semibold">Webhook URL</h2>
           <p className="text-sm text-muted-foreground">Configure this URL in WooCommerce → Settings → Advanced → Webhooks.</p>
           <code className="block text-xs bg-muted p-3 rounded break-all">
