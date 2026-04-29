@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.admin-diagnostics]
 verify_jwt = false
+
+[functions.health-check-cron]
+verify_jwt = false
