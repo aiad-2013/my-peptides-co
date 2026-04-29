@@ -232,32 +232,31 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Parse and validate the order data
+    // Parse and validate the order data.
+    // Always ACK 200 on parse/validation errors so WooCommerce does not auto-disable
+    // the webhook (5 consecutive non-2xx responses trigger auto-disable).
     let orderData: WooCommerceOrder;
     try {
       const parsedJson = JSON.parse(rawBody);
       orderData = WooCommerceOrderSchema.parse(parsedJson);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        console.error('Validation error:', err.errors);
-        return new Response(
-          JSON.stringify({ error: 'Invalid order data format' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-        );
+        console.error('[webhook] Validation error — dropping payload (ack 200):', err.errors);
+      } else {
+        console.error('[webhook] JSON parse error — dropping payload (ack 200):', err);
       }
-      console.error('JSON parse error:', err);
       return new Response(
-        JSON.stringify({ error: 'Invalid request body' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        JSON.stringify({ success: true, ignored: 'invalid_payload' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
     // Generate deterministic token using HMAC
     if (!webhookSecret) {
-      console.error('WOOCOMMERCE_WEBHOOK_SECRET required for token generation');
+      console.error('[webhook] WOOCOMMERCE_WEBHOOK_SECRET missing — cannot generate token (ack 200)');
       return new Response(
-        JSON.stringify({ error: 'Configuration error' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        JSON.stringify({ success: true, ignored: 'missing_secret' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
     const orderToken = await generateOrderToken(orderData.id.toString(), webhookSecret);
