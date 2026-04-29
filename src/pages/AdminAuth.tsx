@@ -16,7 +16,7 @@ const credsSchema = z.object({
 });
 
 export default function AdminAuth() {
-  useSEO({ title: 'Admin Sign In', description: 'Internal admin access', noindex: true });
+  useSEO({ title: 'Admin Sign In', description: 'Internal admin access' });
   const guard = useAdminGuard();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -34,15 +34,17 @@ export default function AdminAuth() {
       toast({ title: 'Invalid input', description: parsed.error.errors[0].message, variant: 'destructive' });
       return;
     }
+    const { email: e2, password: p2 } = parsed.data;
     setBusy(true);
     try {
       if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
+        const { error } = await supabase.auth.signInWithPassword({ email: e2, password: p2 });
         if (error) throw error;
         navigate('/admin');
       } else {
         const { error } = await supabase.auth.signUp({
-          ...parsed.data,
+          email: e2,
+          password: p2,
           options: { emailRedirectTo: `${window.location.origin}/admin` },
         });
         if (error) throw error;

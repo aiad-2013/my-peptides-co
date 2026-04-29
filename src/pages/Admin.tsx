@@ -14,7 +14,7 @@ import { CheckCircle2, XCircle, Loader2, RefreshCw, LogOut } from 'lucide-react'
 interface Check { name: string; ok: boolean; detail: string; meta?: Record<string, unknown>; }
 
 export default function Admin() {
-  useSEO({ title: 'Admin Diagnostics', description: 'Internal diagnostics dashboard', noindex: true });
+  useSEO({ title: 'Admin Diagnostics', description: 'Internal diagnostics dashboard' });
   const guard = useAdminGuard();
   const { toast } = useToast();
   const [checks, setChecks] = useState<Check[] | null>(null);
