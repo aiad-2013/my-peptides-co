@@ -318,10 +318,10 @@ Deno.serve(async (req) => {
       .single();
 
     if (error) {
-      console.error('Error saving order:', error.code);
+      console.error('[webhook] Error saving order — acking 200 to avoid auto-disable:', error.code, error.message);
       return new Response(
-        JSON.stringify({ error: 'Failed to save order' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        JSON.stringify({ success: true, ignored: 'db_error' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
@@ -333,10 +333,12 @@ Deno.serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Webhook error:', error instanceof Error ? error.message : 'Unknown error');
+    // Always ACK 200 to WooCommerce so the webhook is not auto-disabled after
+    // 5 consecutive non-2xx responses. Internal errors are logged for debugging.
+    console.error('[webhook] Unhandled error — acking 200:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ success: true, ignored: 'internal_error' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
   }
 });
