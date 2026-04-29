@@ -200,26 +200,55 @@ Deno.serve(async (req) => {
     
     console.log('Received WooCommerce webhook:', webhookTopic);
 
-    // Handle product webhooks — bump the cache invalidation timestamp so the frontend refetches
+    // Handle product webhooks — sync the affected product into our cache,
+    // which also bumps cache_invalidations and triggers connected clients to refetch.
     if (
       webhookTopic === 'product.updated' ||
       webhookTopic === 'product.created' ||
       webhookTopic === 'product.deleted' ||
       webhookTopic === 'product.restored'
     ) {
-      const { error: ciError } = await supabase
-        .from('cache_invalidations')
-        .update({ updated_at: new Date().toISOString() })
-        .eq('id', 'products');
+      let productId: number | undefined;
+      try {
+        const parsed = JSON.parse(rawBody);
+        if (typeof parsed?.id === 'number') productId = parsed.id;
+      } catch { /* ignore */ }
 
-      if (ciError) {
-        console.error('Error updating cache invalidation:', ciError.message);
-      } else {
-        console.log('Product cache invalidated for topic:', webhookTopic);
+      // For deletions we just bump the invalidation flag so clients refetch and
+      // the next full sync (cron) will prune the cache row.
+      if (webhookTopic === 'product.deleted') {
+        if (productId) {
+          await supabase.from('products_cache').delete().eq('woocommerce_id', productId);
+        }
+        await supabase.from('cache_invalidations')
+          .update({ updated_at: new Date().toISOString() })
+          .eq('id', 'products');
+        return new Response(
+          JSON.stringify({ success: true, message: 'Product removed from cache' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+        );
+      }
+
+      // Fire-and-forget sync for the specific product. We must await the fetch
+      // initiation but don't need the result before ACKing WooCommerce.
+      const syncUrl = `${supabaseUrl}/functions/v1/sync-products`;
+      const syncBody = productId ? { wooCommerceId: productId } : { full: true };
+      try {
+        await fetch(syncUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseServiceKey}`,
+          },
+          body: JSON.stringify(syncBody),
+        });
+        console.log('Triggered product sync for', webhookTopic, productId ?? 'full');
+      } catch (e) {
+        console.error('Failed to trigger sync-products:', e instanceof Error ? e.message : e);
       }
 
       return new Response(
-        JSON.stringify({ success: true, message: 'Product cache invalidated' }),
+        JSON.stringify({ success: true, message: 'Product sync triggered' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }

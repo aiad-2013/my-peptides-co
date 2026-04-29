@@ -164,6 +164,33 @@ export type Database = {
         }
         Relationships: []
       }
+      products_cache: {
+        Row: {
+          created_at: string
+          data: Json
+          image_map: Json
+          slug: string
+          synced_at: string
+          woocommerce_id: number
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          image_map?: Json
+          slug: string
+          synced_at?: string
+          woocommerce_id: number
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          image_map?: Json
+          slug?: string
+          synced_at?: string
+          woocommerce_id?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
