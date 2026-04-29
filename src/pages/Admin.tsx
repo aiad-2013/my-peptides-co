@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAdminGuard } from '@/hooks/useAdminGuard';
 import { useToast } from '@/hooks/use-toast';
 import { useSEO } from '@/hooks/useSEO';
-import { CheckCircle2, XCircle, Loader2, RefreshCw, LogOut } from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, RefreshCw, LogOut, Mail } from 'lucide-react';
 
 interface Check { name: string; ok: boolean; detail: string; meta?: Record<string, unknown>; }
 
