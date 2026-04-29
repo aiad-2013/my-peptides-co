@@ -175,6 +175,61 @@ async function triggerSync(opts: { full?: boolean; wooCommerceId?: number; slug?
   return { status: res.status, ms: Date.now() - t0, body: json };
 }
 
+const ALERT_TO = 'nadia+mpc@aiad.com.au';
+const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
+const RESEND_GATEWAY = 'https://connector-gateway.lovable.dev/resend';
+
+async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
+  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
+  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
+  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
+    console.error('[admin-diagnostics] Missing Resend credentials');
+    return;
+  }
+  const failures = checks.filter(c => !c.ok);
+  const allOk = failures.length === 0;
+  const statusLabel = allOk ? 'All checks passed' : `${failures.length} check${failures.length > 1 ? 's' : ''} failed`;
+  const headerColor = allOk ? '#19A899' : '#b91c1c';
+  const rows = checks.map(c => `
+    <tr>
+      <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:14px;color:#1a1a1a;font-weight:600;width:40%;">
+        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.ok ? '#19A899' : '#b91c1c'};margin-right:8px;vertical-align:middle;"></span>${c.name}
+      </td>
+      <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:13px;color:#55575d;">${c.detail}</td>
+    </tr>`).join('');
+  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f5f5f5;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 16px;">
+      <tr><td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:600px;">
+          <tr><td style="background:${headerColor};padding:24px 32px;">
+            <h1 style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">mypeptideco · Manual Health Check</h1>
+          </td></tr>
+          <tr><td style="padding:32px;">
+            <p style="margin:0 0 8px;font-family:'Poppins',Arial,sans-serif;font-size:18px;font-weight:600;color:#1a1a1a;">${statusLabel}</p>
+            <p style="margin:0 0 24px;font-family:'Space Grotesk',Arial,sans-serif;font-size:14px;color:#55575d;line-height:1.5;">A diagnostic run was triggered manually from the admin dashboard. Full results below.</p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-collapse:collapse;">${rows}</table>
+            <p style="margin:24px 0 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:13px;color:#55575d;">Run timestamp (UTC): ${new Date().toISOString()}<br/>Triggered by user: ${userId}</p>
+          </td></tr>
+          <tr><td style="background:#1a1a1a;padding:16px 32px;text-align:center;">
+            <p style="margin:0;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;color:#999999;">Manual run confirmation · mypeptideco.com</p>
+          </td></tr>
+        </table>
+      </td></tr>
+    </table>
+  </body></html>`;
+  const subject = allOk
+    ? '[mypeptideco] Manual health check — all checks passed'
+    : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
+  const res = await fetch(`${RESEND_GATEWAY}/emails`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
+    body: JSON.stringify({ from: ALERT_FROM, to: [ALERT_TO], subject, html }),
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
+  else console.log('[admin-diagnostics] Confirmation email sent', data?.id);
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
