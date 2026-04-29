@@ -72,53 +72,69 @@ async function checkCache(): Promise<CheckResult> {
   return { name: 'Product cache', ok: (count ?? 0) > 0 && fresh, detail: `${count ?? 0} products. Last sync: ${lastSync ? `${ageHours.toFixed(1)}h ago` : 'never'}` };
 }
 
-async function sendAlertEmail(failures: CheckResult[]) {
+async function sendDailyEmail(checks: CheckResult[]) {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
   if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-    console.error('[health-check] Cannot send alert: missing email credentials');
+    console.error('[health-check] Cannot send email: missing email credentials');
     return;
   }
-  const rows = failures.map(f => `
-    <tr>
-      <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:14px;color:#1a1a1a;font-weight:600;">${f.name}</td>
-      <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:13px;color:#55575d;">${f.detail}</td>
-    </tr>`).join('');
+  const failures = checks.filter(c => !c.ok);
+  const hasFailures = failures.length > 0;
+  const headerBg = hasFailures ? '#dc2626' : '#19A899';
+  const statusLabel = hasFailures ? `${failures.length} CHECK${failures.length > 1 ? 'S' : ''} FAILED` : 'ALL SYSTEMS OPERATIONAL';
+  const statusBlurb = hasFailures
+    ? 'The daily diagnostic run detected issues. Failed checks are highlighted in red below.'
+    : 'The daily diagnostic run completed successfully. All systems are healthy.';
+
+  const rows = checks.map(c => {
+    const rowBg = c.ok ? '#ffffff' : '#fef2f2';
+    const labelColor = c.ok ? '#1a1a1a' : '#b91c1c';
+    const detailColor = c.ok ? '#55575d' : '#b91c1c';
+    const badgeBg = c.ok ? '#19A899' : '#dc2626';
+    const badgeText = c.ok ? 'PASS' : 'FAIL';
+    return `
+    <tr style="background:${rowBg};">
+      <td style="padding:14px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:14px;color:${labelColor};font-weight:700;width:40%;">${c.name}</td>
+      <td style="padding:14px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:13px;color:${detailColor};">${c.detail}</td>
+      <td style="padding:14px 16px;border-bottom:1px solid #e5e7eb;text-align:right;"><span style="display:inline-block;background:${badgeBg};color:#ffffff;font-family:'Poppins',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;padding:4px 10px;border-radius:3px;">${badgeText}</span></td>
+    </tr>`;
+  }).join('');
+
   const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f5f5f5;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 16px;">
       <tr><td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:600px;">
-          <tr><td style="background:#19A899;padding:24px 32px;">
-            <h1 style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">mypeptideco · Health Check Alert</h1>
+        <table width="640" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:640px;">
+          <tr><td style="background:${headerBg};padding:24px 32px;">
+            <p style="margin:0 0 4px;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;font-weight:600;color:#ffffff;letter-spacing:0.1em;text-transform:uppercase;opacity:0.85;">Daily Health Check</p>
+            <h1 style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">${statusLabel}</h1>
           </td></tr>
-          <tr><td style="padding:32px;">
-            <p style="margin:0 0 8px;font-family:'Poppins',Arial,sans-serif;font-size:18px;font-weight:600;color:#1a1a1a;">${failures.length} check${failures.length > 1 ? 's' : ''} failed</p>
-            <p style="margin:0 0 24px;font-family:'Space Grotesk',Arial,sans-serif;font-size:14px;color:#55575d;line-height:1.5;">The daily diagnostic run detected issues. Review below and visit the admin dashboard for full details.</p>
+          <tr><td style="padding:28px 32px 8px;">
+            <p style="margin:0 0 20px;font-family:'Space Grotesk',Arial,sans-serif;font-size:14px;color:#55575d;line-height:1.5;">${statusBlurb}</p>
             <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-collapse:collapse;">${rows}</table>
-            <p style="margin:24px 0 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:13px;color:#55575d;">Run timestamp (UTC): ${new Date().toISOString()}</p>
-            <p style="margin:16px 0 0;"><a href="https://mypeptideco.com/admin" style="display:inline-block;background:#19A899;color:#ffffff;text-decoration:none;padding:12px 20px;font-family:'Poppins',Arial,sans-serif;font-size:14px;font-weight:600;">Open Admin Diagnostics</a></p>
+            <p style="margin:20px 0 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;color:#55575d;">Run timestamp (UTC): ${new Date().toISOString()}</p>
+            <p style="margin:16px 0 24px;"><a href="https://mypeptideco.com/admin" style="display:inline-block;background:#19A899;color:#ffffff;text-decoration:none;padding:12px 20px;font-family:'Poppins',Arial,sans-serif;font-size:14px;font-weight:600;">Open Admin Diagnostics</a></p>
           </td></tr>
           <tr><td style="background:#1a1a1a;padding:16px 32px;text-align:center;">
-            <p style="margin:0;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;color:#999999;">Automated alert · mypeptideco.com</p>
+            <p style="margin:0;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;color:#999999;">Automated daily report · mypeptideco.com</p>
           </td></tr>
         </table>
       </td></tr>
     </table>
   </body></html>`;
 
+  const subject = hasFailures
+    ? `🚨 [mypeptideco] Health check FAILED — ${failures.length} issue${failures.length > 1 ? 's' : ''}`
+    : `✅ [mypeptideco] Daily health check — All systems OK`;
+
   const res = await fetch(`${GATEWAY_URL}/emails`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
-    body: JSON.stringify({
-      from: ALERT_FROM,
-      to: [ALERT_TO],
-      subject: `[mypeptideco] Health check FAILED — ${failures.length} issue${failures.length > 1 ? 's' : ''}`,
-      html,
-    }),
+    body: JSON.stringify({ from: ALERT_FROM, to: [ALERT_TO], subject, html }),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) console.error(`[health-check] Resend send failed [${res.status}]:`, JSON.stringify(data));
-  else console.log('[health-check] Alert email sent', data?.id);
+  else console.log('[health-check] Daily email sent', data?.id);
 }
 
 serve(async (req) => {
@@ -128,8 +144,8 @@ serve(async (req) => {
     const checks = [secrets, woo, webhook, cache];
     const failures = checks.filter(c => !c.ok);
     console.log(`[health-check] ${failures.length} failures of ${checks.length} checks`);
-    if (failures.length > 0) await sendAlertEmail(failures);
-    return new Response(JSON.stringify({ ok: failures.length === 0, checks, alerted: failures.length > 0 }), {
+    await sendDailyEmail(checks);
+    return new Response(JSON.stringify({ ok: failures.length === 0, checks, emailed: true }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
