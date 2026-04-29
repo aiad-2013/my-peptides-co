@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const STORE_URL = 'https://checkout.mypeptideco.com';
-const ALERT_TO = 'nadia+mpc@aiad.com.au';
+const ALERT_TO = 'nadia+resend@aiad.com.au';
 const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 
