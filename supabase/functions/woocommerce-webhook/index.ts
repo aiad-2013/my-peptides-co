@@ -169,27 +169,33 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify webhook signature for actual order webhooks
+    // Verify webhook signature for actual order webhooks.
+    // IMPORTANT: We always ACK with 200 to prevent WooCommerce from auto-disabling
+    // the webhook after 5 consecutive non-2xx responses. Auth failures are logged
+    // and the payload is silently dropped (not processed) instead of returning 401.
+    let signatureValid = true;
     if (webhookSecret) {
       if (!webhookSignature) {
-        console.error('Missing webhook signature');
-        return new Response(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-        );
+        console.error('[webhook] Missing signature header — dropping payload (ack 200)');
+        signatureValid = false;
+      } else {
+        const isValid = await verifyWebhookSignature(rawBody, webhookSignature, webhookSecret);
+        if (!isValid) {
+          console.error('[webhook] Invalid signature — dropping payload (ack 200)');
+          signatureValid = false;
+        } else {
+          console.log('Webhook signature verified successfully');
+        }
       }
-
-      const isValid = await verifyWebhookSignature(rawBody, webhookSignature, webhookSecret);
-      if (!isValid) {
-        console.error('Invalid webhook signature');
-        return new Response(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-        );
-      }
-      console.log('Webhook signature verified successfully');
     } else {
       console.warn('WOOCOMMERCE_WEBHOOK_SECRET not configured - skipping signature verification');
+    }
+
+    if (!signatureValid) {
+      return new Response(
+        JSON.stringify({ success: true, ignored: 'invalid_signature' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
     
     console.log('Received WooCommerce webhook:', webhookTopic);
