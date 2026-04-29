@@ -195,7 +195,10 @@ serve(async (req) => {
       const [secrets, woo, webhook, cache] = await Promise.all([
         checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache(),
       ]);
-      return new Response(JSON.stringify({ checks: [secrets, woo, webhook, cache] }), {
+      const checks = [secrets, woo, webhook, cache];
+      // Fire-and-forget confirmation email (always, pass or fail)
+      sendConfirmationEmail(checks, auth.userId).catch((e) => console.error('[admin-diagnostics] email error', e));
+      return new Response(JSON.stringify({ checks }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
