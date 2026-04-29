@@ -169,27 +169,33 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify webhook signature for actual order webhooks
+    // Verify webhook signature for actual order webhooks.
+    // IMPORTANT: We always ACK with 200 to prevent WooCommerce from auto-disabling
+    // the webhook after 5 consecutive non-2xx responses. Auth failures are logged
+    // and the payload is silently dropped (not processed) instead of returning 401.
+    let signatureValid = true;
     if (webhookSecret) {
       if (!webhookSignature) {
-        console.error('Missing webhook signature');
-        return new Response(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-        );
+        console.error('[webhook] Missing signature header — dropping payload (ack 200)');
+        signatureValid = false;
+      } else {
+        const isValid = await verifyWebhookSignature(rawBody, webhookSignature, webhookSecret);
+        if (!isValid) {
+          console.error('[webhook] Invalid signature — dropping payload (ack 200)');
+          signatureValid = false;
+        } else {
+          console.log('Webhook signature verified successfully');
+        }
       }
-
-      const isValid = await verifyWebhookSignature(rawBody, webhookSignature, webhookSecret);
-      if (!isValid) {
-        console.error('Invalid webhook signature');
-        return new Response(
-          JSON.stringify({ error: 'Unauthorized' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 401 }
-        );
-      }
-      console.log('Webhook signature verified successfully');
     } else {
       console.warn('WOOCOMMERCE_WEBHOOK_SECRET not configured - skipping signature verification');
+    }
+
+    if (!signatureValid) {
+      return new Response(
+        JSON.stringify({ success: true, ignored: 'invalid_signature' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
+      );
     }
     
     console.log('Received WooCommerce webhook:', webhookTopic);
@@ -226,32 +232,31 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Parse and validate the order data
+    // Parse and validate the order data.
+    // Always ACK 200 on parse/validation errors so WooCommerce does not auto-disable
+    // the webhook (5 consecutive non-2xx responses trigger auto-disable).
     let orderData: WooCommerceOrder;
     try {
       const parsedJson = JSON.parse(rawBody);
       orderData = WooCommerceOrderSchema.parse(parsedJson);
     } catch (err) {
       if (err instanceof z.ZodError) {
-        console.error('Validation error:', err.errors);
-        return new Response(
-          JSON.stringify({ error: 'Invalid order data format' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-        );
+        console.error('[webhook] Validation error — dropping payload (ack 200):', err.errors);
+      } else {
+        console.error('[webhook] JSON parse error — dropping payload (ack 200):', err);
       }
-      console.error('JSON parse error:', err);
       return new Response(
-        JSON.stringify({ error: 'Invalid request body' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
+        JSON.stringify({ success: true, ignored: 'invalid_payload' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
     // Generate deterministic token using HMAC
     if (!webhookSecret) {
-      console.error('WOOCOMMERCE_WEBHOOK_SECRET required for token generation');
+      console.error('[webhook] WOOCOMMERCE_WEBHOOK_SECRET missing — cannot generate token (ack 200)');
       return new Response(
-        JSON.stringify({ error: 'Configuration error' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        JSON.stringify({ success: true, ignored: 'missing_secret' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
     const orderToken = await generateOrderToken(orderData.id.toString(), webhookSecret);
@@ -313,10 +318,10 @@ Deno.serve(async (req) => {
       .single();
 
     if (error) {
-      console.error('Error saving order:', error.code);
+      console.error('[webhook] Error saving order — acking 200 to avoid auto-disable:', error.code, error.message);
       return new Response(
-        JSON.stringify({ error: 'Failed to save order' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+        JSON.stringify({ success: true, ignored: 'db_error' }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
       );
     }
 
@@ -328,10 +333,12 @@ Deno.serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Webhook error:', error instanceof Error ? error.message : 'Unknown error');
+    // Always ACK 200 to WooCommerce so the webhook is not auto-disabled after
+    // 5 consecutive non-2xx responses. Internal errors are logged for debugging.
+    console.error('[webhook] Unhandled error — acking 200:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(
-      JSON.stringify({ error: 'Internal server error' }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ success: true, ignored: 'internal_error' }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 200 }
     );
   }
 });
