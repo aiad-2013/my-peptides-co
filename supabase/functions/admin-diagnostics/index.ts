@@ -220,11 +220,14 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const subject = allOk
     ? '[mypeptideco] Manual health check — all checks passed'
     : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
+  const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
-  const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
+  const sandboxSender = ALERT_FROM.includes('onboarding@resend.dev');
+  const meta = { to, bcc_count: bcc.length, sandbox_sender: sandboxSender };
   const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
-  if (bcc.length > 0) payload.bcc = bcc;
+  if (!sandboxSender && bcc.length > 0) payload.bcc = bcc;
+  else if (sandboxSender && bcc.length > 0) console.warn('[admin-diagnostics] Ignoring BCC because Resend sandbox sender is active');
   const res = await fetch(`${RESEND_GATEWAY}/emails`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
@@ -233,11 +236,11 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
     console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
-    return { ok: false, status: res.status, error: data };
+    return { ok: false, status: res.status, error: data, meta };
   }
 
   console.log('[admin-diagnostics] Confirmation email sent', data?.id);
-  return { ok: true, id: data?.id ?? null };
+  return { ok: true, id: data?.id ?? null, meta };
 }
 
 serve(async (req) => {
