@@ -175,7 +175,7 @@ async function triggerSync(opts: { full?: boolean; wooCommerceId?: number; slug?
   return { status: res.status, ms: Date.now() - t0, body: json };
 }
 
-const FALLBACK_TO = 'nadia+resend@aiad.com.au';
+const FALLBACK_TO = 'nadia+mpc@aiad.com.au';
 const ALERT_FROM_EMAIL = 'alerts@mypeptideco.com';
 const ALERT_FROM_NAME = 'mypeptideco alerts';
 const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
