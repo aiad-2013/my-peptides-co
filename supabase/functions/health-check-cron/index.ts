@@ -130,8 +130,10 @@ async function sendDailyEmail(checks: CheckResult[]) {
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
+  const sandboxSender = ALERT_FROM.includes('onboarding@resend.dev');
   const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
-  if (bcc.length > 0) payload.bcc = bcc;
+  if (!sandboxSender && bcc.length > 0) payload.bcc = bcc;
+  else if (sandboxSender && bcc.length > 0) console.warn('[health-check] Ignoring BCC because Resend sandbox sender is active');
   const res = await fetch(`${GATEWAY_URL}/emails`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
