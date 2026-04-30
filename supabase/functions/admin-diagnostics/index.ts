@@ -176,14 +176,14 @@ async function triggerSync(opts: { full?: boolean; wooCommerceId?: number; slug?
 }
 
 const FALLBACK_TO = 'nadia+resend@aiad.com.au';
-const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
-const RESEND_GATEWAY = 'https://connector-gateway.lovable.dev/resend';
+const ALERT_FROM_EMAIL = 'alerts@mypeptideco.com';
+const ALERT_FROM_NAME = 'mypeptideco alerts';
+const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
 
 async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-    console.error('[admin-diagnostics] Missing Resend credentials');
+  const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
+  if (!SENDGRID_API_KEY) {
+    console.error('[admin-diagnostics] Missing SENDGRID_API_KEY');
     return { ok: false, reason: 'missing_credentials' };
   }
   const failures = checks.filter(c => !c.ok);
@@ -223,24 +223,31 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
-  const sandboxSender = ALERT_FROM.includes('onboarding@resend.dev');
-  const meta = { to, bcc_count: bcc.length, sandbox_sender: sandboxSender };
-  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
-  if (!sandboxSender && bcc.length > 0) payload.bcc = bcc;
-  else if (sandboxSender && bcc.length > 0) console.warn('[admin-diagnostics] Ignoring BCC because Resend sandbox sender is active');
-  const res = await fetch(`${RESEND_GATEWAY}/emails`, {
+  const meta = { to, bcc_count: bcc.length, provider: 'sendgrid' };
+
+  const personalization: Record<string, unknown> = { to: [{ email: to }] };
+  if (bcc.length > 0) personalization.bcc = bcc.map(email => ({ email }));
+
+  const payload = {
+    personalizations: [personalization],
+    from: { email: ALERT_FROM_EMAIL, name: ALERT_FROM_NAME },
+    subject,
+    content: [{ type: 'text/html', value: html }],
+  };
+
+  const res = await fetch(SENDGRID_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SENDGRID_API_KEY}` },
     body: JSON.stringify(payload),
   });
-  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
-    return { ok: false, status: res.status, error: data, meta };
+    const errText = await res.text().catch(() => '');
+    console.error(`[admin-diagnostics] SendGrid send failed [${res.status}]:`, errText);
+    return { ok: false, status: res.status, error: errText, meta };
   }
-
-  console.log('[admin-diagnostics] Confirmation email sent', data?.id);
-  return { ok: true, id: data?.id ?? null, meta };
+  const messageId = res.headers.get('x-message-id');
+  console.log('[admin-diagnostics] Confirmation email sent', messageId);
+  return { ok: true, id: messageId, meta };
 }
 
 serve(async (req) => {
