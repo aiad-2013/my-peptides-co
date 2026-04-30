@@ -74,10 +74,9 @@ async function checkCache(): Promise<CheckResult> {
 }
 
 async function sendDailyEmail(checks: CheckResult[]) {
-  const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
-  const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
-  if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
-    console.error('[health-check] Cannot send email: missing email credentials');
+  const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
+  if (!SENDGRID_API_KEY) {
+    console.error('[health-check] Cannot send email: missing SENDGRID_API_KEY');
     return;
   }
   const failures = checks.filter(c => !c.ok);
