@@ -12,12 +12,23 @@ import { useSEO } from '@/hooks/useSEO';
 import { CheckCircle2, XCircle, Loader2, RefreshCw, LogOut, Mail } from 'lucide-react';
 
 interface Check { name: string; ok: boolean; detail: string; meta?: Record<string, unknown>; }
+interface DiagnosticsResponse {
+  checks: Check[];
+  email?: {
+    ok: boolean;
+    id?: string | null;
+    status?: number;
+    error?: { message?: string };
+    meta?: { to?: string; bcc_count?: number; sandbox_sender?: boolean };
+  };
+}
 
 export default function Admin() {
   useSEO({ title: 'Admin Diagnostics', description: 'Internal diagnostics dashboard' });
   const guard = useAdminGuard();
   const { toast } = useToast();
   const [checks, setChecks] = useState<Check[] | null>(null);
+  const [emailResult, setEmailResult] = useState<DiagnosticsResponse['email'] | null>(null);
   const [running, setRunning] = useState(false);
   const [syncTarget, setSyncTarget] = useState('');
   const [syncResult, setSyncResult] = useState<unknown>(null);
@@ -37,10 +48,11 @@ export default function Admin() {
   }
 
   async function runHealthChecks() {
-    setRunning(true); setChecks(null);
+    setRunning(true); setChecks(null); setEmailResult(null);
     try {
-      const data = await callDiagnostics('health');
+      const data = await callDiagnostics('health') as DiagnosticsResponse;
       setChecks(data.checks as Check[]);
+      setEmailResult(data.email ?? null);
     } catch (e) {
       toast({ title: 'Health check failed', description: e instanceof Error ? e.message : 'Error', variant: 'destructive' });
     } finally { setRunning(false); }
@@ -95,20 +107,37 @@ export default function Admin() {
           </div>
           {!checks && !running && <p className="text-sm text-muted-foreground">Click "Run checks" to test API + webhook + cache.</p>}
           {checks && (
-            <ul className="space-y-3">
-              {checks.map((c, i) => (
-                <li key={i} className="flex items-start gap-3 p-3 rounded-md border">
-                  {c.ok ? <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{c.name}</span>
-                      <Badge variant={c.ok ? 'default' : 'destructive'}>{c.ok ? 'OK' : 'FAIL'}</Badge>
+            <div className="space-y-3">
+              <ul className="space-y-3">
+                {checks.map((c, i) => (
+                  <li key={i} className="flex items-start gap-3 p-3 rounded-md border">
+                    {c.ok ? <CheckCircle2 className="h-5 w-5 text-primary shrink-0 mt-0.5" /> : <XCircle className="h-5 w-5 text-destructive shrink-0 mt-0.5" />}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{c.name}</span>
+                        <Badge variant={c.ok ? 'default' : 'destructive'}>{c.ok ? 'OK' : 'FAIL'}</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground break-words">{c.detail}</p>
                     </div>
-                    <p className="text-sm text-muted-foreground break-words">{c.detail}</p>
+                  </li>
+                ))}
+              </ul>
+
+              {emailResult && (
+                <div className="rounded-md border p-3">
+                  <div className="flex items-center gap-2">
+                    {emailResult.ok ? <CheckCircle2 className="h-5 w-5 text-primary" /> : <XCircle className="h-5 w-5 text-destructive" />}
+                    <span className="font-medium">Notification email</span>
+                    <Badge variant={emailResult.ok ? 'default' : 'destructive'}>{emailResult.ok ? 'SENT' : 'FAILED'}</Badge>
                   </div>
-                </li>
-              ))}
-            </ul>
+                  <p className="mt-2 text-sm text-muted-foreground break-words">
+                    {emailResult.ok
+                      ? `Delivered to ${emailResult.meta?.to ?? 'configured recipient'}.`
+                      : (emailResult.error?.message ?? 'The email provider rejected the send.')}
+                  </p>
+                </div>
+              )}
+            </div>
           )}
         </Card>
 
