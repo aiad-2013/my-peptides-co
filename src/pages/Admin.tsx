@@ -147,9 +147,14 @@ export default function Admin() {
               <div className="text-xs text-muted-foreground mt-1">Account: Nadia (aiad.com.au)</div>
             </div>
             <div className="p-3 rounded-md border">
-              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Recipient</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Recipient (To)</div>
               <div className="font-medium break-all">nadia+resend@aiad.com.au</div>
               <div className="text-xs text-muted-foreground mt-1">From: onboarding@resend.dev</div>
+            </div>
+            <div className="p-3 rounded-md border">
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">BCC</div>
+              <div className="font-medium">Configured via secret</div>
+              <div className="text-xs text-muted-foreground mt-1">Edit <code className="bg-muted px-1 rounded">DIAGNOSTICS_BCC</code> (comma-separated) in backend secrets</div>
             </div>
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Daily Cron</div>
@@ -163,7 +168,7 @@ export default function Admin() {
             </div>
           </div>
           <p className="text-xs text-muted-foreground">
-            To send to additional recipients, verify <code className="bg-muted px-1 rounded">mypeptideco.com</code> at resend.com/domains.
+            BCC accepts a comma-separated list of addresses and applies to both the daily cron and manual diagnostic runs.
           </p>
         </Card>
 

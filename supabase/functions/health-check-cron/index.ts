@@ -127,10 +127,14 @@ async function sendDailyEmail(checks: CheckResult[]) {
     ? `🚨 [mypeptideco] Health check FAILED — ${failures.length} issue${failures.length > 1 ? 's' : ''}`
     : `✅ [mypeptideco] Daily health check — All systems OK`;
 
+  const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
+  const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
+  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [ALERT_TO], subject, html };
+  if (bcc.length > 0) payload.bcc = bcc;
   const res = await fetch(`${GATEWAY_URL}/emails`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
-    body: JSON.stringify({ from: ALERT_FROM, to: [ALERT_TO], subject, html }),
+    body: JSON.stringify(payload),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) console.error(`[health-check] Resend send failed [${res.status}]:`, JSON.stringify(data));
