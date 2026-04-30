@@ -130,18 +130,25 @@ async function sendDailyEmail(checks: CheckResult[]) {
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
-  const sandboxSender = ALERT_FROM.includes('onboarding@resend.dev');
-  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
-  if (!sandboxSender && bcc.length > 0) payload.bcc = bcc;
-  else if (sandboxSender && bcc.length > 0) console.warn('[health-check] Ignoring BCC because Resend sandbox sender is active');
-  const res = await fetch(`${GATEWAY_URL}/emails`, {
+  const personalization: Record<string, unknown> = { to: [{ email: to }] };
+  if (bcc.length > 0) personalization.bcc = bcc.map(email => ({ email }));
+  const payload = {
+    personalizations: [personalization],
+    from: { email: ALERT_FROM_EMAIL, name: ALERT_FROM_NAME },
+    subject,
+    content: [{ type: 'text/html', value: html }],
+  };
+  const res = await fetch(SENDGRID_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
+    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SENDGRID_API_KEY}` },
     body: JSON.stringify(payload),
   });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) console.error(`[health-check] Resend send failed [${res.status}]:`, JSON.stringify(data));
-  else console.log('[health-check] Daily email sent', data?.id);
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    console.error(`[health-check] SendGrid send failed [${res.status}]:`, errText);
+  } else {
+    console.log('[health-check] Daily email sent', res.headers.get('x-message-id'));
+  }
 }
 
 serve(async (req) => {
