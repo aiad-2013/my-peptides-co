@@ -184,7 +184,7 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
   if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
     console.error('[admin-diagnostics] Missing Resend credentials');
-    return;
+    return { ok: false, reason: 'missing_credentials' };
   }
   const failures = checks.filter(c => !c.ok);
   const allOk = failures.length === 0;
@@ -220,19 +220,27 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const subject = allOk
     ? '[mypeptideco] Manual health check — all checks passed'
     : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
+  const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
-  const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
+  const sandboxSender = ALERT_FROM.includes('onboarding@resend.dev');
+  const meta = { to, bcc_count: bcc.length, sandbox_sender: sandboxSender };
   const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
-  if (bcc.length > 0) payload.bcc = bcc;
+  if (!sandboxSender && bcc.length > 0) payload.bcc = bcc;
+  else if (sandboxSender && bcc.length > 0) console.warn('[admin-diagnostics] Ignoring BCC because Resend sandbox sender is active');
   const res = await fetch(`${RESEND_GATEWAY}/emails`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
     body: JSON.stringify(payload),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
-  else console.log('[admin-diagnostics] Confirmation email sent', data?.id);
+  if (!res.ok) {
+    console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
+    return { ok: false, status: res.status, error: data, meta };
+  }
+
+  console.log('[admin-diagnostics] Confirmation email sent', data?.id);
+  return { ok: true, id: data?.id ?? null, meta };
 }
 
 serve(async (req) => {
@@ -256,9 +264,11 @@ serve(async (req) => {
         checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache(),
       ]);
       const checks = [secrets, woo, webhook, cache];
-      // Fire-and-forget confirmation email (always, pass or fail)
-      sendConfirmationEmail(checks, auth.userId).catch((e) => console.error('[admin-diagnostics] email error', e));
-      return new Response(JSON.stringify({ checks }), {
+      const email = await sendConfirmationEmail(checks, auth.userId).catch((e) => {
+        console.error('[admin-diagnostics] email error', e);
+        return { ok: false, reason: e instanceof Error ? e.message : 'unknown_error' };
+      });
+      return new Response(JSON.stringify({ checks, email }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
