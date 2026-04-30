@@ -184,7 +184,7 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
   if (!LOVABLE_API_KEY || !RESEND_API_KEY) {
     console.error('[admin-diagnostics] Missing Resend credentials');
-    return;
+    return { ok: false, reason: 'missing_credentials' };
   }
   const failures = checks.filter(c => !c.ok);
   const allOk = failures.length === 0;
@@ -231,8 +231,13 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
     body: JSON.stringify(payload),
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok) console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
-  else console.log('[admin-diagnostics] Confirmation email sent', data?.id);
+  if (!res.ok) {
+    console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
+    return { ok: false, status: res.status, error: data };
+  }
+
+  console.log('[admin-diagnostics] Confirmation email sent', data?.id);
+  return { ok: true, id: data?.id ?? null };
 }
 
 serve(async (req) => {
@@ -256,9 +261,11 @@ serve(async (req) => {
         checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache(),
       ]);
       const checks = [secrets, woo, webhook, cache];
-      // Fire-and-forget confirmation email (always, pass or fail)
-      sendConfirmationEmail(checks, auth.userId).catch((e) => console.error('[admin-diagnostics] email error', e));
-      return new Response(JSON.stringify({ checks }), {
+      const email = await sendConfirmationEmail(checks, auth.userId).catch((e) => {
+        console.error('[admin-diagnostics] email error', e);
+        return { ok: false, reason: e instanceof Error ? e.message : 'unknown_error' };
+      });
+      return new Response(JSON.stringify({ checks, email }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
