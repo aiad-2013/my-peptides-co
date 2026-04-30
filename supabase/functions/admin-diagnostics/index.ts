@@ -176,8 +176,9 @@ async function triggerSync(opts: { full?: boolean; wooCommerceId?: number; slug?
 }
 
 const FALLBACK_TO = 'nadia+resend@aiad.com.au';
-const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
-const RESEND_GATEWAY = 'https://connector-gateway.lovable.dev/resend';
+const ALERT_FROM_EMAIL = 'alerts@mypeptideco.com';
+const ALERT_FROM_NAME = 'mypeptideco alerts';
+const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
 
 async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
