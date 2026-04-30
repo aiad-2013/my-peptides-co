@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const STORE_URL = 'https://checkout.mypeptideco.com';
-const ALERT_TO = 'nadia+resend@aiad.com.au';
+const FALLBACK_TO = 'nadia+resend@aiad.com.au';
 const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
 const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
 
@@ -129,7 +129,8 @@ async function sendDailyEmail(checks: CheckResult[]) {
 
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
-  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [ALERT_TO], subject, html };
+  const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
+  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
   if (bcc.length > 0) payload.bcc = bcc;
   const res = await fetch(`${GATEWAY_URL}/emails`, {
     method: 'POST',

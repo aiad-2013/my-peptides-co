@@ -148,8 +148,8 @@ export default function Admin() {
             </div>
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Recipient (To)</div>
-              <div className="font-medium break-all">nadia+resend@aiad.com.au</div>
-              <div className="text-xs text-muted-foreground mt-1">From: onboarding@resend.dev</div>
+              <div className="font-medium">Configured via secret</div>
+              <div className="text-xs text-muted-foreground mt-1">Edit <code className="bg-muted px-1 rounded">DIAGNOSTICS_TO</code> in backend secrets · From: onboarding@resend.dev</div>
             </div>
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">BCC</div>
