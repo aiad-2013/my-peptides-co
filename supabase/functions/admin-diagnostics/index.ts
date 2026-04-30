@@ -175,7 +175,7 @@ async function triggerSync(opts: { full?: boolean; wooCommerceId?: number; slug?
   return { status: res.status, ms: Date.now() - t0, body: json };
 }
 
-const ALERT_TO = 'nadia+resend@aiad.com.au';
+const FALLBACK_TO = 'nadia+resend@aiad.com.au';
 const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
 const RESEND_GATEWAY = 'https://connector-gateway.lovable.dev/resend';
 
