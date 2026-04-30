@@ -8,8 +8,9 @@ const corsHeaders = {
 
 const STORE_URL = 'https://checkout.mypeptideco.com';
 const FALLBACK_TO = 'nadia+resend@aiad.com.au';
-const ALERT_FROM = 'mypeptideco alerts <onboarding@resend.dev>';
-const GATEWAY_URL = 'https://connector-gateway.lovable.dev/resend';
+const ALERT_FROM_EMAIL = 'alerts@mypeptideco.com';
+const ALERT_FROM_NAME = 'mypeptideco alerts';
+const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
 
 interface CheckResult { name: string; ok: boolean; detail: string; }
 
