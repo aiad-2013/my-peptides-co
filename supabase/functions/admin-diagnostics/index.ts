@@ -220,10 +220,14 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
   const subject = allOk
     ? '[mypeptideco] Manual health check — all checks passed'
     : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
+  const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
+  const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
+  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [ALERT_TO], subject, html };
+  if (bcc.length > 0) payload.bcc = bcc;
   const res = await fetch(`${RESEND_GATEWAY}/emails`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${LOVABLE_API_KEY}`, 'X-Connection-Api-Key': RESEND_API_KEY },
-    body: JSON.stringify({ from: ALERT_FROM, to: [ALERT_TO], subject, html }),
+    body: JSON.stringify(payload),
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) console.error(`[admin-diagnostics] Resend send failed [${res.status}]:`, JSON.stringify(data));
