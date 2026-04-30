@@ -222,7 +222,8 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
     : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
   const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
   const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
-  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [ALERT_TO], subject, html };
+  const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
+  const payload: Record<string, unknown> = { from: ALERT_FROM, to: [to], subject, html };
   if (bcc.length > 0) payload.bcc = bcc;
   const res = await fetch(`${RESEND_GATEWAY}/emails`, {
     method: 'POST',
