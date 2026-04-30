@@ -15,7 +15,7 @@ const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
 interface CheckResult { name: string; ok: boolean; detail: string; }
 
 async function checkSecrets(): Promise<CheckResult> {
-  const required = ['WOOCOMMERCE_CONSUMER_KEY', 'WOOCOMMERCE_CONSUMER_SECRET', 'WOOCOMMERCE_WEBHOOK_SECRET', 'SUPABASE_SERVICE_ROLE_KEY', 'RESEND_API_KEY', 'LOVABLE_API_KEY'];
+  const required = ['WOOCOMMERCE_CONSUMER_KEY', 'WOOCOMMERCE_CONSUMER_SECRET', 'WOOCOMMERCE_WEBHOOK_SECRET', 'SUPABASE_SERVICE_ROLE_KEY', 'SENDGRID_API_KEY'];
   const missing = required.filter(k => !Deno.env.get(k));
   return { name: 'Secrets configured', ok: missing.length === 0, detail: missing.length === 0 ? `${required.length} required secrets present` : `Missing: ${missing.join(', ')}` };
 }
