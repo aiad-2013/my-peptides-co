@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const STORE_URL = 'https://checkout.mypeptideco.com';
-const FALLBACK_TO = 'nadia+resend@aiad.com.au';
+const FALLBACK_TO = 'nadia+mpc@aiad.com.au';
 const ALERT_FROM_EMAIL = 'alerts@mypeptideco.com';
 const ALERT_FROM_NAME = 'mypeptideco alerts';
 const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
