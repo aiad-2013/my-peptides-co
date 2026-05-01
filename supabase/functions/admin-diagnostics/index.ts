@@ -221,12 +221,12 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
     ? '[mypeptideco] Manual health check — all checks passed'
     : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
-  const bccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
-  const bcc = bccRaw.split(',').map(s => s.trim()).filter(Boolean);
-  const meta = { to, bcc_count: bcc.length, provider: 'sendgrid' };
+  const ccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
+  const cc = ccRaw.split(',').map(s => s.trim()).filter(Boolean);
+  const meta = { to, cc_count: cc.length, provider: 'sendgrid' };
 
   const personalization: Record<string, unknown> = { to: [{ email: to }] };
-  if (bcc.length > 0) personalization.bcc = bcc.map(email => ({ email }));
+  if (cc.length > 0) personalization.cc = cc.map(email => ({ email }));
 
   const payload = {
     personalizations: [personalization],
