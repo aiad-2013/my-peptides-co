@@ -127,7 +127,7 @@ async function sendDailyEmail(checks: CheckResult[]) {
     ? `🚨 [mypeptideco] Health check FAILED — ${failures.length} issue${failures.length > 1 ? 's' : ''}`
     : `✅ [mypeptideco] Daily health check — All systems OK`;
 
-  const ccRaw = Deno.env.get('DIAGNOSTICS_BCC') ?? '';
+  const ccRaw = Deno.env.get('DIAGNOSTICS_CC') ?? '';
   const cc = ccRaw.split(',').map(s => s.trim()).filter(Boolean);
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
   const personalization: Record<string, unknown> = { to: [{ email: to }] };
