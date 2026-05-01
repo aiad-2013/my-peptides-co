@@ -187,28 +187,40 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
     return { ok: false, reason: 'missing_credentials' };
   }
   const failures = checks.filter(c => !c.ok);
-  const allOk = failures.length === 0;
-  const statusLabel = allOk ? 'All checks passed' : `${failures.length} check${failures.length > 1 ? 's' : ''} failed`;
-  const headerColor = allOk ? '#19A899' : '#b91c1c';
-  const rows = checks.map(c => `
-    <tr>
-      <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:14px;color:#1a1a1a;font-weight:600;width:40%;">
-        <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${c.ok ? '#19A899' : '#b91c1c'};margin-right:8px;vertical-align:middle;"></span>${c.name}
-      </td>
-      <td style="padding:12px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:13px;color:#55575d;">${c.detail}</td>
-    </tr>`).join('');
+  const hasFailures = failures.length > 0;
+  const headerBg = hasFailures ? '#dc2626' : '#19A899';
+  const statusLabel = hasFailures ? `${failures.length} CHECK${failures.length > 1 ? 'S' : ''} FAILED` : 'ALL SYSTEMS OPERATIONAL';
+  const statusBlurb = hasFailures
+    ? 'A manual diagnostic run detected issues. Failed checks are highlighted in red below.'
+    : 'A manual diagnostic run completed successfully. All systems are healthy.';
+
+  const rows = checks.map(c => {
+    const rowBg = c.ok ? '#ffffff' : '#fef2f2';
+    const labelColor = c.ok ? '#1a1a1a' : '#b91c1c';
+    const detailColor = c.ok ? '#55575d' : '#b91c1c';
+    const badgeBg = c.ok ? '#19A899' : '#dc2626';
+    const badgeText = c.ok ? 'PASS' : 'FAIL';
+    return `
+    <tr style="background:${rowBg};">
+      <td style="padding:14px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:14px;color:${labelColor};font-weight:700;width:40%;">${c.name}</td>
+      <td style="padding:14px 16px;border-bottom:1px solid #e5e7eb;font-family:'Space Grotesk',sans-serif;font-size:13px;color:${detailColor};">${c.detail}</td>
+      <td style="padding:14px 16px;border-bottom:1px solid #e5e7eb;text-align:right;"><span style="display:inline-block;background:${badgeBg};color:#ffffff;font-family:'Poppins',Arial,sans-serif;font-size:11px;font-weight:700;letter-spacing:0.05em;padding:4px 10px;border-radius:3px;">${badgeText}</span></td>
+    </tr>`;
+  }).join('');
+
   const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f5f5f5;">
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:32px 16px;">
       <tr><td align="center">
-        <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:600px;">
-          <tr><td style="background:${headerColor};padding:24px 32px;">
-            <h1 style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:20px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">mypeptideco · Manual Health Check</h1>
+        <table width="640" cellpadding="0" cellspacing="0" style="background:#ffffff;max-width:640px;">
+          <tr><td style="background:${headerBg};padding:24px 32px;">
+            <p style="margin:0 0 4px;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;font-weight:600;color:#ffffff;letter-spacing:0.1em;text-transform:uppercase;opacity:0.85;">Manual Health Check</p>
+            <h1 style="margin:0;font-family:'Poppins',Arial,sans-serif;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.01em;">${statusLabel}</h1>
           </td></tr>
-          <tr><td style="padding:32px;">
-            <p style="margin:0 0 8px;font-family:'Poppins',Arial,sans-serif;font-size:18px;font-weight:600;color:#1a1a1a;">${statusLabel}</p>
-            <p style="margin:0 0 24px;font-family:'Space Grotesk',Arial,sans-serif;font-size:14px;color:#55575d;line-height:1.5;">A diagnostic run was triggered manually from the admin dashboard. Full results below.</p>
+          <tr><td style="padding:28px 32px 8px;">
+            <p style="margin:0 0 20px;font-family:'Space Grotesk',Arial,sans-serif;font-size:14px;color:#55575d;line-height:1.5;">${statusBlurb}</p>
             <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;border-collapse:collapse;">${rows}</table>
-            <p style="margin:24px 0 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:13px;color:#55575d;">Run timestamp (UTC): ${new Date().toISOString()}<br/>Triggered by user: ${userId}</p>
+            <p style="margin:20px 0 0;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;color:#55575d;">Run timestamp (UTC): ${new Date().toISOString()}<br/>Triggered by user: ${userId}</p>
+            <p style="margin:16px 0 24px;"><a href="https://mypeptideco.com/admin" style="display:inline-block;background:#19A899;color:#ffffff;text-decoration:none;padding:12px 20px;font-family:'Poppins',Arial,sans-serif;font-size:14px;font-weight:600;">Open Admin Diagnostics</a></p>
           </td></tr>
           <tr><td style="background:#1a1a1a;padding:16px 32px;text-align:center;">
             <p style="margin:0;font-family:'Space Grotesk',Arial,sans-serif;font-size:12px;color:#999999;">Manual run confirmation · mypeptideco.com</p>
@@ -217,9 +229,9 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
       </td></tr>
     </table>
   </body></html>`;
-  const subject = allOk
-    ? '[mypeptideco] Manual health check — all checks passed'
-    : `[mypeptideco] Manual health check — ${failures.length} issue${failures.length > 1 ? 's' : ''}`;
+  const subject = hasFailures
+    ? `🚨 [mypeptideco] Manual health check FAILED — ${failures.length} issue${failures.length > 1 ? 's' : ''}`
+    : `✅ [mypeptideco] Manual health check — All systems OK`;
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
   const ccRaw = Deno.env.get('DIAGNOSTICS_CC') ?? '';
   const cc = ccRaw.split(',').map(s => s.trim()).filter(Boolean);
