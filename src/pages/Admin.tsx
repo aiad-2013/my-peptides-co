@@ -167,23 +167,23 @@ export default function Admin() {
             <h2 className="text-xl font-semibold">Admin Email Notifications</h2>
           </div>
           <p className="text-sm text-muted-foreground">
-            Automated diagnostic emails delivered via Resend (connected through Lovable Cloud).
+            Automated diagnostic emails delivered via SendGrid (connected through Lovable Cloud).
           </p>
           <div className="grid sm:grid-cols-2 gap-3 text-sm">
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Provider</div>
-              <div className="font-medium">Resend</div>
+              <div className="font-medium">SendGrid</div>
               <div className="text-xs text-muted-foreground mt-1">Account: Nadia (aiad.com.au)</div>
             </div>
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Recipient (To)</div>
               <div className="font-medium">Configured via secret</div>
-              <div className="text-xs text-muted-foreground mt-1">Edit <code className="bg-muted px-1 rounded">DIAGNOSTICS_TO</code> in backend secrets · From: onboarding@resend.dev</div>
+              <div className="text-xs text-muted-foreground mt-1">Edit <code className="bg-muted px-1 rounded">DIAGNOSTICS_TO</code> in backend secrets · From: alerts@mypeptideco.com</div>
             </div>
             <div className="p-3 rounded-md border">
-              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">BCC</div>
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">CC</div>
               <div className="font-medium">Configured via secret</div>
-              <div className="text-xs text-muted-foreground mt-1">Edit <code className="bg-muted px-1 rounded">DIAGNOSTICS_BCC</code> (comma-separated) in backend secrets</div>
+              <div className="text-xs text-muted-foreground mt-1">Edit <code className="bg-muted px-1 rounded">DIAGNOSTICS_CC</code> (comma-separated) in backend secrets</div>
             </div>
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Daily Cron</div>
