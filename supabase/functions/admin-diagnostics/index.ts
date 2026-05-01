@@ -230,8 +230,8 @@ async function sendConfirmationEmail(checks: CheckResult[], userId: string) {
     </table>
   </body></html>`;
   const subject = hasFailures
-    ? `🚨 [mypeptideco] Manual health check FAILED — ${failures.length} issue${failures.length > 1 ? 's' : ''}`
-    : `✅ [mypeptideco] Manual health check — All systems OK`;
+    ? `🚨 My Peptide Co health check FAILED — Manual Health Check`
+    : `✅ My Peptide Co health check passed — Manual Health Check`;
   const to = (Deno.env.get('DIAGNOSTICS_TO') ?? FALLBACK_TO).trim() || FALLBACK_TO;
   const ccRaw = Deno.env.get('DIAGNOSTICS_CC') ?? '';
   const cc = ccRaw.split(',').map(s => s.trim()).filter(Boolean);
