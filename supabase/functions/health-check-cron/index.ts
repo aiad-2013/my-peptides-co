@@ -9,7 +9,7 @@ const corsHeaders = {
 const STORE_URL = 'https://checkout.mypeptideco.com';
 const FALLBACK_TO = 'nadia+mpc@aiad.com.au';
 const ALERT_FROM_EMAIL = 'alerts@mypeptideco.com';
-const ALERT_FROM_NAME = 'mypeptideco alerts';
+const ALERT_FROM_NAME = 'My Peptide Co Diagnostics';
 const SENDGRID_URL = 'https://api.sendgrid.com/v3/mail/send';
 
 interface CheckResult { name: string; ok: boolean; detail: string; }
