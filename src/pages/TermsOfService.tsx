@@ -45,7 +45,7 @@ const TermsOfService = () => {
             <p>We reserve the right to modify these terms at any time. Changes will be effective immediately upon posting to the website. Your continued use of the website constitutes acceptance of the modified terms.</p>
 
             <h2 className="text-xl font-serif font-semibold text-foreground">Contact</h2>
-            <p>For questions about these Terms of Service, please contact us at <a href="mailto:support@vicorpus.com" className="text-accent hover:underline">support@vicorpus.com</a>.</p>
+            <p>For questions about these Terms of Service, please contact us at <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">info@mypeptideco.com</a>.</p>
           </div>
         </div>
       </main>

@@ -50,7 +50,7 @@ const Shipping = () => {
             <p>Once your order has been dispatched, you can track it using the tracking number provided in your shipping confirmation email, or by visiting our <a href="/track-order" className="text-accent hover:underline">Track Order</a> page.</p>
 
             <h2 className="text-xl font-serif font-semibold text-foreground">Lost or Damaged Packages</h2>
-            <p>If your package is lost or arrives damaged, please contact us at <a href="mailto:support@vicorpus.com" className="text-accent hover:underline">support@vicorpus.com</a> within 7 days of the expected delivery date and we will resolve the issue promptly.</p>
+            <p>If your package is lost or arrives damaged, please contact us at <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">info@mypeptideco.com</a> within 7 days of the expected delivery date and we will resolve the issue promptly.</p>
           </div>
         </div>
       </main>
