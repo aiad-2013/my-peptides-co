@@ -56,6 +56,7 @@ function AppRoutes() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms-of-service" element={<TermsOfService />} />
           <Route path="/lab-reports" element={<LabReports />} />
+          <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/product-diagrams" element={<InternalDiagrams />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/admin/login" element={<AdminAuth />} />
