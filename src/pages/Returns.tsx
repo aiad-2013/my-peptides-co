@@ -43,7 +43,7 @@ const Returns = () => {
             <p>We will cover all return shipping costs for faulty, damaged, or incorrectly supplied items.</p>
 
             <h2 className="text-xl font-serif font-semibold text-foreground">How to Initiate a Return</h2>
-            <p>To start a return, please contact our support team at <a href="mailto:support@vicorpus.com" className="text-accent hover:underline">support@vicorpus.com</a> with:</p>
+            <p>To start a return, please contact our support team at <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">info@mypeptideco.com</a> with:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li>Your order number</li>
               <li>The reason for return</li>
@@ -58,7 +58,7 @@ const Returns = () => {
             <p>We cannot accept returns for products that have been opened or used, unless the product is faulty or not as described. This is to ensure the safety and integrity of all research compounds.</p>
 
             <h2 className="text-xl font-serif font-semibold text-foreground">Contact Us</h2>
-            <p>If you have any questions about our returns policy, please reach out to <a href="mailto:support@vicorpus.com" className="text-accent hover:underline">support@vicorpus.com</a>. We're here to help.</p>
+            <p>If you have any questions about our returns policy, please reach out to <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">info@mypeptideco.com</a>. We're here to help.</p>
           </div>
         </div>
       </main>

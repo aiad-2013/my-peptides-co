@@ -108,7 +108,7 @@ export const HomepageFAQ = () => {
           {/* Footer note */}
           <p className="mt-10 text-xs text-muted-foreground/50">
             Have a question not listed here?{' '}
-            <a href="mailto:support@vicorpus.com" className="text-accent/70 hover:text-accent transition-colors duration-200 underline underline-offset-4">
+            <a href="mailto:info@mypeptideco.com" className="text-accent/70 hover:text-accent transition-colors duration-200 underline underline-offset-4">
               Contact us
             </a>
           </p>

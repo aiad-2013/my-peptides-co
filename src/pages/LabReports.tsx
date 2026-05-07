@@ -192,8 +192,8 @@ export default function LabReports() {
           {/* Footnote */}
           <p className="text-xs text-muted-foreground leading-relaxed mt-14">
             Can't find a report? Email us at{' '}
-            <a href="mailto:hello@mypeptideco.com.au" className="text-accent hover:underline">
-              hello@mypeptideco.com.au
+            <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">
+              info@mypeptideco.com
             </a>{' '}
             and we'll send the latest CoA directly to you.
           </p>

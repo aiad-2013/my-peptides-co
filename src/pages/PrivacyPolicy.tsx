@@ -53,10 +53,10 @@ const PrivacyPolicy = () => {
             <p>Our website uses cookies to enhance your browsing experience and analyse site traffic. You can manage your cookie preferences through your browser settings.</p>
 
             <h2 className="text-xl font-serif font-semibold text-foreground">Your Rights</h2>
-            <p>Under Australian Privacy Law, you have the right to access, correct, or delete your personal information. To exercise these rights, please contact us at <a href="mailto:support@vicorpus.com" className="text-accent hover:underline">support@vicorpus.com</a>.</p>
+            <p>Under Australian Privacy Law, you have the right to access, correct, or delete your personal information. To exercise these rights, please contact us at <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">info@mypeptideco.com</a>.</p>
 
             <h2 className="text-xl font-serif font-semibold text-foreground">Contact</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:support@vicorpus.com" className="text-accent hover:underline">support@vicorpus.com</a>.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:info@mypeptideco.com" className="text-accent hover:underline">info@mypeptideco.com</a>.</p>
           </div>
         </div>
       </main>
