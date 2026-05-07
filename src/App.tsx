@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import LabReports from "./pages/LabReports";
 import InternalDiagrams from "./pages/internal/Diagrams";
 import Admin from "./pages/Admin";
+import ContactUs from "./pages/ContactUs";
 import AdminAuth from "./pages/AdminAuth";
 
 const queryClient = new QueryClient();
