@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { MapPin, Mail, Send, Clock } from 'lucide-react';
 
 const contactSchema = z.object({
@@ -33,7 +34,7 @@ const ContactUs = () => {
     setForm((f) => ({ ...f, [field]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const result = contactSchema.safeParse(form);
     if (!result.success) {
@@ -47,19 +48,27 @@ const ContactUs = () => {
     setErrors({});
     setSubmitting(true);
 
-    const subject = encodeURIComponent(form.subject?.trim() || `Enquiry from ${form.name}`);
-    const body = encodeURIComponent(
-      `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`
-    );
-    window.location.href = `mailto:info@mypeptideco.com?subject=${subject}&body=${body}`;
-
-    setTimeout(() => {
-      setSubmitting(false);
-      toast({
-        title: 'Opening your email app',
-        description: "If nothing happens, email us directly at info@mypeptideco.com.",
+    try {
+      const { error } = await supabase.functions.invoke('send-contact-message', {
+        body: result.data,
       });
-    }, 600);
+      if (error) throw error;
+
+      toast({
+        title: 'Message sent',
+        description: "Thanks — we'll get back to you within 1 business day.",
+      });
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Couldn't send message",
+        description: 'Please try again or email info@mypeptideco.com directly.',
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
