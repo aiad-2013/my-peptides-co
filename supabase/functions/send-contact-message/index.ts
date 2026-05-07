@@ -1,4 +1,7 @@
-import { corsHeaders } from '@supabase/supabase-js/cors';
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
 import { z } from 'npm:zod@3.23.8';
 
 const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
