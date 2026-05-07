@@ -46,7 +46,7 @@ export const Footer = () => {
               <li><a href="/track-order" className="hover:text-accent transition-colors">Track Order</a></li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4" />
-                <a href="mailto:info@mypeptideco.com" className="hover:text-accent transition-colors">
+                <a href="/contact-us" className="hover:text-accent transition-colors">
                   Contact Us
                 </a>
               </li>
