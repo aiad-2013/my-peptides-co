@@ -73,11 +73,11 @@ async function checkCache(): Promise<CheckResult> {
   return { name: 'Product cache', ok: (count ?? 0) > 0 && fresh, detail: `${count ?? 0} products. Last sync: ${lastSync ? `${ageHours.toFixed(1)}h ago` : 'never'}` };
 }
 
-async function sendDailyEmail(checks: CheckResult[]) {
+async function sendDailyEmail(checks: CheckResult[]): Promise<{ ok: boolean; messageId: string | null }> {
   const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
   if (!SENDGRID_API_KEY) {
     console.error('[health-check] Cannot send email: missing SENDGRID_API_KEY');
-    return;
+    return { ok: false, messageId: null };
   }
   const failures = checks.filter(c => !c.ok);
   const hasFailures = failures.length > 0;
