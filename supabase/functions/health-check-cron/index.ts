@@ -73,11 +73,11 @@ async function checkCache(): Promise<CheckResult> {
   return { name: 'Product cache', ok: (count ?? 0) > 0 && fresh, detail: `${count ?? 0} products. Last sync: ${lastSync ? `${ageHours.toFixed(1)}h ago` : 'never'}` };
 }
 
-async function sendDailyEmail(checks: CheckResult[]) {
+async function sendDailyEmail(checks: CheckResult[]): Promise<{ ok: boolean; messageId: string | null }> {
   const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
   if (!SENDGRID_API_KEY) {
     console.error('[health-check] Cannot send email: missing SENDGRID_API_KEY');
-    return;
+    return { ok: false, messageId: null };
   }
   const failures = checks.filter(c => !c.ok);
   const hasFailures = failures.length > 0;
@@ -138,28 +138,76 @@ async function sendDailyEmail(checks: CheckResult[]) {
     subject,
     content: [{ type: 'text/html', value: html }],
   };
-  const res = await fetch(SENDGRID_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SENDGRID_API_KEY}` },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    console.error(`[health-check] SendGrid send failed [${res.status}]:`, errText);
-  } else {
-    console.log('[health-check] Daily email sent', res.headers.get('x-message-id'));
+  // Retry SendGrid up to 3 times with exponential backoff for transient failures.
+  const MAX_ATTEMPTS = 3;
+  let lastErr = '';
+  let messageId: string | null = null;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      const res = await fetch(SENDGRID_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${SENDGRID_API_KEY}` },
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        messageId = res.headers.get('x-message-id');
+        console.log(`[health-check] Daily email sent on attempt ${attempt}`, messageId);
+        return { ok: true, messageId };
+      }
+      lastErr = `HTTP ${res.status}: ${await res.text().catch(() => '')}`;
+      console.error(`[health-check] SendGrid attempt ${attempt} failed:`, lastErr);
+    } catch (e) {
+      lastErr = e instanceof Error ? e.message : String(e);
+      console.error(`[health-check] SendGrid attempt ${attempt} threw:`, lastErr);
+    }
+    if (attempt < MAX_ATTEMPTS) {
+      await new Promise(r => setTimeout(r, 1500 * attempt));
+    }
   }
+  console.error(`[health-check] All ${MAX_ATTEMPTS} SendGrid attempts failed. Last error:`, lastErr);
+  return { ok: false, messageId: null };
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
   try {
+    const url = new URL(req.url);
+    const force = url.searchParams.get('force') === 'true';
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+    const today = new Date().toISOString().slice(0, 10);
+
+    // Skip if today's email already sent (unless force=true)
+    if (!force) {
+      const { data: existing } = await supabase
+        .from('diagnostics_email_log')
+        .select('run_date, sent_at')
+        .eq('run_date', today)
+        .maybeSingle();
+      if (existing) {
+        console.log(`[health-check] Email for ${today} already sent at ${existing.sent_at}; skipping.`);
+        return new Response(JSON.stringify({ ok: true, skipped: true, reason: 'already_sent_today', sent_at: existing.sent_at }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
     const [secrets, woo, webhook, cache] = await Promise.all([checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache()]);
     const checks = [secrets, woo, webhook, cache];
     const failures = checks.filter(c => !c.ok);
     console.log(`[health-check] ${failures.length} failures of ${checks.length} checks`);
-    await sendDailyEmail(checks);
-    return new Response(JSON.stringify({ ok: failures.length === 0, checks, emailed: true }), {
+    const sendResult = await sendDailyEmail(checks);
+
+    if (sendResult.ok) {
+      const { error: logErr } = await supabase
+        .from('diagnostics_email_log')
+        .insert({ run_date: today, failures_count: failures.length, message_id: sendResult.messageId });
+      if (logErr && !logErr.message?.includes('duplicate')) {
+        console.error('[health-check] Failed to log send:', logErr.message);
+      }
+    }
+
+    return new Response(JSON.stringify({ ok: failures.length === 0, checks, emailed: sendResult.ok }), {
+      status: sendResult.ok ? 200 : 502,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (e) {
