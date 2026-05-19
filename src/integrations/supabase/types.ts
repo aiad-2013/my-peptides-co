@@ -65,6 +65,30 @@ export type Database = {
         }
         Relationships: []
       }
+      diagnostics_email_log: {
+        Row: {
+          failures_count: number
+          id: string
+          message_id: string | null
+          run_date: string
+          sent_at: string
+        }
+        Insert: {
+          failures_count?: number
+          id?: string
+          message_id?: string | null
+          run_date: string
+          sent_at?: string
+        }
+        Update: {
+          failures_count?: number
+          id?: string
+          message_id?: string | null
+          run_date?: string
+          sent_at?: string
+        }
+        Relationships: []
+      }
       lab_test_requests: {
         Row: {
           created_at: string
