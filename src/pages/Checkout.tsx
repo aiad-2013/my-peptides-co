@@ -61,9 +61,9 @@ const Checkout = () => {
       <Header />
       <main className="flex-1 py-8 px-4">
         <div className="max-w-lg mx-auto">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors">
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Keep Shopping
           </button>
 
           <div className="bg-card rounded-xl border border-border p-6">
