@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
@@ -106,6 +106,14 @@ const TrackOrderContent = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const orderParam = params.get('orderNumber');
+    const emailParam = params.get('email');
+    if (orderParam) setOrderNumberInput(orderParam);
+    if (emailParam) setEmailInput(emailParam);
+  }, []);
 
   const status = order ? statusConfig[order.status] || statusConfig.processing : null;
   const StatusIcon = status?.icon || Package;
