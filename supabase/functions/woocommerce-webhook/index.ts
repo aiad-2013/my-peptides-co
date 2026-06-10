@@ -328,7 +328,7 @@ Deno.serve(async (req) => {
       billing_address: sanitizeAddress(orderData.billing),
       shipping_address: sanitizeAddress(orderData.shipping),
       line_items: sanitizedLineItems,
-      subtotal: parseMonetaryValue(orderData.subtotal),
+      subtotal: parseMonetaryValue(orderData.subtotal) || sanitizedLineItems.reduce((sum, li) => sum + parseMonetaryValue(li.total), 0),
       shipping_total: parseMonetaryValue(orderData.shipping_total),
       tax_total: parseMonetaryValue(orderData.total_tax),
       total: parseMonetaryValue(orderData.total),
