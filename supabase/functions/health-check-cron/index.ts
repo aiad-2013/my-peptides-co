@@ -62,6 +62,35 @@ async function checkWebhookEndpoint(): Promise<CheckResult> {
   return { name: 'Webhook signature flow', ok, detail: ok ? 'Signed payload accepted; invalid rejected' : `valid=${JSON.stringify(validJson)} invalid=${JSON.stringify(invalidJson)}` };
 }
 
+async function checkWebhookDeliveries(): Promise<CheckResult> {
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const since = new Date(Date.now() - 24 * 3_600_000).toISOString();
+  const { count, error } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .gte('updated_at', since);
+  if (error) return { name: 'WooCommerce webhook deliveries (24h)', ok: false, detail: error.message };
+  const { data: latest } = await supabase
+    .from('orders')
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const lastAt = latest?.updated_at ? new Date(latest.updated_at as string) : null;
+  const ageHours = lastAt ? (Date.now() - lastAt.getTime()) / 3_600_000 : Infinity;
+  const n = count ?? 0;
+  // OK if we've received at least one webhook in the last 24h, OR latest delivery is within 72h
+  // (low-volume days shouldn't trigger a false alarm).
+  const ok = n > 0 || ageHours < 72;
+  return {
+    name: 'WooCommerce webhook deliveries (24h)',
+    ok,
+    detail: lastAt
+      ? `${n} order webhook${n === 1 ? '' : 's'} received. Last delivery: ${ageHours.toFixed(1)}h ago.`
+      : `${n} order webhooks received. No deliveries on record.`,
+  };
+}
+
 async function checkCache(): Promise<CheckResult> {
   const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
   const { count, error } = await supabase.from('products_cache').select('*', { count: 'exact', head: true });
@@ -72,6 +101,7 @@ async function checkCache(): Promise<CheckResult> {
   const fresh = ageHours < 26;
   return { name: 'Product cache', ok: (count ?? 0) > 0 && fresh, detail: `${count ?? 0} products. Last sync: ${lastSync ? `${ageHours.toFixed(1)}h ago` : 'never'}` };
 }
+
 
 async function sendDailyEmail(checks: CheckResult[]): Promise<{ ok: boolean; messageId: string | null }> {
   const SENDGRID_API_KEY = Deno.env.get('SENDGRID_API_KEY');
@@ -191,8 +221,8 @@ serve(async (req) => {
       }
     }
 
-    const [secrets, woo, webhook, cache] = await Promise.all([checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache()]);
-    const checks = [secrets, woo, webhook, cache];
+    const [secrets, woo, webhook, deliveries, cache] = await Promise.all([checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkWebhookDeliveries(), checkCache()]);
+    const checks = [secrets, woo, webhook, deliveries, cache];
     const failures = checks.filter(c => !c.ok);
     console.log(`[health-check] ${failures.length} failures of ${checks.length} checks`);
     const sendResult = await sendDailyEmail(checks);

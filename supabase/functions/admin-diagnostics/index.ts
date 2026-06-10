@@ -125,6 +125,34 @@ async function checkWebhookEndpoint(): Promise<CheckResult> {
   };
 }
 
+async function checkWebhookDeliveries(): Promise<CheckResult> {
+  const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
+  const since = new Date(Date.now() - 24 * 3_600_000).toISOString();
+  const { count, error } = await supabase
+    .from('orders')
+    .select('*', { count: 'exact', head: true })
+    .gte('updated_at', since);
+  if (error) return { name: 'WooCommerce webhook deliveries (24h)', ok: false, detail: error.message };
+  const { data: latest } = await supabase
+    .from('orders')
+    .select('updated_at')
+    .order('updated_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const lastAt = latest?.updated_at ? new Date(latest.updated_at as string) : null;
+  const ageHours = lastAt ? (Date.now() - lastAt.getTime()) / 3_600_000 : Infinity;
+  const n = count ?? 0;
+  const ok = n > 0 || ageHours < 72;
+  return {
+    name: 'WooCommerce webhook deliveries (24h)',
+    ok,
+    detail: lastAt
+      ? `${n} order webhook${n === 1 ? '' : 's'} received. Last delivery: ${ageHours.toFixed(1)}h ago.`
+      : `${n} order webhooks received. No deliveries on record.`,
+    meta: { count: n, last_delivery: latest?.updated_at ?? null },
+  };
+}
+
 async function checkCache(): Promise<CheckResult> {
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
@@ -279,10 +307,10 @@ serve(async (req) => {
 
   try {
     if (action === 'health') {
-      const [secrets, woo, webhook, cache] = await Promise.all([
-        checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache(),
+      const [secrets, woo, webhook, deliveries, cache] = await Promise.all([
+        checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkWebhookDeliveries(), checkCache(),
       ]);
-      const checks = [secrets, woo, webhook, cache];
+      const checks = [secrets, woo, webhook, deliveries, cache];
       const email = await sendConfirmationEmail(checks, auth.userId).catch((e) => {
         console.error('[admin-diagnostics] email error', e);
         return { ok: false, reason: e instanceof Error ? e.message : 'unknown_error' };
