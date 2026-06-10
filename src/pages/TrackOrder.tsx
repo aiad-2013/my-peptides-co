@@ -107,6 +107,14 @@ const TrackOrderContent = () => {
     }
   };
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const orderParam = params.get('orderNumber');
+    const emailParam = params.get('email');
+    if (orderParam) setOrderNumberInput(orderParam);
+    if (emailParam) setEmailInput(emailParam);
+  }, []);
+
   const status = order ? statusConfig[order.status] || statusConfig.processing : null;
   const StatusIcon = status?.icon || Package;
 
