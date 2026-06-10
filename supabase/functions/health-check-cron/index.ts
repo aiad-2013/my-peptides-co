@@ -221,8 +221,8 @@ serve(async (req) => {
       }
     }
 
-    const [secrets, woo, webhook, cache] = await Promise.all([checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkCache()]);
-    const checks = [secrets, woo, webhook, cache];
+    const [secrets, woo, webhook, deliveries, cache] = await Promise.all([checkSecrets(), checkWooApi(), checkWebhookEndpoint(), checkWebhookDeliveries(), checkCache()]);
+    const checks = [secrets, woo, webhook, deliveries, cache];
     const failures = checks.filter(c => !c.ok);
     console.log(`[health-check] ${failures.length} failures of ${checks.length} checks`);
     const sendResult = await sendDailyEmail(checks);
