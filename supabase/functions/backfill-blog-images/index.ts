@@ -84,7 +84,7 @@ Deno.serve(async (req) => {
   const { count } = await supabase
     .from('blog_posts')
     .select('id', { count: 'exact', head: true })
-    .or('featured_image.is.null,featured_image.eq.');
+    .or('featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%');
 
   return new Response(JSON.stringify({
     remaining: count,
