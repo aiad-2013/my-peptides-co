@@ -54,6 +54,8 @@ const Blog = () => {
   });
 
   const [category, setCategory] = useState<CategoryFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const POSTS_PER_PAGE = 9;
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['blog-posts'],
@@ -72,11 +74,27 @@ const Blog = () => {
         });
       });
 
+  const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+  const paginated = filtered.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
+  );
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const categories: { label: string; value: CategoryFilter }[] = [
     { label: 'All Articles', value: 'all' },
     { label: 'SARMs', value: 'sarms' },
     { label: 'Peptides', value: 'peptides' },
   ];
+
+  const handleCategoryChange = (value: CategoryFilter) => {
+    setCategory(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-background">
