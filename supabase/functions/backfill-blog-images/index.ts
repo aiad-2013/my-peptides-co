@@ -6,6 +6,8 @@ const corsHeaders = {
 };
 
 const WP_API = 'https://checkout.mypeptideco.com/wp-json/wp/v2';
+const BUCKET = 'product-images';
+const PREFIX = 'blog';
 
 async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
   try {
@@ -16,14 +18,69 @@ async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
     if (!res.ok) return null;
     const posts = await res.json();
     if (!posts || posts.length === 0) return null;
-    const post = posts[0];
-    const mediaItems = post?._embedded?.['wp:featuredmedia'];
+    const mediaItems = posts[0]?._embedded?.['wp:featuredmedia'];
     if (mediaItems && mediaItems.length > 0 && mediaItems[0].source_url) {
       return mediaItems[0].source_url as string;
     }
     return null;
   } catch (e) {
     console.error(`Error fetching image for slug ${slug}:`, e);
+    return null;
+  }
+}
+
+async function mirrorToStorage(
+  supabase: any,
+  sourceUrl: string,
+  slug: string,
+): Promise<string | null> {
+  try {
+    // Try direct fetch first, then fallback through image-proxy if needed
+    const candidates = [sourceUrl];
+    if (sourceUrl.includes('checkout.mypeptideco.com')) {
+      const proxyBase = `${Deno.env.get('SUPABASE_URL')}/functions/v1/image-proxy?url=`;
+      candidates.push(`${proxyBase}${encodeURIComponent(sourceUrl)}`);
+    }
+
+    let buf: ArrayBuffer | null = null;
+    let contentType = 'image/jpeg';
+    for (const u of candidates) {
+      const r = await fetch(u, {
+        headers: {
+          'User-Agent': 'Mozilla/5.0',
+          'Accept': 'image/*',
+          'Referer': 'https://checkout.mypeptideco.com/',
+        },
+      });
+      if (r.ok) {
+        const ct = r.headers.get('content-type') || '';
+        if (ct.startsWith('image/')) {
+          contentType = ct;
+          buf = await r.arrayBuffer();
+          break;
+        }
+      }
+    }
+    if (!buf) {
+      console.error(`Could not download image for ${slug} from ${sourceUrl}`);
+      return null;
+    }
+
+    const ext = contentType.split('/')[1]?.split(';')[0] || 'jpg';
+    const path = `${PREFIX}/${slug}.${ext}`;
+
+    const { error: upErr } = await supabase.storage
+      .from(BUCKET)
+      .upload(path, buf, { contentType, upsert: true });
+    if (upErr) {
+      console.error(`Upload failed for ${slug}:`, upErr.message);
+      return null;
+    }
+
+    const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    return data.publicUrl;
+  } catch (e) {
+    console.error(`mirrorToStorage error for ${slug}:`, e);
     return null;
   }
 }
@@ -48,52 +105,61 @@ Deno.serve(async (req) => {
     if (body.refetch_all) refetchAll = true;
   } catch {}
 
-  // Include posts missing an image OR pointing at the legacy vicorpus.com host
-  // (those URLs now return HTML — the original assets were not migrated to
-  // checkout.mypeptideco.com under the same path).
-  let query = supabase
-    .from('blog_posts')
-    .select('id, slug, featured_image');
+  const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
+  // We want to (re)mirror any post whose featured_image is missing, broken
+  // (vicorpus.com), or not yet mirrored to our own Supabase Storage.
+  let query = supabase.from('blog_posts').select('id, slug, featured_image');
   if (!refetchAll) {
-    query = query.or('featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%');
+    query = query.or(
+      `featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%,featured_image.not.ilike.%${new URL(SUPABASE_URL).host}%`,
+    );
   }
   const { data: posts, error } = await query.range(offset, offset + batchSize - 1);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
-      status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 
-  const results: { slug: string; image: string | null; updated: boolean }[] = [];
+  const results: { slug: string; source: string | null; stored: string | null; updated: boolean }[] = [];
 
   for (const post of posts ?? []) {
-    const imageUrl = await getFeaturedImageForSlug(post.slug);
-    console.log(`Slug: ${post.slug} → ${imageUrl ?? 'no image found'}`);
-    if (imageUrl) {
+    const sourceUrl = await getFeaturedImageForSlug(post.slug);
+    if (!sourceUrl) {
+      console.log(`No WP image for ${post.slug}`);
+      results.push({ slug: post.slug, source: null, stored: null, updated: false });
+      continue;
+    }
+    const stored = await mirrorToStorage(supabase, sourceUrl, post.slug);
+    if (stored) {
       const { error: updateErr } = await supabase
         .from('blog_posts')
-        .update({ featured_image: imageUrl })
+        .update({ featured_image: stored })
         .eq('id', post.id);
-      results.push({ slug: post.slug, image: imageUrl, updated: !updateErr });
+      results.push({ slug: post.slug, source: sourceUrl, stored, updated: !updateErr });
     } else {
-      results.push({ slug: post.slug, image: null, updated: false });
+      results.push({ slug: post.slug, source: sourceUrl, stored: null, updated: false });
     }
   }
 
   const { count } = await supabase
     .from('blog_posts')
     .select('id', { count: 'exact', head: true })
-    .or('featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%');
+    .or(
+      `featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%,featured_image.not.ilike.%${new URL(SUPABASE_URL).host}%`,
+    );
 
-  return new Response(JSON.stringify({
-    remaining: count,
-    offset,
-    batchSize,
-    processed: results.length,
-    hasMore: (count ?? 0) > 0,
-    results,
-  }), {
-    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-  });
+  return new Response(
+    JSON.stringify({
+      remaining: count,
+      offset,
+      batchSize,
+      processed: results.length,
+      hasMore: (count ?? 0) > 0,
+      results,
+    }),
+    { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+  );
 });
