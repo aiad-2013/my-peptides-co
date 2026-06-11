@@ -9,6 +9,15 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination';
 
 
 interface BlogPostItem {
@@ -45,6 +54,8 @@ const Blog = () => {
   });
 
   const [category, setCategory] = useState<CategoryFilter>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const POSTS_PER_PAGE = 9;
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ['blog-posts'],
@@ -63,11 +74,27 @@ const Blog = () => {
         });
       });
 
+  const totalPages = Math.ceil(filtered.length / POSTS_PER_PAGE);
+  const paginated = filtered.slice(
+    (currentPage - 1) * POSTS_PER_PAGE,
+    currentPage * POSTS_PER_PAGE
+  );
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const categories: { label: string; value: CategoryFilter }[] = [
     { label: 'All Articles', value: 'all' },
     { label: 'SARMs', value: 'sarms' },
     { label: 'Peptides', value: 'peptides' },
   ];
+
+  const handleCategoryChange = (value: CategoryFilter) => {
+    setCategory(value);
+    setCurrentPage(1);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,7 +114,7 @@ const Blog = () => {
           {categories.map((c) => (
             <button
               key={c.value}
-              onClick={() => setCategory(c.value)}
+              onClick={() => handleCategoryChange(c.value)}
               className={cn(
                 'px-5 py-2 text-sm font-medium rounded-full transition-all duration-200',
                 category === c.value
@@ -100,9 +127,15 @@ const Blog = () => {
           ))}
         </div>
 
+        {!isLoading && filtered.length > 0 && (
+          <p className="text-center text-sm text-muted-foreground mb-6">
+            Showing {Math.min(filtered.length, (currentPage - 1) * POSTS_PER_PAGE + 1)}–{Math.min(filtered.length, currentPage * POSTS_PER_PAGE)} of {filtered.length} articles
+          </p>
+        )}
+
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: 9 }).map((_, i) => (
               <div key={i} className="rounded-lg border border-border bg-card overflow-hidden">
                 <div className="p-5 space-y-3">
                   <Skeleton className="h-4 w-20" />
@@ -114,7 +147,7 @@ const Blog = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {filtered.map((post) => (
+            {paginated.map((post) => (
               <Link
                 key={post.id}
                 to={`/blog/${post.slug}`}
@@ -143,6 +176,58 @@ const Blog = () => {
                 </div>
               </Link>
             ))}
+          </div>
+        )}
+
+        {totalPages > 1 && (
+          <div className="mt-12">
+            <Pagination>
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); goToPage(currentPage - 1); }}
+                    className={currentPage === 1 ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+                {Array.from({ length: totalPages }).map((_, i) => {
+                  const page = i + 1;
+                  if (
+                    totalPages > 7 &&
+                    page !== 1 &&
+                    page !== totalPages &&
+                    (page < currentPage - 1 || page > currentPage + 1)
+                  ) {
+                    if (page === currentPage - 2 || page === currentPage + 2) {
+                      return (
+                        <PaginationItem key={page}>
+                          <PaginationEllipsis />
+                        </PaginationItem>
+                      );
+                    }
+                    return null;
+                  }
+                  return (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => { e.preventDefault(); goToPage(page); }}
+                        isActive={page === currentPage}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    onClick={(e) => { e.preventDefault(); goToPage(currentPage + 1); }}
+                    className={currentPage === totalPages ? 'pointer-events-none opacity-50' : ''}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
           </div>
         )}
       </main>
