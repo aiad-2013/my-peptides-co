@@ -12,7 +12,7 @@ const PREFIX = 'blog';
 async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
   try {
     const url = `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`;
-    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://checkout.mypeptideco.com/' } });
     if (!res.ok) {
       console.log(`[${slug}] WP posts fetch failed: ${res.status} ${res.statusText}`);
       return null;
@@ -35,7 +35,7 @@ async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
     const mediaId = post?.featured_media;
     if (mediaId && mediaId > 0) {
       const mres = await fetch(`${WP_API}/media/${mediaId}`, {
-        headers: { 'User-Agent': 'Mozilla/5.0' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://checkout.mypeptideco.com/' },
       });
       if (mres.ok) {
         const media = await mres.json();
@@ -76,7 +76,7 @@ async function mirrorToStorage(
     for (const u of candidates) {
       const r = await fetch(u, {
         headers: {
-          'User-Agent': 'Mozilla/5.0',
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://checkout.mypeptideco.com/',
           'Accept': 'image/*',
           'Referer': 'https://checkout.mypeptideco.com/',
         },
