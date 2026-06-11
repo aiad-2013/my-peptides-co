@@ -11,14 +11,19 @@ const PREFIX = 'blog';
 
 async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
   try {
-    const res = await fetch(
-      `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } }
-    );
-    if (!res.ok) return null;
+    const url = `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+    if (!res.ok) {
+      console.log(`[${slug}] WP posts fetch failed: ${res.status} ${res.statusText}`);
+      return null;
+    }
     const posts = await res.json();
-    if (!posts || posts.length === 0) return null;
+    if (!posts || posts.length === 0) {
+      console.log(`[${slug}] WP returned no posts`);
+      return null;
+    }
     const post = posts[0];
+    console.log(`[${slug}] post.id=${post?.id} featured_media=${post?.featured_media} embedded=${!!post?._embedded}`);
 
     // 1. Try _embedded featured media
     const mediaItems = post?._embedded?.['wp:featuredmedia'];
