@@ -11,17 +11,46 @@ const PREFIX = 'blog';
 
 async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
   try {
-    const res = await fetch(
-      `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } }
-    );
-    if (!res.ok) return null;
+    const url = `${WP_API}/posts?slug=${encodeURIComponent(slug)}&_embed=wp:featuredmedia&per_page=1`;
+    const res = await fetch(url, { headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://checkout.mypeptideco.com/' } });
+    if (!res.ok) {
+      console.log(`[${slug}] WP posts fetch failed: ${res.status} ${res.statusText}`);
+      return null;
+    }
     const posts = await res.json();
-    if (!posts || posts.length === 0) return null;
-    const mediaItems = posts[0]?._embedded?.['wp:featuredmedia'];
-    if (mediaItems && mediaItems.length > 0 && mediaItems[0].source_url) {
+    if (!posts || posts.length === 0) {
+      console.log(`[${slug}] WP returned no posts`);
+      return null;
+    }
+    const post = posts[0];
+    console.log(`[${slug}] post.id=${post?.id} featured_media=${post?.featured_media} embedded=${!!post?._embedded}`);
+
+    // 1. Try _embedded featured media
+    const mediaItems = post?._embedded?.['wp:featuredmedia'];
+    if (mediaItems && mediaItems.length > 0 && mediaItems[0]?.source_url) {
       return mediaItems[0].source_url as string;
     }
+
+    // 2. Fallback: fetch media directly by featured_media ID
+    const mediaId = post?.featured_media;
+    if (mediaId && mediaId > 0) {
+      const mres = await fetch(`${WP_API}/media/${mediaId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://checkout.mypeptideco.com/' },
+      });
+      if (mres.ok) {
+        const media = await mres.json();
+        if (media?.source_url) return media.source_url as string;
+        if (media?.guid?.rendered) return media.guid.rendered as string;
+      }
+    }
+
+    // 3. Fallback: parse first image from content
+    const html = post?.content?.rendered as string | undefined;
+    if (html) {
+      const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m && m[1]) return m[1];
+    }
+
     return null;
   } catch (e) {
     console.error(`Error fetching image for slug ${slug}:`, e);
@@ -47,7 +76,7 @@ async function mirrorToStorage(
     for (const u of candidates) {
       const r = await fetch(u, {
         headers: {
-          'User-Agent': 'Mozilla/5.0',
+          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36', 'Accept': 'application/json, text/plain, */*', 'Accept-Language': 'en-US,en;q=0.9', 'Referer': 'https://checkout.mypeptideco.com/',
           'Accept': 'image/*',
           'Referer': 'https://checkout.mypeptideco.com/',
         },
