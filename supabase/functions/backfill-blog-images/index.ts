@@ -40,18 +40,24 @@ Deno.serve(async (req) => {
 
   let offset = 0;
   let batchSize = 10;
+  let refetchAll = false;
   try {
     const body = await req.json().catch(() => ({}));
     if (body.offset !== undefined) offset = body.offset;
     if (body.batch_size !== undefined) batchSize = body.batch_size;
+    if (body.refetch_all) refetchAll = true;
   } catch {}
 
-  // Only fetch posts that don't have a featured image yet
-  const { data: posts, error } = await supabase
+  // Include posts missing an image OR pointing at the legacy vicorpus.com host
+  // (those URLs now return HTML — the original assets were not migrated to
+  // checkout.mypeptideco.com under the same path).
+  let query = supabase
     .from('blog_posts')
-    .select('id, slug, featured_image')
-    .or('featured_image.is.null,featured_image.eq.')
-    .range(offset, offset + batchSize - 1);
+    .select('id, slug, featured_image');
+  if (!refetchAll) {
+    query = query.or('featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%');
+  }
+  const { data: posts, error } = await query.range(offset, offset + batchSize - 1);
 
   if (error) {
     return new Response(JSON.stringify({ error: error.message }), {
@@ -78,7 +84,7 @@ Deno.serve(async (req) => {
   const { count } = await supabase
     .from('blog_posts')
     .select('id', { count: 'exact', head: true })
-    .or('featured_image.is.null,featured_image.eq.');
+    .or('featured_image.is.null,featured_image.eq.,featured_image.ilike.%vicorpus.com%');
 
   return new Response(JSON.stringify({
     remaining: count,

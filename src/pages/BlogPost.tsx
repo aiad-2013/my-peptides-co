@@ -7,7 +7,7 @@ import { Footer } from '@/components/Footer';
 import { Header } from '@/components/Header';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { getProxiedImageUrl } from '@/lib/imageProxy';
+import { getBlogImageUrl, BLOG_FALLBACK_IMAGE } from '@/lib/imageProxy';
 import { useSEO } from '@/hooks/useSEO';
 
 interface BlogPostData {
@@ -92,15 +92,19 @@ const BlogPost = () => {
               {post.title}
             </h1>
 
-            {post.featured_image && (
-              <div className="rounded-lg overflow-hidden mb-8">
-               <img
-                  src={getProxiedImageUrl(post.featured_image)}
-                  alt={post.title}
-                  className="w-full h-auto object-cover"
-                />
-              </div>
-            )}
+            <div className="rounded-lg overflow-hidden mb-8 bg-muted">
+              <img
+                src={getBlogImageUrl(post.featured_image)}
+                alt={post.title}
+                width={1280}
+                height={720}
+                className="w-full h-auto object-cover"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = BLOG_FALLBACK_IMAGE;
+                }}
+              />
+            </div>
+
 
             <div
               className="prose prose-lg max-w-none
