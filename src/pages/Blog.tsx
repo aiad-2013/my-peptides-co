@@ -114,7 +114,7 @@ const Blog = () => {
           {categories.map((c) => (
             <button
               key={c.value}
-              onClick={() => setCategory(c.value)}
+              onClick={() => handleCategoryChange(c.value)}
               className={cn(
                 'px-5 py-2 text-sm font-medium rounded-full transition-all duration-200',
                 category === c.value
@@ -126,6 +126,12 @@ const Blog = () => {
             </button>
           ))}
         </div>
+
+        {!isLoading && filtered.length > 0 && (
+          <p className="text-center text-sm text-muted-foreground mb-6">
+            Showing {Math.min(filtered.length, (currentPage - 1) * POSTS_PER_PAGE + 1)}–{Math.min(filtered.length, currentPage * POSTS_PER_PAGE)} of {filtered.length} articles
+          </p>
+        )}
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
