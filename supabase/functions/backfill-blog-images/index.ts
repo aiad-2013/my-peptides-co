@@ -18,10 +18,34 @@ async function getFeaturedImageForSlug(slug: string): Promise<string | null> {
     if (!res.ok) return null;
     const posts = await res.json();
     if (!posts || posts.length === 0) return null;
-    const mediaItems = posts[0]?._embedded?.['wp:featuredmedia'];
-    if (mediaItems && mediaItems.length > 0 && mediaItems[0].source_url) {
+    const post = posts[0];
+
+    // 1. Try _embedded featured media
+    const mediaItems = post?._embedded?.['wp:featuredmedia'];
+    if (mediaItems && mediaItems.length > 0 && mediaItems[0]?.source_url) {
       return mediaItems[0].source_url as string;
     }
+
+    // 2. Fallback: fetch media directly by featured_media ID
+    const mediaId = post?.featured_media;
+    if (mediaId && mediaId > 0) {
+      const mres = await fetch(`${WP_API}/media/${mediaId}`, {
+        headers: { 'User-Agent': 'Mozilla/5.0' },
+      });
+      if (mres.ok) {
+        const media = await mres.json();
+        if (media?.source_url) return media.source_url as string;
+        if (media?.guid?.rendered) return media.guid.rendered as string;
+      }
+    }
+
+    // 3. Fallback: parse first image from content
+    const html = post?.content?.rendered as string | undefined;
+    if (html) {
+      const m = html.match(/<img[^>]+src=["']([^"']+)["']/i);
+      if (m && m[1]) return m[1];
+    }
+
     return null;
   } catch (e) {
     console.error(`Error fetching image for slug ${slug}:`, e);
