@@ -173,7 +173,6 @@ export default function Admin() {
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Provider</div>
               <div className="font-medium">SendGrid</div>
-              <div className="text-xs text-muted-foreground mt-1">Account: Nadia (aiad.com.au)</div>
             </div>
             <div className="p-3 rounded-md border">
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-1">Recipient (To)</div>
