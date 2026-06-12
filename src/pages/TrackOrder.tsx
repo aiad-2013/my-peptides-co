@@ -115,7 +115,16 @@ const TrackOrderContent = () => {
     if (emailParam) setEmailInput(emailParam);
   }, []);
 
-  const status = order ? statusConfig[order.status] || statusConfig.processing : null;
+  const humanizeStatus = (s: string) =>
+    s.replace(/^wc-/, '').replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+  const rawStatus = order?.status ? order.status.replace(/^wc-/, '') : '';
+  const status = order
+    ? statusConfig[rawStatus] || {
+        icon: Package,
+        label: humanizeStatus(order.status),
+        color: 'text-accent',
+      }
+    : null;
   const StatusIcon = status?.icon || Package;
 
   return (
